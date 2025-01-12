@@ -168,6 +168,11 @@
                   <input type="password" class="form-control" name="confirmPassword" id="confirmPassword" value="" >
                 </div>
                 <div id="errorInConfirmPassword" class="error-message"></div>
+                <%if(locals.message && message.length>0){%>
+                  <div class="alert alert-danger text-center">
+                    <%=message%>
+                  </div>
+                  <%}%>
                 <div class="col-12">
                   <div class="form-check">
                     <input class="form-check-input" type="checkbox" value="" name="iAgree" id="iAgree" required>
@@ -186,7 +191,7 @@
             <div class="row">
               <div class="col-12">
                 <hr class="mt-5 mb-4 border-secondary-subtle">
-                <p class="m-0 text-secondary text-center">Already have an account? <a href="#!" class="link-primary text-decoration-none">Sign in</a></p>
+                <p class="m-0 text-secondary text-center">Already have an account? <a href="/login" class="link-primary text-decoration-none">Sign in</a></p>
               </div>
             </div>
             <div class="row">
@@ -215,100 +220,99 @@
 
 </main>
 <footer>
-    <!-- Footer Start-->
-    <div class="footer-area footer-padding">
-        <div class="container-fluid ">
-            <div class="row d-flex justify-content-between">
-                <div class="col-xl-3 col-lg-3 col-md-8 col-sm-8">
-                 <div class="single-footer-caption mb-50">
-                   <div class="single-footer-caption mb-30">
-                      <!-- logo -->
-                      <div class="footer-logo mb-35">
-                       <a href="index.html"><img src="assets/img/logo/logo2_footer.png" alt=""></a>
-                   </div>
-                   <div class="footer-tittle">
-                       <div class="footer-pera">
-                           <p>Suspendisse varius enim in eros elementum tristique. Duis cursus, mi quis viverra ornare, eros dolor interdum nulla.</p>
-                       </div>
-                   </div>
-                   <!-- social -->
-                   <div class="footer-social">
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="https://bit.ly/sai4ull"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#"><i class="fab fa-pinterest-p"></i></a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-xl-2 col-lg-2 col-md-4 col-sm-4">
-        <div class="single-footer-caption mb-50">
-            <div class="footer-tittle">
-                <h4>Quick links</h4>
-                <ul>
-                    <li><a href="#">Image Licensin</a></li>
-                    <li><a href="#">Style Guide</a></li>
-                    <li><a href="#">Privacy Policy</a></li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    <div class="col-xl-2 col-lg-2 col-md-4 col-sm-4">
-        <div class="single-footer-caption mb-50">
-            <div class="footer-tittle">
-                <h4>Shop Category</h4>
-                <ul>
-                    <li><a href="#">Image Licensin</a></li>
-                    <li><a href="#">Style Guide</a></li>
-                    <li><a href="#">Privacy Policy</a></li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    <div class="col-xl-2 col-lg-2 col-md-4 col-sm-4">
-        <div class="single-footer-caption mb-50">
-            <div class="footer-tittle">
-                <h4>Pertners</h4>
-                <ul>
-                    <li><a href="#">Image Licensin</a></li>
-                    <li><a href="#">Style Guide</a></li>
-                    <li><a href="#">Privacy Policy</a></li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    <div class="col-xl-2 col-lg-3 col-md-4 col-sm-4">
-        <div class="single-footer-caption mb-50">
-            <div class="footer-tittle">
-                <h4>Get in touch</h4>
-                <ul>
-                    <li><a href="#">(89) 982-278 356</a></li>
-                    <li><a href="#">demo@colorlib.com</a></li>
-                    <li><a href="#">67/A, Colorlib, Green road, NYC</a></li>
-                </ul>
-            </div>
-        </div>
-    </div>
+  <!-- Footer Start-->
+  <div class="footer-area footer-padding bg-secondary">
+      <div class="container-fluid ">
+          <div class="row d-flex justify-content-between">
+              <div class="col-xl-3 col-lg-3 col-md-8 col-sm-8">
+               <div class="single-footer-caption mb-50">
+                 <div class="single-footer-caption mb-30">
+                    <!-- logo -->
+                    <div class="footer-logo mb-35">
+                     <a href="index.html" class="h1 text-light" text-decoration:none>GentzGallery</a>
+                 </div>
+                 <div class="footer-tittle">
+                     <div class="footer-pera">
+                         <p>Where to find the perfect watch</p>
+                     </div>
+                 </div>
+                 <!-- social -->
+                 <div class="footer-social">
+                  <a href="#"><i class="fab fa-twitter"></i></a>
+                  <a href="https://bit.ly/sai4ull"><i class="fab fa-facebook-f"></i></a>
+                  <a href="#"><i class="fab fa-pinterest-p"></i></a>
+              </div>
+          </div>
+      </div>
+  </div>
+  <div class="col-xl-2 col-lg-2 col-md-4 col-sm-4">
+      <div class="single-footer-caption mb-50">
+          <div class="footer-tittle">
+              <h4>Help & Information</h4>
+              <ul>
+                  <li><a href="#">Terms & Conditions</a></li>
+                  <li><a href="#">Home Page</a></li>
+              </ul>
+          </div>
+      </div>
+  </div>
+  <div class="col-xl-2 col-lg-2 col-md-4 col-sm-4">
+      <div class="single-footer-caption mb-50">
+          <div class="footer-tittle">
+              <h4>About</h4>
+              <ul>
+                  <li><a href="#">Our Story</a></li>
+                  <li><a href="#">Contact Us</a></li>
+                 
+              </ul>
+          </div>
+      </div>
+  </div>
+  <div class="col-xl-2 col-lg-2 col-md-4 col-sm-4">
+      <div class="single-footer-caption mb-50">
+          <div class="footer-tittle">
+              <h4>Collections</h4>
+              <ul>
+                  <li><a href="#">Men</a></li>
+                  <li><a href="#">Boys</a></li>
+              
+              </ul>
+          </div>
+      </div>
+  </div>
+  <div class="col-xl-2 col-lg-3 col-md-4 col-sm-4">
+      <div class="single-footer-caption mb-50">
+          <div class="footer-tittle">
+              <h4>Categories</h4>
+              <ul>
+                  <li><a href="#">Analog</a></li>
+                  <li><a href="#">Digital</a></li>
+                  <li><a href="#">Analog-Digital</a></li>
+                  <li><a href="#">Smart</a></li>
+              </ul>
+          </div>
+      </div>
+  </div>
 </div>
 </div>
 </div>
 <!-- footer-bottom area -->
 <div class="footer-bottom-area">
-    <div class="container">
-        <div class="footer-border">
-           <div class="row d-flex align-items-center">
-               <div class="col-xl-12 ">
-                   <div class="footer-copy-right text-center">
-                       <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-                          Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
-                          <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </div>
-  </div>
-  <!-- Footer End-->
-</footer>
+  <div class="container">
+      <div class="footer-border">
+         <div class="row d-flex align-items-center">
+             <div class="col-xl-12 ">
+                 <div class="footer-copy-right text-center">
+                     <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                        Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+                        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Footer End-->
 <!--? Search model Begin -->
 <div class="search-model-box">
     <div class="h-100 d-flex align-items-center justify-content-center">
@@ -365,162 +369,6 @@
 <script src="./assets/js/main.js"></script>
 
 
-
-
-<!-- form validation -->
-<!-- <script>
-  document.addEventListener("DOMContentLoaded", function () {
-  document.querySelector("form").addEventListener("submit", formValidate)
-  })
-    function formValidate(e){
-      e.preventDefault();
-      let phone = document.getElementById("phone").value;
-      let name = document.getElementById("name").value;
-      let email = document.getElementById("email").value;
-      let password = document.getElementById("password").value;
-      let repeatPassword = document.getElementById("confirmPassword").value;
-      if(email=='' || password=='' || repeatPassword==''|| name=='' || phone==''){
-        Swal.fire("All fields are required");
-        return false;
-      }else if(password !=repeatPassword){
-        Swal.fire("Password does not match")
-      }else{
-        e.target.submit();
-        //alert("user created successfully")
-        return true
-      }
-   
-}
-  
-  
-</script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> -->
-
-<!-- <script>
-  let phoneId = document.getElementById("phone")
-  let nameId = document.getElementById("name")
-  let emailId = document.getElementById("email")
-  let passwordId = document.getElementById("password")
-  let confirmPasswordId = document.getElementById("confirmPassword")
-  let errorInName = document.getElementById("errorInName");
-  let errorInEmail = document.getElementById("errorInEmail");
-  let errorInPhone = document.getElementById("errorInPhone");
-  let errorInPassword = document.getElementById("errorInPassword");
-  let errorInConfirmPassword = document.getElementById("errorInConfirmPassword");
-  let signForm = document.getElementById("signForm");
-  console.log("small try ", phoneId)
-
-  function nameValidateChecking (e){
-    const nameVal = nameId.value;
-    const namePattern = /^[A-Za-z\s]+$/;
-
-    if(nameVal.trim()===""){
-      errorInName.style.display = "block";
-      errorInName.innerHTML = "Please enter a valid name"
-    }else if(!namePattern.test(nameVal)){
-      errorInName.style.display = "block";
-      errorInName.innerHTML = "Name can only be contain alphabets and spaces "
-    }else{
-      errorInName.style.display="none"
-      errorInName.innerHTML = "";
-
-    }
-
-  }
-
-
-
-
-  function emailValidateChecking(e){
-    const emailVal =  emailId.value;
-    const emailPattern =   /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
-    if(!emailPattern.test(emailVal)){
-      errorInEmail.style.display = "block";
-      errorInEmail.innerHTML = "Invalid format"
-    }else{
-      errorInEmail.style.display ='none';
-      errorInEmail.innerHTML = ""
-    }
-  }
-
-
-  function phoneValidateChecking(e){
-    const phoneVal = phoneId.value;
-    if(phoneVal.trim()==""){
-      errorInPhone.style.display = "block";
-      errorInPhone.innerHTML="Enter a valid phone number"
-    }else if(phoneVal.length<10 || phoneVal.length>0){
-      errorInPhone.style.display = "block";
-      errorInPhone.innerHTML = "Enter a 10 digit mobile number"
-    }else{
-      errorInPhone.style.display = "none";
-      errorInPhone.innerHTML = ""
-    }
-  }
-
-
-
-  function passwordValidateChecking(e){
-    const passwordVal = passwordId.value;
-    const confirmPasswordVal = confirmPasswordId;
-    const alpha = /^[A-Za-z]+$/;
-    const digit = /\d/ ;
-    if(passwordVal.length<8){
-      errorInPassword.style.display = "block";
-      errorInPassword.innerHTML = "Should contain atleast 8 characters"
-    }else if(!alpha.test(passwordVal || !digit.test(passwordVal))){
-      errorInPassword.style.display = "block";
-      errorInPassword.innerHTML="Should contain numbers and alphabet"
-    }else{
-      errorInPassword.style.display = "none";l
-      errorInPassword.innerHTML  ="";
-
-    }
-    if(passwordVal !==confirmPasswordVal){
-      errorInConfirmPassword.style.display = "block";
-      errorInConfirmPassword.innerHTML = "Passwords do not match";
-    }else{
-      errorInConfirmPassword.style.display = "none";
-      errorInConfirmPassword.innerHTML  = "";
-    }
-  }
-
-  
-
-  document.addEventListener("DOMContentLoaded",function(){
-    signForm.addEventListener("submit",function(e){
-
-      nameValidateChecking();
-      emailValidateChecking();
-      phoneValidateChecking();
-      passwordValidateChecking();
-
-      if(
-        !nameId||
-        !passwordId||
-        !emailId ||
-        !phoneId||
-        !repeatPasswordId||
-        !errorInName||
-        !errorInEmail||
-        !errorInPhone||
-        !errorInPassword||
-        !errorInConfirmPassword||
-        !signForm){
-          console.log("One or more elements are not found")
-        }
-        if(
-          errorInName.innerHTML ||
-          errorInEmail.innerHTML ||
-          errorInPhone.innerHTML ||
-          errorInPassword.innerHTML ||
-          errorInConfirmPassword.innerHTML
-        ){
-          e.preventDefault();
-        }
-    })
-  })
-</script> -->
 
 
 <script>

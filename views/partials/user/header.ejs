@@ -25,7 +25,39 @@
     <link rel="stylesheet" href="assets/css/nice-select.css">
     <link rel="stylesheet" href="assets/css/style.css">
     
-    
+    <style>
+        .dropdown{
+            position: relative;
+            display: inline-block;;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1000;
+            right: inherit;
+        }
+        .dropdown-content a{
+            color:black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+        }
+        .dropdown-content a:hover{
+            background-color: #cfcfcf;
+        }
+        .dropdown:hover .dropdown-content{
+            display: block;
+        }
+        .header{
+            position: relative;
+            z-index: 500;
+        }
+
+    </style>
 </head>
 <body class="full-wrapper">
     <!-- ? Preloader Start -->
@@ -58,6 +90,7 @@
                                         <li><a href="index.html">Home</a></li> 
                                         <li><a href="shop.html">Men</a></li>
                                         <li><a href="about.html">Boys</a></li>
+                                        <li><a href="contact.html">Contact</a></li>
                                         <!-- <li><a href="blog.html">Blog</a>
                                             <ul class="submenu">
                                                 <li><a href="blog.html">Blog</a></li>
@@ -66,9 +99,23 @@
                                                 <li><a href="product_details.html">Product Details</a></li>
                                             </ul>
                                         </li> -->
-                                        <li><a href="contact.html">Contact</a></li>
-                                        <li><a href="/login">Login</a></li>
-                                        <li><a href="/signup">Signup</a></li>
+                                        <% if(locals.user) { %>
+                                            <div class="dropdown">
+                                               <li><a href="" class="sign-in-link"><%=locals.user.name %></a></li> 
+                                                <div class="dropdown-content">
+                                                    <a href="/userProfile">Profile</a>
+                                                    <a href="/logout">Logout</a>
+
+                                                </div>
+                                            </div>
+                                        <% } else {%>
+                                            <li><a href="/login">Login</a></li>
+                                            <li><a href="/signup">Signup</a></li>
+
+                                            <% } %>
+                                        
+                                        
+                                   
                                     </ul>
                                 </nav>
                             </div>   

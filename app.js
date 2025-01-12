@@ -7,7 +7,8 @@ const path = require('path');
 const userRouter = require('./routes/userRouter');
 const logger =  require('morgan');
 const session =require('express-session');
-const passport = require('./config/passport')
+const passport = require('./config/passport');
+const adminRouter = require('./routes/adminRouter');
 db();
 
 
@@ -41,6 +42,7 @@ app.use(express.static('public'));
 
 
 app.use('/',userRouter)
+app.use('/admin',adminRouter)
 
 app.listen(process.env.PORT, ()=>{
     console.log("server running at ",process.env.PORT )
