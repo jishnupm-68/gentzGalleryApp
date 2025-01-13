@@ -49,7 +49,22 @@ router.get("/deleteBrand", adminAuth, brandController.deleteBrand);
 
 
 //product Management
-//router.get("/addProducts",adminAuth, productController.getProductAddPage)
+router.get("/addProducts",adminAuth, productController.getProductAddPage)
+router.post('/addProducts',adminAuth,uploads.array('images',4),productController.addProducts)
+router.get('/products',adminAuth,productController.getAllProducts)
+router.post('/addProductOffer',adminAuth, productController.addProductOffer);
+router.post("/removeProductOffer",adminAuth, productController.removeProductOffer);
+router.get('/blockProduct',adminAuth,productController.blockProduct)
+router.get('/unBlockProduct',adminAuth,productController.unBlockProduct)
+router.get('/editProduct',adminAuth, productController.getEditProduct);
+router.post('/editProduct',adminAuth,uploads.array('images',4), productController.editProduct);
+
+// router.post('/editProduct/',(req,res)=>{
+//     console.log("params",req.params) 
+//     console.log("query", req.query)
+// });
 
 
+
+router.post('/deleteImage',adminAuth, productController.deleteSingleImage);
 module.exports = router
