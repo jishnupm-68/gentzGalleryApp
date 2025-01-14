@@ -71,7 +71,7 @@
   <section class="content-main" style="margin-left: 20%;">
     <div class="content-header">
       <div>
-        <h2 class="content-title card-title">Category</h2>
+        <h2 class="content-title card-title mt-3">Category</h2>
       </div>
     </div>
     <header class="card-header text-center mb-20">
@@ -139,7 +139,7 @@
                         <a href="#" class="text-white" onclick="addOffer('<%=category._id%>')">Add Offer</a>
                       </button>
                       <% }else{ %>
-                      <button class="btn btn-info"style="width: 100px">
+                      <button class="btn btn-danger"style="width: 100px">
                         <a href="#" class="text-white" onclick="removeOffer('<%=category._id%>')">Remove</a>
                       </button>
                       <% } %>
@@ -305,7 +305,7 @@
                 categoryId:categoryId})
             })
             const data = await response.json();
-            console.log(data)
+            console.log("data,", response.ok,data.success)
             if(response.OK && data.success===true) {
               Swal.fire(
                 "Offer added",
@@ -315,9 +315,12 @@
                 location.reload()
               });
             }else{
-              Swal.fire("Failed",data.message || "Adding offer failed", "error")
-            }
+              Swal.fire("Success",data.message || "Adding offer successfull", "success")
+              .then(()=>{
+                location.reload();
 
+              })
+            }
           }catch(error){
             Swal.fire(
               "Error",
@@ -333,17 +336,18 @@
 
       async function removeOffer(categoryId){
         try{
-          const response = await fetch("adminm/removeCategoryOffer",{
+          const response = await fetch("/admin/removeCategoryOffer",{
             method:"post",
             headers:{
               'Content-Type': 'application/json'
             },
             body: JSON.stringify({categoryId:categoryId})
           })
+          console.log("Fetch called")
 
           const data  = await response.json();
-
-          if(response.ok && data.status ==='true'){
+          console.log("data,", response.ok,data.success)
+          if(response.ok ){
             Swal.fire(
               "offer removed",
               "The Offer has been removed successfully",
@@ -353,6 +357,7 @@
             })
           }else{
             Swal.fire("Failed",data.message || "Removing offer failed", "error")
+            .then(()=>location.reload())
           }
 
         }

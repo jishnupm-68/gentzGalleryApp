@@ -1,6 +1,8 @@
 const { render } = require("../../app")
 const env= require("dotenv").config();
 const User = require('../../models/userSchema')
+const Category = require('../../models/categorySchema');
+const Product  = require('../../models/productSchema');
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt")
 
@@ -8,21 +10,37 @@ const bcrypt = require("bcrypt")
 
 const loadHomePage = async(req,res)=>{
     try{
-        const user = req.session.user
+        const user = req.session.user;
+        console.log(user)
         
+        const categories = await Category.find({isListed:true});
+        const productData = await Product.find({
+            isBlocked:false,
+            category:{$in:categories.map(category=>category._id)},
+            //quantity:{$gt:0}
+        })
+        
+        
+        
+        productData.sort((a,b)=>{new Date(b.createdOn)-new Date(a.createdOn)})
+       
+        let productDataResponse = productData.slice(0,4)
+        console.log(productData.length,"Is the no of products acvailable",productDataResponse.length)
+
         if(user){
             const userData = await User.findOne({_id:user})
-            console.log(userData)
-            return res.render("home",{user:userData})
+          
+            return res.render("home",{user:userData, products:productDataResponse})
+           //return res.render("home",{user:userData})
         }
         else{
-            return res.render("home")
+            return res.render("home",{products:productData})
         }
     }catch(error){
         console.log("home page not found");
         res.status(500).send("server error");
     }
-    
+     
 }
 
 

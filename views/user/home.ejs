@@ -1,5 +1,108 @@
 <%- include('../partials/user/header.ejs') %>
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+  .btn {
+      display: inline-block;
+      padding: 12px 20px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #fff;
+      background-color: #ff6b6b;
+      border: none;
+      border-radius: 5px;
+      transition: background-color 0.3s, transform 0.3s;
+      cursor: pointer;
+      text-align: center;
+  }
+
+
+  .btn:hover {
+      background-color: #ff4c4c;
+      transform: translateY(-2px);
+  }
+
+
+  .btn:active {
+      transform: translateY(1px);
+  }
+  .wishlist-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: rgba(255, 255, 255, 0.8);
+      padding: 10px;
+      border-radius: 50%;
+      color: #ff6b6b;
+      font-size: 18px;
+      z-index: 10;
+      transition: background-color 0.3s, color 0.3s, transform 0.3s;
+  }
+
+
+  .wishlist-btn:hover {
+      background-color: rgba(255, 255, 255, 1);
+      color: #ff4c4c;
+      transform: translateY(-2px);
+  }
+
+
+  .wishlist-btn:active {
+      transform: translateY(1px);
+  }
+
+
+  .product-img-action-wrap {
+      position: relative;
+  }
+
+
+  .product-img {
+      position: relative;
+      display: block;
+      overflow: hidden;
+  }
+
+
+  .product-cart-wrap {
+      border: 1px solid #eee;
+      padding: 20px;
+      margin-bottom: 30px;
+  }
+
+
+  .product-content-wrap h6 {
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 5px;
+  }
+
+
+  .product-content-wrap h5 {
+      font-size: 16px;
+      color: #ff6b6b;
+      margin-bottom: 10px;
+  }
+
+
+  .product-content-wrap a {
+      display: inline-block;
+      padding: 8px 12px;
+      background-color: #ff6b6b;
+      color: white;
+      text-transform: uppercase;
+      font-size: 14px;
+      border-radius: 4px;
+      text-decoration: none;
+  }
+
+
+  .product-content-wrap a:hover {
+      background-color: #ff4c4c;
+  }
+</style>
+
+
     <main>
         <!--? Hero Area Start-->
         <div class="container-fluid">
@@ -82,60 +185,24 @@
         <div class="popular-items pt-50">
             <div class="container-fluid">
                 <div class="row">
-                    <div class="col-lg-3 col-md-6 col-sm-6">
-                        <div class="single-popular-items mb-50 text-center wow fadeInUp" data-wow-duration="1s" data-wow-delay=".1s">
-                            <div class="popular-img">
-                                <img src="assets/img/gallery/popular1.png" alt="">
-                                <div class="img-cap">
-                                    <span>Glasses</span>
-                                </div>
-                                <div class="favorit-items">
-                                 <a href="shop.html" class="btn">Shop Now</a>
-                             </div>
-                         </div>
-                     </div>
-                 </div>
-                 <div class="col-lg-3 col-md-6 col-sm-6">
-                    <div class="single-popular-items mb-50 text-center wow fadeInUp" data-wow-duration="1s" data-wow-delay=".2s">
-                        <div class="popular-img">
-                            <img src="assets/img/gallery/popular2.png" alt="">
-                            <div class="img-cap">
-                                <span>Watches</span>
-                            </div>
-                            <div class="favorit-items">
-                             <a href="shop.html" class="btn">Shop Now</a>
-                         </div>
-                     </div>
-                 </div>
-             </div>
-             <div class="col-lg-3 col-md-6 col-sm-6">
-                <div class="single-popular-items mb-50 text-center wow fadeInUp" data-wow-duration="1s" data-wow-delay=".4s">
-                    <div class="popular-img">
-                        <img src="assets/img/gallery/popular3.png" alt="">
-                        <div class="img-cap">
-                            <span>Jackets</span>
-                        </div>
-                        <div class="favorit-items">
-                         <a href="shop.html" class="btn">Shop Now</a>
-                     </div>
-                 </div>
-             </div>
-         </div>
-         <div class="col-lg-3 col-md-6 col-sm-6">
-            <div class="single-popular-items mb-50 text-center wow fadeInUp" data-wow-duration="1s" data-wow-delay=".6s">
-                <div class="popular-img">
-                    <img src="assets/img/gallery/popular4.png" alt="">
-                    <div class="img-cap">
-                        <span>Clothes</span>
-                    </div>
-                    <div class="favorit-items">
-                     <a href="shop.html" class="btn">Shop Now</a>
-                 </div>
-             </div>
+                    
+                 
+
+ <div class="col-lg-12 col-md-6 col-sm-12">
+    <div class="single-popular-items mb-50 text-center wow fadeInUp" data-wow-duration="1s" data-wow-delay=".2s">
+        <div class="popular-img">
+            <img src="/uploads/brands/1736849786662-830146210-hand-wrist-watch-business-suit-elegant-handsome-man-suit-man-suit-male-beard-mustache-black-white_293990-4461.jpg" style=" height: 50%;" alt="">
+            <div class="img-cap">
+                <span>Watches</span>
+            </div>
+            <div class="favorit-items">
+             <a href="/shop" class="btn">Shop </a>
          </div>
      </div>
  </div>
 </div>
+
+</div> 
 </div>
 <!-- Popular Items End -->
 <!--? New Arrival Start -->
@@ -150,183 +217,46 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
-                <div class="single-new-arrival mb-50 text-center wow fadeInUp" data-wow-duration="1s" data-wow-delay=".1s">
-                    <div class="popular-img">
-                        <img src="assets/img/gallery/arrival1.png" alt="">
-                        <div class="favorit-items">
-                            <!-- <span class="flaticon-heart"></span> -->
-                            <img src="assets/img/gallery/favorit-card.png" alt="">
+            <section class="product spad">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <ul class="filter__controls">
+                                <li data-filter=".new-arrivals">New Arrivals</li>
+                            </ul>
                         </div>
                     </div>
-                    <div class="popular-caption">
-                        <h3><a href="product_details.html">Knitted Jumper</a></h3>
-                        <div class="rating mb-10">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <span>$ 30.00</span>
+                    <div class="row product__filter">
+                      <% for(let i=0;i<4;i++){ %>
+                            <div class="col-lg-3 col-md-4 col-12 col-sm-6">
+                                <div class="product-cart-wrap mb-30">
+                                    <div class="product-img-action-wrap">
+                                        <div class="product-img product-img-zoom">
+                                            <a href="/productDetails?id=<%= products[i]._id %>">
+                                                <img class="default-img" src="/uploads/brands/<%=products[i].productImage[0]%>" alt="<%=products[i].productName%>">
+                                            </a>
+                                        </div>
+                                        <a href="/addToWishlist?id=<%= products[i]._id %>" class="wishlist-btn">
+                                            <i class="fas fa-heart"></i>
+                                        </a>
+                                    </div>
+              
+              
+                                    <div class="product-content-wrap">
+                                        <h6><%= products[i].productName %></h6>
+                                        <h5><%= products[i].productPrice %></h5>
+                                        <a href="/addToCart?id=<%= products[i]._id %>">Add to Cart</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <% } %>
                     </div>
                 </div>
-            </div>
-            <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
-                <div class="single-new-arrival mb-50 text-center wow fadeInUp" data-wow-duration="1s" data-wow-delay=".2s">
-                    <div class="popular-img">
-                        <img src="assets/img/gallery/arrival2.png" alt="">
-                        <div class="favorit-items">
-                            <!-- <span class="flaticon-heart"></span> -->
-                            <img src="assets/img/gallery/favorit-card.png" alt="">
-                        </div>
-                    </div>
-                    <div class="popular-caption">
-                     <h3><a href="product_details.html">Knitted Jumper</a></h3>
-                     <div class="rating mb-10">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <span>$ 30.00</span>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
-            <div class="single-new-arrival mb-50 text-center wow fadeInUp" data-wow-duration="1s" data-wow-delay=".3s">
-                <div class="popular-img">
-                    <img src="assets/img/gallery/arrival3.png" alt="">
-                    <div class="favorit-items">
-                        <!-- <span class="flaticon-heart"></span> -->
-                        <img src="assets/img/gallery/favorit-card.png" alt="">
-                    </div>
-                </div>
-                <div class="popular-caption">
-                 <h3><a href="product_details.html">Knitted Jumper</a></h3>
-                 <div class="rating mb-10">
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                </div>
-                <span>$ 30.00</span>
-            </div>
-        </div>
-    </div>
-    <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
-        <div class="single-new-arrival mb-50 text-center wow fadeInUp" data-wow-duration="1s" data-wow-delay=".4s">
-            <div class="popular-img">
-                <img src="assets/img/gallery/arrival4.png" alt="">
-                <div class="favorit-items">
-                    <!-- <span class="flaticon-heart"></span> -->
-                    <img src="assets/img/gallery/favorit-card.png" alt="">
-                </div>
-            </div>
-            <div class="popular-caption">
-             <h3><a href="product_details.html">Knitted Jumper</a></h3>
-             <div class="rating mb-10">
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-            </div>
-            <span>$ 30.00</span>
-        </div>
-    </div>
-</div>
-<div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
-    <div class="single-new-arrival mb-50 text-center wow fadeInUp" data-wow-duration="1s" data-wow-delay=".5s">
-        <div class="popular-img">
-            <img src="assets/img/gallery/arrival5.png" alt="">
-            <div class="favorit-items">
-                <!-- <span class="flaticon-heart"></span> -->
-                <img src="assets/img/gallery/favorit-card.png" alt="">
-            </div>
-        </div>
-        <div class="popular-caption">
-         <h3><a href="product_details.html">Knitted Jumper</a></h3>
-         <div class="rating mb-10">
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-        </div>
-        <span>$ 30.00</span>
-    </div>
-</div>
-</div>
-<div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
-    <div class="single-new-arrival mb-50 text-center wow fadeInUp" data-wow-duration="1s" data-wow-delay=".6s">
-        <div class="popular-img">
-            <img src="assets/img/gallery/arrival6.png" alt="">
-            <div class="favorit-items">
-                <!-- <span class="flaticon-heart"></span> -->
-                <img src="assets/img/gallery/favorit-card.png" alt="">
-            </div>
-        </div>
-        <div class="popular-caption">
-         <h3><a href="product_details.html">Knitted Jumper</a></h3>
-         <div class="rating mb-10">
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-        </div>
-        <span>$ 30.00</span>
-    </div>
-</div>
-</div>
-<div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
-    <div class="single-new-arrival mb-50 text-center wow fadeInUp" data-wow-duration="1s" data-wow-delay=".7s">
-        <div class="popular-img">
-            <img src="assets/img/gallery/arrival7.png" alt="">
-            <div class="favorit-items">
-                <!-- <span class="flaticon-heart"></span> -->
-                <img src="assets/img/gallery/favorit-card.png" alt="">
-            </div>
-        </div>
-        <div class="popular-caption">
-         <h3><a href="product_details.html">Knitted Jumper</a></h3>
-         <div class="rating mb-10">
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-        </div>
-        <span>$ 30.00</span>
-    </div>
-</div>
-</div>
-<div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
-    <div class="single-new-arrival mb-50 text-center wow fadeInUp" data-wow-duration="1s" data-wow-delay=".8s">
-        <div class="popular-img">
-            <img src="assets/img/gallery/arrival8.png" alt="">
-            <div class="favorit-items">
-                <!-- <span class="flaticon-heart"></span> -->
-                <img src="assets/img/gallery/favorit-card.png" alt="">
-            </div>
-        </div>
-        <div class="popular-caption">
-         <h3><a href="product_details.html">Knitted Jumper</a></h3>
-         <div class="rating mb-10">
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-        </div>
-        <span>$ 30.00</span>
-    </div>
-</div>
-</div>
-</div>
+              </section>
+            
+           
+        
+
 <!-- Button -->
 <div class="row justify-content-center">
     <div class="room-btn">
@@ -432,6 +362,24 @@
     </div>
 </div>
 <!--? Services Area End -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+</section>
+
+  
+
+
 </main>
 
 <%- include('../partials/user/footer.ejs') %>

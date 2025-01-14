@@ -54,6 +54,30 @@ const productSchema = new Schema({
         requierd:true,
         default: "Available"
     },
+    rating: { 
+        type: Number, 
+        min: 0, 
+        max: 5, 
+        default: 0 
+    },
+    ratings: [
+        {
+            userId: {
+                type: Schema.Types.ObjectId,
+                ref: "User",
+                required: true
+            },
+            rating: {
+                type: Number,
+                min: 1,
+                max: 5,
+                required: true
+            },
+            comment: {
+                type: String
+            }
+        }
+    ]
 }, {
     timestamps:true
 });
@@ -62,3 +86,4 @@ const productSchema = new Schema({
 const Product  = mongoose.model("Product", productSchema);
 
 module.exports = Product;
+

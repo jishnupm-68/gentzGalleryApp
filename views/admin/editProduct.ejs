@@ -19,6 +19,30 @@
 
 
        }
+       .thumbnails-container {
+           display: flex;
+           overflow-x: auto;
+       }
+
+
+       .thumbnail {
+           margin-right: 10px;
+
+
+       }
+       #imgView1, #imgView2, #imgView3, #imgView4{
+            max-width: 100%;    /* Prevent the image from exceeding the container width */
+            max-height: 400px;  /* Set a reasonable maximum height */
+            object-fit: contain; /* Maintain aspect ratio while fitting the image */
+            }
+            #croppedImg1,#croppedImg2, #croppedImg4,#croppedImg4{ 
+                position: relative;   /* Keeps the image and cropper positioned properly */
+                max-width: 100%;      /* Restrict the container width */
+                max-height: 400px;    /* Set a maximum height */
+                overflow: hidden;     /* Prevent overflow outside the container */
+                margin: auto;         /* Center the container if necessary */
+            }
+      
 </style>
    <section class="content-main" style="margin-left: 25%;">
        <div class="row">
@@ -129,9 +153,9 @@
                                                 <td>
                                                     <input type="hidden" value="<%=product.productImage[i]%>" id="imageDatas">
                                                     <img class="rounded" style="width: 50px; height: 60px;"
-                                                        src="/uploads/re-image/<%=product.productImage[i]%>"
+                                                        src="/uploads/brands/<%=product.productImage[i]%>"
                                                         alt="">
-                                                    <i onclick="deleteSingleImage('<%=product.productImage[i]%>, <%=product._id%>')" style="position: absolute; margin-left: .5rem; cursor: pointer;" class="fa-thin fa-x"></i>
+                                                    <i onclick="deleteSingleImage('<%=product.productImage[i]%>', '<%=product._id%>')" style="position: absolute; margin-left: .5rem; cursor: pointer;" class="fa-thin fa-x">x</i>
                                                 </td>
                                             </div>
                                            
@@ -349,10 +373,11 @@
    if (description.trim() === "") {
       displayErrorMessage('description-error', 'Please enter a product description.');
       isValid = false;
-   } else if (!/^[a-zA-Z\s]+$/.test(description.trim())) {
-      displayErrorMessage('description-error', 'Product description should contain only alphabetic characters.');
-      isValid = false;
-   }
+   } 
+//    else if (!/^[a-zA-Z\s]+$/.test(description.trim())) {
+//       displayErrorMessage('description-error', 'Product description should contain only alphabetic characters.');
+//       isValid = false;
+//    }
   
   
            

@@ -91,6 +91,7 @@ const addCategoryOffer = async (req,res)=>{
 const removeCategoryOffer = async (req,res)=>{
     try{
         const categoryId = req.body.categoryId;
+        console.log(categoryId)
         const category = await Category.findById(categoryId);
 
         if(!category){

@@ -1,6 +1,6 @@
 <%- include('../partials/admin/header.ejs') %>
 <style>
-  .pagination-container {
+  /* .pagination-container {
     text-align: center;
   }
   .pagination {
@@ -19,7 +19,7 @@
 
   .pagination a:hover {
     background-color: #f5f5f5;
-  }
+  } */
   .error-message {
     color: red;
   }
@@ -39,29 +39,7 @@
         </div>
       <div class="row">
         
-        <div class="col-md-3">
-          <form method="post" action="/admin/addBrand" enctype="multipart/form-data">
-            <div class="mb-4">
-              <label for="product_name" class="form-label">Brand Name</label>
-              <input
-                type="text"
-                name="name"
-                placeholder="Type here"
-                class="form-control"
-              />
-            </div>
-            <label for="product_name" class="form-label">Brand Image</label>
-            <div class="input-upload">
-              <img src="" alt=""/>
-              <input class="form-control border" name="image" type="file" />
-            </div>
-            <div class="d-grid">
-              <button class="btn btn-primary mt-20" type="submit">
-                Add Brand
-              </button>
-            </div>
-          </form>
-        </div>
+        
         <div class="col-md-7 ml-105">
           <div class="table-responsive">
             <table class="table table-hover">
@@ -88,8 +66,9 @@
                       "
                     >
                       <img
-                        src="/public/uploads/re-image/<%=brand.brandImage[0]%>"
+                        src="/uploads/brands/<%= brand.brandImage[0] %>"
                         alt="<%=brand.brandImage[0]%>"
+                        console.log(<%=brand.brandImage[0]%>)
                         class="img-fluid rounded-circle"
                         style="width: 100%; height: auto"
                       />
@@ -138,10 +117,53 @@
             </table>
           </div>
         </div>
+
+        <div class="col-md-3">
+          <form method="post" action="/admin/addBrand" enctype="multipart/form-data">
+            <div class="mb-4">
+              <label for="product_name" class="form-label">Brand Name</label>
+              <input
+                type="text"
+                name="name"
+                placeholder="Type here"
+                class="form-control"
+              />
+            </div>
+            <label for="product_name" class="form-label">Brand Image</label>
+            <div class="input-upload">
+              <img src="" alt=""/>
+              <input class="form-control border" name="image" type="file" />
+            </div>
+            <div class="d-grid">
+              <button class="btn btn-primary mt-20" type="submit">
+                Add Brand
+              </button>
+            </div>
+          </form>
+        </div>
+
+
+
       </div>
     </div>
   </div>
-  <div class="pagination-container">
+ 
+
+
+
+<!-- pagination -->
+<div class="container mt-3">
+  <nav aria-label="Page navigation">
+      <ul class="pagination justify-content-center mb-20" >
+          <% for (let i = 1; i <= totalPages; i++) { %>
+              <li class="page-item <%= (i === currentPage) ? 'active' : '' %>">
+                  <a class="page-link" href="?page=<%= i %>">
+                      <%= i %>
+                  </a>
+              </li>
+          <% } %>
+      </ul>
+  </nav>
 </div>
 </section>
 

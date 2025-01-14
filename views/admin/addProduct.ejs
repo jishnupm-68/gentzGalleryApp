@@ -19,6 +19,19 @@
 
 
        }
+       #imgView1, #imgView2, #imgView3, #imgView4{
+            max-width: 100%;    /* Prevent the image from exceeding the container width */
+            max-height: 400px;  /* Set a reasonable maximum height */
+            object-fit: contain; /* Maintain aspect ratio while fitting the image */
+            }
+            #croppedImg1,#croppedImg2, #croppedImg4,#croppedImg4{ 
+                position: relative;   /* Keeps the image and cropper positioned properly */
+                max-width: 100%;      /* Restrict the container width */
+                max-height: 400px;    /* Set a maximum height */
+                overflow: hidden;     /* Prevent overflow outside the container */
+                margin: auto;         /* Center the container if necessary */
+            }
+
 </style>
    <section class="content-main" style="margin-left: 25%;">
        <div class="row">
@@ -237,7 +250,7 @@
             let dataURL = reader.result;
             let image = document.getElementById("imgView"+index);
             let src =dataURL;
-            console.log(src)
+            //console.log(src)
 
 
             let cropper = new Cropper(image,{
@@ -276,59 +289,6 @@
         }
         reader.readAsDataURL(input.files[0]);
     }
-
-//     function viewImage(event, index) {
-//     const input = event.target;
-//     const reader = new FileReader();
-
-//     reader.onload = function () {
-//         const dataURL = reader.result;
-
-//         const image = document.getElementById("imgView" + index);
-//         image.src = dataURL;
-
-//         const cropperContainer = document.querySelector("#croppedImg" + index).parentNode;
-//         cropperContainer.style.display = "block";
-
-//         // Initialize the Cropper
-//         const cropper = new Cropper(image, {
-//             aspectRatio: 1,
-//             viewMode: 1,
-//             guides: true,
-//             background: false,
-//             autoCropArea: 1,
-//             zoomable: true,
-//         });
-
-//         const saveButton = document.querySelector("#saveButton" + index);
-//         saveButton.addEventListener("click", function () {
-//             // Get the cropped canvas
-//             const croppedCanvas = cropper.getCroppedCanvas();
-//             const croppedImage = document.getElementById("croppedImg" + index);
-//             croppedImage.src = croppedCanvas.toDataURL("image/jpeg", 1.0);
-
-//             // Create a new file from the cropped image blob
-//             const timeStamp = new Date().getTime();
-//             const fileName = `cropped-img-${timeStamp}-${index}.jpeg`;
-
-//             croppedCanvas.toBlob((blob) => {
-//                 const croppedFile = new File([blob], fileName, { type: "image/jpeg" });
-
-//                 // Update the corresponding input with the cropped file
-//                 const inputField = document.getElementById(`input${index}`);
-//                 const dataTransfer = new DataTransfer();
-//                 dataTransfer.items.add(croppedFile);
-//                 inputField.files = dataTransfer.files;
-
-//                 // Cleanup
-//                 cropper.destroy();
-//                 cropperContainer.style.display = "none";
-//             });
-//         });
-//     };
-
-//     reader.readAsDataURL(input.files[0]);
-// }
 
 
     const selectedImages = [] ;
@@ -393,12 +353,14 @@
    if (description.trim() === "") {
       displayErrorMessage('description-error', 'Please enter a product description.');
       isValid = false;
-   } else if (!/^[a-zA-Z\s]+$/.test(description.trim())) {
-      displayErrorMessage('description-error', 'Product description should contain only alphabetic characters.');
-      isValid = false;
-   }
+    }
+//  else if (!/^[A-Za-z0-9\s,.'()/-"]*$/.test(description.trim())) {
+//       displayErrorMessage('description-error', 'Product description should contain only alphabetic characters.');
+//       isValid = false;
+//    }
   
-  
+   
+
            
   
   

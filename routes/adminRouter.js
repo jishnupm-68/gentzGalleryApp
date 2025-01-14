@@ -7,7 +7,10 @@ const categoryController = require('../controllers/admin/categoryController')
 const productController = require('../controllers/admin/productController')
 const multer  =require("multer");
 const storage = require('../helpers/multer');
-const uploads = multer({storage: storage})
+const uploads = multer({
+    storage,
+    limits: { fileSize: 2 * 1024 * 1024 }, // Limit file size to 2 MB
+});
 const brandController = require('../controllers/admin/brandController')
 
 
@@ -31,7 +34,7 @@ router.get('/unblockCustomer',adminAuth,customerController.customerUnblocked)
 router.get('/category',adminAuth,categoryController.categoryInfo)
 router.post('/addCategory',adminAuth,categoryController.addCategory)
 router.post('/addCategoryOffer',adminAuth,categoryController.addCategoryOffer)
-router.post('/removeCategory',adminAuth,categoryController.removeCategoryOffer)
+router.post('/removeCategoryOffer',adminAuth,categoryController.removeCategoryOffer)
 router.get('/listCategory', adminAuth,categoryController.getListCategory);
 router.get("/unListCategory",adminAuth, categoryController.getUnListCategory)
 router.get("/editCategory",adminAuth, categoryController.getEditCategory)

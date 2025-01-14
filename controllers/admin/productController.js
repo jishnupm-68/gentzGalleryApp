@@ -262,8 +262,12 @@ const editProduct = async(req,res)=>{
 const deleteSingleImage  = async(req,res)=>{
     try {
         const {imageNameToServer, productIdToServer} = req.body;
+        console.log("coming data", req.body);
         const product = await Product.findByIdAndUpdate(productIdToServer,{$pull:{productImage:imageNameToServer}});
-        const imagePath = path.join("public","uploads",imageNameToServer);
+       // const imagePath = path.join("../../GentzGalleryApp/public/uploads/brands",imageNameToServer);
+       const imagePath = path.resolve(__dirname, "../../public/uploads/brands", imageNameToServer);
+
+        console.log("image path",imagePath);
         if(fs.existsSync(imagePath)){
             await  fs.unlinkSync(imagePath);
             console.log("Image"+imageNameToServer+" deleted successfully");

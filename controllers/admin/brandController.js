@@ -13,7 +13,7 @@ const getBrandPage =async(req, res)=>{
         const totalBrands = await Brand.countDocuments();
         const totalPages = Math.ceil(totalBrands / limit);
         const reverseBrand =brandData.reverse();
-        console.log(brandData, reverseBrand)
+        console.log("brand is:",brandData,"reverse brand is: ", reverseBrand)
         res.render("brand", {
             data: reverseBrand,
             currentPage: page,
@@ -28,25 +28,57 @@ const getBrandPage =async(req, res)=>{
 }
 
 
-const addBrand = async(req, res)=>{
-    try{
+// const addBrand = async(req, res)=>{
+//     try{
+//         const brand = req.body.name;
+//         const findBrand= await Brand.findOne({brand});
+//         if(!findBrand){
+//             const image = req.file.filename;
+//             const newBrand = new Brand({
+//                 brandName:brand,
+//                 brandImage:image
+//             });
+//             await newBrand.save();
+//             res.redirect("/admin/brands");
+//         }
+
+//     }catch(error){
+//         res.rediret("admin/pageError")
+
+//     }
+// }
+
+
+
+
+const addBrand = async (req, res) => {
+    try {
         const brand = req.body.name;
-        const findBrand= await Brand.findOne({brand});
-        if(!findBrand){
-            const image = req.file.filename;
-            const newBrand = new Brand({
-                brandName:brand,
-                brandImage:image
-            });
-            await newBrand.save();
-            res.redirect("/admin/brands");
+        const findBrand = await Brand.findOne({ brandName: brand });
+
+        if (!findBrand) {
+            console.log(req.file, req.file.filename, "File and filename")
+            if (req.file && req.file.filename) {
+                const image = req.file.filename;
+                const newBrand = new Brand({
+                    brandName: brand,
+                    brandImage: image,
+                });
+                console.log(newBrand,image, "New image file creation")
+                await newBrand.save();
+                res.redirect("/admin/brands");
+            } else {
+                res.status(400).send("Image upload failed");
+            }
+        } else {
+            res.status(400).send("Brand already exists");
         }
-
-    }catch(error){
-        res.rediret("admin/pageError")
-
+    } catch (error) {
+        console.error("Error adding brand:", error);
+        res.redirect("/admin/pageError");
     }
-}
+};
+
   
 
 
