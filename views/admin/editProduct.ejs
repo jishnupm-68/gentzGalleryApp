@@ -448,7 +448,7 @@
               type: 'post',
               data: {imageNameToServer:imageId, productIdToServer:productId},
               success:((response)=>{
-                if(response.status===true){
+                if(response.ok){
                   window.location.reload();
                 }
               })

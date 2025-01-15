@@ -9,29 +9,29 @@ const User = require("../../models/userSchema");
 
 
 const productDetails = async (req,res)=>{
-    console.log("ITS HERE")
+    console.log("ITS productDetails")
     try{
         const userId  = req.session.user;
-        console.log(userId)
         const userData= await User.findById(userId);
-        console.log(userData)
         const productId = req.query.id;
-        console.log(productId)
-        const product = await Product.findById(productId);
-        console.log(product)
+        const product = await Product.findById(productId).populate('category');
         const findCategory = product.category;
-        console.log(findCategory)
         const categoryOffer  = findCategory ?.categoryOffer ||0;
         const category = await Category.findById(findCategory);
         const productOffer = product.productOffer ||0;
-        console.log(categoryOffer)
         const totalOffer = categoryOffer + productOffer
+
+        console.log("USer",userData, "product",product, "totalOffer",totalOffer,"category",findCategory,"quantity", product.quantity)
         res.render("productDetails",{
             user:userData,
-            product:product
+            product:product,
+            quantity:product.quantity,
+            totalOffer:totalOffer,
+            category:findCategory
         })
 
     }catch(error){
+        console.error("error while fetching productDetails",error)
         res.redirect("/pageNotFound")
 
     }

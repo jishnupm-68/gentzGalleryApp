@@ -210,6 +210,7 @@ const getEditProduct = async(req,res)=>{
 
 
 const editProduct = async(req,res)=>{
+    console.log("Here for editing the existing product")
     console.log("params",req.params) 
     console.log("query", req.query)
     try {
@@ -249,6 +250,7 @@ const editProduct = async(req,res)=>{
             }
         }
         await Product.findByIdAndUpdate(id,{$set:updateFields},{new:true});
+        console.log("Data saved for editing the product")
         res.redirect('/admin/products')
         
     } catch (error) {

@@ -1,13 +1,31 @@
 <%- include("../../views/partials/user/header") %>
+
+
+
+
 <main class="main">
- <div class="page-header breadcrumb-wrap">
+ <!-- <div class="page-header breadcrumb-wrap">
      <div class="container">
          <div class="breadcrumb">
              <a href="#" rel="nofollow">Home</a>
-             <span>Product details</span>
+             <span></span>>
+             <a href="">Product Details</a>
          </div>
      </div>
- </div>
+ </div> -->
+ <div class="page-header breadcrumb-wrap">
+    <div class="container">
+        <nav class="breadcrumb" aria-label="breadcrumb">
+            <a href="/shop" rel="nofollow">Home</a>
+            <span></span>
+            
+            <a href="#" rel="nofollow">Product details</a>
+        </nav>
+    </div>
+</div>
+
+
+
  <section class="mt-50 mb-50">
      <div class="container">
          <div class="row">
@@ -18,14 +36,15 @@
                              <div class="detail-gallery">
                                  <span class="zoom-icon"><i class="fi-rs-search"></i></span>
                                  <div class="product-image-slider">
+                                   
                                      <figure class="border-radius-10">
-                                         <img src="" alt="">
+                                         <img src="/uploads/brands/<%= product.productImage[0] %>" alt="Product Image">
                                      </figure>
                                      <figure class="border-radius-10">
-                                       <img src="" alt="">
+                                       <img src="/uploads/brands/<%= product.productImage[1] %>" alt="Product Image">
                                    </figure>
                                    <figure class="border-radius-10">
-                                       <img src="" alt="">
+                                       <img src="/uploads/brands/<%= product.productImage[2] %>" alt="Product Image">
                                    </figure>
                                    <figure class="border-radius-10">
                                        <img src="" alt="">
@@ -35,20 +54,21 @@
                                    </figure>
                                  </div>
                                  <div  class="slider-nav-thumbnails pl-15 pr-15">
+                                    <% for (let i=0;i<product.productImage.length;i++) {%>
                                     
                                        <div>
-                                           <img style="object-fit:contain ;" src="" alt="">
-                                       </div>
-                                  
+                                           <img style="object-fit:contain ;" src="/uploads/brands/<%= product.productImage[i] %>" alt="Product Image">
+                                       </div>              
+                                  <% } %>
                                  </div>
                              </div>
                          </div>
                          <div class="col-md-6 col-sm-12 col-xs-12">
                              <div class="detail-info">
-                                 <h2 class="title-detail"></h2>
+                                 <h2 class="title-detail"><%=product.productName %></h2>
                                  <div class="product-detail-rating">
                                      <div class="pro-details-brand">
-                                         <span> Brands: <a href="#"></a></span>
+                                         <span> Brand: <a href="#"><%=product.brand %></a></span>
                                      </div>
                                      <div class="product-rate-cover text-end">
                                          <div class="product-rate d-inline-block">
@@ -60,15 +80,21 @@
                                  </div>
                                  <div class="clearfix product-price-cover">
                                      <div class="product-price primary-color float-left">
-                                         <ins><span class="text-brand"></span></ins>
-                                         <ins><span class="old-price font-md ml-15"></span></ins>
+                                         <ins><span class="text-brand"><%=product.salePrice %>₹</span></ins>
+                                         <ins><span class="old-price font-md ml-15"><strike><%=product.regularPrice %>₹</strike></span></ins>
                                          <span class="save-price  font-md color3 ml-15">
+
+                                            <% if(!totalOffer) {%>
+                                                No offers
+                                                <% }else {%>
+                                                    <%=totalOffer %>% offer
+                                                    <% } %>
                                        </span>
                                      </div>
                                  </div>
                                  <div class="bt-1 border-color-1 mt-15 mb-15"></div>
                                  <div class="short-desc mb-30">
-                                     <p></p>
+                                     <p><%=product.description %></p>
                                  </div>
                                  <div class="product_sort_info font-xs mb-30">
                                      <ul>
@@ -94,8 +120,8 @@
                                  </div>
                                  <ul class="product-meta font-xs color-grey mt-50">
                                      <li class="mb-5">Stock Code: <a href="#">FWM15VKT</a></li>
-                                     <li class="mb-5">Tags: <a href="#" rel="tag"></a> <a href="#" rel="tag"></a> <a href="#" rel="tag"></a> </li>
-                                     <li>Availability:<span class="in-stock text-success ml-5"></span></li>
+                                     <li class="mb-5">Tags: <a href="#" rel="tag"></a><%=category.name %> <a href="#" rel="tag"></a> <a href="#" rel="tag"></a> </li>
+                                     <li>Availability:<span class="in-stock text-success ml-5"><%=quantity %></span></li>
                                  </ul>
                              </div>
                          </div>
