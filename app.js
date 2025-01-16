@@ -39,6 +39,7 @@ app.set("views", [path.join(__dirname, 'views/user'),path.join(__dirname,'views/
 //app.use(express.static(path.join(__dirname, "public")))
 app.use(express.static('public'));
 app.use("/uploads/brands", express.static(path.join(__dirname, "../../GentzGalleryApp/public/uploads/brands")));
+app.use("/uploads/product-imagesResized", express.static(path.join(__dirname, "../../GentzGalleryApp/public/uploads/product-imagesResized")));
 
 
 

@@ -32,6 +32,9 @@ router.get('/unblockCustomer',adminAuth,customerController.customerUnblocked)
 
 //category Management
 router.get('/category',adminAuth,categoryController.categoryInfo)
+router.get('/addCategory',(req,res)=>{
+    res.render("addNewCategory")
+})
 router.post('/addCategory',adminAuth,categoryController.addCategory)
 router.post('/addCategoryOffer',adminAuth,categoryController.addCategoryOffer)
 router.post('/removeCategoryOffer',adminAuth,categoryController.removeCategoryOffer)

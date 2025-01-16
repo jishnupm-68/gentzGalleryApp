@@ -12,14 +12,13 @@ const bcrypt = require("bcrypt")
 
 const loadHomePage = async(req,res)=>{
     try{
+        console.log("Session detaiils from load home page", req.session.user)
         const user = req.session.user;
-        console.log(user)
-        
         const categories = await Category.find({isListed:true});
         const productData = await Product.find({
             isBlocked:false,
             category:{$in:categories.map(category=>category._id)},
-            //quantity:{$gt:0}
+            quantity:{$gt:0}
         })
         
         
@@ -27,11 +26,11 @@ const loadHomePage = async(req,res)=>{
         productData.sort((a,b)=>{new Date(b.createdOn)-new Date(a.createdOn)})
        
         let productDataResponse = productData.slice(0,4)
-        console.log(productData.length,"Is the no of products acvailable",productDataResponse.length)
-
+        console.log(productData.length,"Is the no of products aVailable",productDataResponse.length)
+        console.log("User fdrom loadhomePage",user)
         if(user){
             const userData = await User.findOne({_id:user})
-          
+            console.log("userdata while using load homepage",userData)
             return res.render("home",{user:userData, products:productDataResponse})
            //return res.render("home",{user:userData})
         }
@@ -104,7 +103,7 @@ async function sentVerificationEmail(email,otp){
 
     }
 }
-
+ 
 
 const signup = async (req, res) => {
     try {
@@ -231,7 +230,7 @@ const login = async(req,res)=>{
         if(!passwordMatch){
             return res.render("login",{message:"Incorrect Password"});
         }
-
+        console.log("manual login",findUser._id)
         req.session.user = findUser._id;
         res.redirect('/')
     } catch (error) {
@@ -242,6 +241,30 @@ const login = async(req,res)=>{
 
 }
 
+const googleLogin = async (req,res)=>{
+    try{
+        const userEmail= req.user.email;
+        console.log("data from req",req.user)
+        const user = await User.findOne({isAdmin:false,email:userEmail});
+        if(!user){
+            return res.redirect("/signup")
+        }
+        console.log("user",user,user._id)
+        if(!user){
+            return res.render("login",{message:"User not found"})
+        }
+        if(user.isBlocked){
+            return res.render("login",{message:"User is blocked by admin"})
+        }
+       
+        req.session.user = user._id;
+        res.redirect('/')
+
+    }
+    catch(error){
+
+    }
+}
 
 const logout = async (req,res)=>{
     try {
@@ -272,12 +295,13 @@ const loadShopPage = async (req,res)=>{
         const products = await Product.find({
             isBlocked:false,
             category:{$in:categoryIds},
-            quantity:{$gt:0}}).sort({createdOn:-1}).skip(skip).limit(limit);
+            //quantity:{$gt:0}
+        }).sort({createdOn:-1}).skip(skip).limit(limit);
 
         const totalProducts = await Product.countDocuments({
             isBlocked:false,
             category:{$in:categoryIds},
-            quantity:{$gt:0}
+            //quantity:{$gt:0}
         });
         const totalPages = Math.ceil(totalProducts/limit);
         const brands = await Brand.find({isBlocked:false});
@@ -313,7 +337,7 @@ const filterProduct = async (req,res)=>{
         const brands = await Brand.find({}).lean();
         const query = {
             isBlocked:false,
-            quantity:{$gt:0}
+           // quantity:{$gt:0}
         }
         if(findCategory){
             query.category = findCategory._id
@@ -374,7 +398,7 @@ const filterByPrice = async (req,res)=>{
         let findProducts = await Product.find({
             salePrice:{$gt:req.query.gt ,$lt:req.query.lt},
             isBlocked:false,
-            quantity:{$gt:0}
+            //quantity:{$gt:0}
         }).lean()
 
         findProducts.sort((a,b)=>{
@@ -431,7 +455,7 @@ const searchProducts  = async(req,res)=>{
                 isBlocked:false,
               //  $text:{$search:search},
                 category:{$in:categoryIds},
-                quantity:{$gt:0}
+                //quantity:{$gt:0}
             }).lean()
         }
 
@@ -475,6 +499,7 @@ module.exports = {
     resendOtp,
     loadLogin,
     login,
+    googleLogin,
     logout,
     loadShopPage,
     filterProduct,

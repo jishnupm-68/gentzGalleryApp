@@ -46,25 +46,51 @@
 </style>
    <section class="content-main" style="margin-left: 25%;">
        <div class="row">
-           <div class="col-9">
+           <!-- <div class="col-9">
                <div class="content-header">
                    <h2 class="content-title" style="margin-top: 10%;">Edit Product</h2>
-               </div>
-           </div>
+               
+                   <a href="/admin/products" style="text-decoration: none;">
+                    <button class="btn btn-warning" type="submit">Cancel</button>
+                 </a>
+
+                </div>
+              
+           </div> -->
+
+           <div class="col-9">
+            <div class="content-header d-flex justify-content-between align-items-center" style="display: flex;justify-content: space-between;align-items: center;">
+                <h2 class="content-title" style="margin-top: 10%;">Edit Product</h2>
+                
+            </div>
+            <div><a href="/admin/products" style="text-decoration: none;">
+                <button class="btn btn-warning mt-2 mb-4 mr-5" type="submit">Cancel</button>
+            </a></div>
+        </div>
+        
+
+
+
+
            <div class="col-lg-6">
                <div class="card mb-4">
                    <div class="card-body">
                    
                        <form method="post" action="/admin/editProduct?id=<%=product._id%>" enctype="multipart/form-data"
-                           onsubmit="return validateForm()">
+                           onsubmit="return validateForm()" id="productForm">
                            <div class="mb-4">
+                            
                                <label for="product_name" class="form-label">Product Name</label>
                                <input type="text" placeholder="Type here" name="productName" value="<%= product.productName %>"
                                    class="form-control border" id="product_name">
+                                   <% if(locals.message) {%>
+                                    <div class="text-danger"><%=locals.message%></div>
+                                    <% } %>
                                <div id="productName-error" class="error-message"></div>
                            </div>
                            <div class="col-lg-4 mb-4">
                                <label class="form-label">Brand</label>
+                               
                                <select class="form-select border" name="brand">
                                    
                                 <% for (let i = 0; i < brand.length; i++) { %>
@@ -191,7 +217,7 @@
                                                 </div>
                                             </div>
                                             
-                                            <div class="row">
+                                            <!-- <div class="row">
                                                 <div class="card-body align-items-center" style="margin-bottom: 20px;">
                                                     <img src="" alt="" id="imgView3">
                                                     <input class="form-control" type="file" name="images" id="input3"
@@ -203,7 +229,7 @@
                                                     <img src="" id="croppedImg3" alt="">
                                                     <button type="button" id="saveButton3" class="btn-sm btn-primary">Save</button>
                                                 </div>
-                                            </div>
+                                            </div> -->
                                             
                                             <div class="row">
                                                 <div class="card-body align-items-center" style="margin-bottom: 20px;">
@@ -221,12 +247,16 @@
                             </div>
                         </div>
                         <div>
-
-
                             <button class="btn btn-md rounded font-sm hover-up" id="updatebtn"
                                 type="button"  onclick="validateAndSubmit()">Update</button>
+
+
+                                
+
                         </div>
+                       
                     </form>
+                    
                 </div>
             </div>
         </div>
@@ -238,11 +268,10 @@
 
 
 <script>
-    function validateAndSubmit(){
+     function validateAndSubmit(){
         if(validateForm()){
             document.forms[0].submit();
         }
-
     }
 
 
@@ -454,6 +483,43 @@
               })
             });
           }
+
+
+
+
+
+          document.getElementById('productForm').addEventListener('submit', async function (event) {
+    event.preventDefault(); // Prevent default form submission
+
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData.entries());
+
+    try {
+        const response = await fetch('/submit-product', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert('Product submitted successfully!');
+            // Optionally, redirect or clear the form
+            window.location.href = '/admin/products'; // Redirect to products page
+        } else {
+            if (result.error) {
+                alert(result.error); // Show error in an alert
+            } else {
+                alert('An unexpected error occurred.');
+            }
+        }
+    } catch (error) {
+        alert('Unable to connect to the server. Please try again later.');
+        console.error(error);
+    }
+});
+
 </script>
      
 <%- include('../partials/admin/footer.ejs') %>

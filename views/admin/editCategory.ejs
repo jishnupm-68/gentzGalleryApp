@@ -1,15 +1,24 @@
 <%- include('../partials/admin/header.ejs') %>
 <div class="container  " >
-    <div class="row  justify-content-center">
+    <div class="row  justify-content-center" style="padding-top: 5%;">
+
+        <div class="content-header">
+            <div  >
+              <h2 class="content-title card-title mt-3 mb-2" >Category</h2>
+            </div>
+          </div>
+
+
         <div class="col-md-6 mt-60 mt-5 " style = "margin-top: 20%;">
             <form method="post" action="/admin/editCategory/<%=category._id%>">
-                <div class="d-grid text-end mt-30 col-md-5 mt-5">
+                <div class="d-grid text-end mt-30 col-md-5 mt-5 mb-2" >
                     <button class="btn btn-primary" type="submit">Update category</button>
                 </div>
                 <div class="mb-4 mt-30">
                     <label for="product_name" class="form-label">Name</label>
                     <input type="text" name="categoryName" value="<%=category.name %>" class="form-control border" />
                     <% if(locals.message) {%>
+                        
                         <div class="text-danger"><%=locals.message%></div>
                         <% } %>
                 </div>
@@ -18,8 +27,11 @@
                     <label class="form-label">Description</label>
                     <textarea name="description" class="form-control border"><%=category.description %></textarea>
                 </div>
-               
             </form>
+
+            <a href="/admin/category" style="text-decoration: none;"><div class="d-grid text-end mt-30 col-md-5 mt-2 mb-5">
+                <button class="btn btn-warning" type="submit">Cancel</button>
+            </div> </a>
         </div>
     </div>
 </div>

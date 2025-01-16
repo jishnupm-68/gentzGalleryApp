@@ -26,7 +26,7 @@ const getProductAddPage = async (req,res)=>{
 const addProducts = async (req,res)=>{
     try{
         const products = req.body;
-        console.log("coming data",products,req.files)
+        console.log("coming data products",products,"files",req.files)
         const productExists = await Product.findOne({
             productName:products.productName,
 
@@ -36,10 +36,36 @@ const addProducts = async (req,res)=>{
             if(req.files && req.files.length>0){
                 for(let i=0;i<req.files.length;i++){
                     const originalImagePath = req.files[i].path;    
-                    const resizedImagePath  =  path.join(__dirname,"../../public/uploads/product-imagesResized"); 
+                    //const resizedImagePath  =  path.join(__dirname,"../../GentzGalleryApp/public/uploads/brands/product-imagesResized");  
+                    //const resizedImagePath  =  path.join(__dirname,"../../public/uploads/product-imagesResized"); 
+                    // const resizedImagePath = path.join(
+                    //     __dirname,
+                    //     "../../public/uploads/brands",
+                    //     `resized-${Date.now()}.jpg` // Add a filename
+                    // );
+
+
+
+                    const resizedImagePath = path.join(
+                            __dirname,
+                            "../../public/uploads/product-imagesResized",
+                            req.files[i].filename // Add a filename
+                        );
+
                     console.log("debugging", originalImagePath, resizedImagePath);
-                    await sharp(originalImagePath).resize({width:440, height:400}).toFile(resizedImagePath);
+                    await sharp(originalImagePath)
+                    .resize({width:440, height:400})
+                    .toFile(resizedImagePath);
+                    
+                    // images.push(req.files[i].filename);
+
+
+                  
+
+
                     images.push(req.files[i].filename);
+                   //images.push(resizedImagePath);
+                    console.log("images",req.files[i].filename,"resizedPath",resizedImagePath)
             }
         }
         const categoryId = await Category.findOne({name:products.category})
@@ -101,7 +127,7 @@ const getAllProducts = async(req,res)=>{
 
         const category = await Category.find({isListed:true});
         const brand = await Category.find({isListed:true});
-
+        console.log(count, limit)
         if(category && brand){
             res.render("products",{
                 data:productData,
@@ -138,7 +164,7 @@ const addProductOffer = async (req,res)=>{
         res.json({status:true})
     }catch(error){
         res.status(500).json({status:false, message:"Internal Server Error"})
-        res.redirect("/admin/pageError");
+        //res.redirect("/admin/pageError");
         
     }
 }
@@ -211,8 +237,10 @@ const getEditProduct = async(req,res)=>{
 
 const editProduct = async(req,res)=>{
     console.log("Here for editing the existing product")
+    console.log("body", req.body.brand)
     console.log("params",req.params) 
     console.log("query", req.query)
+    console.log("files",req.files)
     try {
         const id = req.query.id;
         const product = await Product.findOne({_id:id})
@@ -221,9 +249,12 @@ const editProduct = async(req,res)=>{
             productName:data.productName,
             id:{$ne:id}
         });
+        const category = await Category.find();
+        const brand = await Brand.find({});
 
         if(existingProduct){
-            return res.status(400).json({error:"Product name already exists, please try with another name"})
+            return res.render('editProduct',{product:product, cat:category, brand:brand, message:"Product name already exists, please try again with another name"})
+            //return res.status(400).json({error:"Product name already exists, please try with another name"})
         }
 
         const images =[];
@@ -232,7 +263,7 @@ const editProduct = async(req,res)=>{
             images.push(req.files[i].filename);
             }
         }
-
+        console.log("images in editing ",images)
         const updateFields = {
             productName:data.productName,
             description:data.description,

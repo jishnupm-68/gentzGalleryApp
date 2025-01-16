@@ -13,8 +13,11 @@ const categoryInfo = async(req,res)=>{
         .limit(limit)
         .exec();
 
-        const totalCategories  = await Category.countDocuments;
+        const totalCategories  = await Category.countDocuments();
+        
         const totalPages = Math.ceil(totalCategories/limit);
+        
+        console.log(totalCategories, totalPages);
         res.render('category',{
             cat:categoryData,
             currentPage:page,
@@ -137,6 +140,7 @@ const getUnListCategory = async(req,res)=>{
     try {
         const id = req.query.id;
         await Category.updateOne({_id:id},{$set:{isListed:true}})
+        res.redirect("/admin/category");
     } catch (error) {
         res.redirect("/admin/pageError")
     }
