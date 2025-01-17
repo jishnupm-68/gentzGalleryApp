@@ -27,10 +27,17 @@ const loadHomePage = async(req,res)=>{
        
         let productDataResponse = productData.slice(0,4)
         console.log(productData.length,"Is the no of products aVailable",productDataResponse.length)
-        console.log("User fdrom loadhomePage",user)
-        if(user){
+        console.log("User from loadhomePage",user)
+        if(user ){
             const userData = await User.findOne({_id:user})
-            console.log("userdata while using load homepage",userData)
+            console.log("userdata while using load homepage",userData.isBlocked)
+            if( userData.isBlocked==true){
+                console.log("User is not blocked")
+                req.session.user = undefined
+                return res.render("home",{user:undefined, products:productDataResponse})
+            }else{
+                return res.render("home",{user:userData, products:productDataResponse})
+            }
             return res.render("home",{user:userData, products:productDataResponse})
            //return res.render("home",{user:userData})
         }
@@ -152,12 +159,14 @@ const verifyOtp = async (req,res)=>{
         console.log(otp)
         if(otp === req.session.userOtp){
             const user = req.session.userData;
+            console.log("googleId", user.googleId, user)
             const passwordHash = await securePassword(user.password)
-
+            let undefinedForGoogleId = undefined
             const saveUserData  = new User({
                 name:user.name,
                 email:user.email,
                 phone:user.phone,
+                googleId:new Date(),
                 password: passwordHash
             })
             console.log("Here before saving data")
@@ -219,6 +228,7 @@ const login = async(req,res)=>{
     try {
         const {email,password} = req.body
         const findUser = await User.findOne({isAdmin:0, email:email});
+        console.log(findUser)
 
         if(!findUser){
             return res.render("login",{message:"User not found"})

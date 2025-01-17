@@ -171,7 +171,7 @@
                                     <!-- Hero Caption -->
                                     <div class="hero__caption">
                                         <h1>fashion<br>changing<br>always</h1>
-                                        <a href="shop.html" class="btn">Shop Now</a>
+                                        <a href="/shop" class="btn">Shop Now</a>
                                     </div>
                                 </div>
                             </div>
@@ -209,13 +209,13 @@
 <div class="new-arrival">
     <div class="container">
         <!-- Section tittle -->
-        <div class="row justify-content-center">
+        <!-- <div class="row justify-content-center">
             <div class="col-xl-7 col-lg-8 col-md-10">
                 <div class="section-tittle mb-60 text-center wow fadeInUp" data-wow-duration="2s" data-wow-delay=".2s">
                     <h2>new<br>arrival</h2>
                 </div>
             </div>
-        </div>
+        </div> -->
         <div class="row">
             <section class="product spad">
                 <div class="container">
@@ -233,7 +233,7 @@
                                     <div class="product-img-action-wrap">
                                         <div class="product-img product-img-zoom">
                                             <a href="/productDetails?id=<%= products[i]._id %>">
-                                                <img class="default-img" src="/uploads/brands/<%=products[i].productImage[0]%>" alt="<%=products[i].productName%>">
+                                                <img class="default-img" src="/uploads/product-imagesResized/<%=products[i].productImage[0]%>" alt="<%=products[i].productName%>">
                                             </a>
                                         </div>
                                         <a href="/addToWishlist?id=<%= products[i]._id %>" class="wishlist-btn">

@@ -45,7 +45,7 @@
       
 </style>
    <section class="content-main" style="margin-left: 25%;">
-       <div class="row">
+       <div class="row col-12 d-flex justify-content-between align-items-center">
            <!-- <div class="col-9">
                <div class="content-header">
                    <h2 class="content-title" style="margin-top: 10%;">Edit Product</h2>
@@ -58,7 +58,7 @@
               
            </div> -->
 
-           <div class="col-9">
+           <div class="col-12">
             <div class="content-header d-flex justify-content-between align-items-center" style="display: flex;justify-content: space-between;align-items: center;">
                 <h2 class="content-title" style="margin-top: 10%;">Edit Product</h2>
                 
@@ -72,9 +72,9 @@
 
 
 
-           <div class="col-lg-6">
-               <div class="card mb-4">
-                   <div class="card-body">
+           <div class="col-lg-12 col-md-12">
+               <div class="card mb-4 col-12">
+                   <div class="card-body col-9 d-flex justify-content-between align-items-center card border-light-subtle shadow-sm">
                    
                        <form method="post" action="/admin/editProduct?id=<%=product._id%>" enctype="multipart/form-data"
                            onsubmit="return validateForm()" id="productForm">
@@ -261,7 +261,7 @@
             </div>
         </div>
     </div>
-    </div>
+  
 </section>
 <script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
 
@@ -444,12 +444,12 @@
               }
   
   
-              if (images.files.length === 0) {
-                  displayErrorMessage("images-error",'Please select an image.');
-                  isValid = false;
-              }
-              return isValid;
-          }
+        //       if (images.files.length === 0) {
+        //           displayErrorMessage("images-error",'Please select an image.');
+        //           isValid = false;
+        //       }
+               return isValid;
+        }
 
 
           function displayErrorMessage(elementId, message) {
@@ -465,8 +465,6 @@
                   element.innerText = '';
               });
               const errorMessage = document.getElementById('errorMessage');
-  
-  
           }
 
 
@@ -519,7 +517,7 @@
         console.error(error);
     }
 });
-
+    
 </script>
      
 <%- include('../partials/admin/footer.ejs') %>

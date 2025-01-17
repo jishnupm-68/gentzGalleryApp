@@ -71,7 +71,7 @@
   <section class="content-main" style="margin-left: 20%; padding-top: 5%;" >
     <div class="content-header">
       <div>
-        <h2 class="content-title card-title mt-3">Category</h2>
+        <h2 class="content-title card-title mt-3 pl-1">Category</h2>
       </div>
     </div>
     <header class="card-header text-center mb-20">
@@ -82,85 +82,89 @@
         </div>
       </form>
     </header>
-    <div class="card">
+    <div class="card col-10">
       <div class="card-body">
         <a href="/admin/addCategory" style="text-decoration: none;"><div class="d-grid text-end mt-30 col-md-5 mb-3">
           <button class="btn btn-primary" type="submit">Add new Category</button>
-      </div> </a>
-        <div class="row">
+      </div> </a> 
+      </div>
 
-          <!--  Add new Category was here-->
-          
-          
-          <div class="col-md-8 ml-10">
-            <div class="table-responsive">
-              <table class="table table-hover">
-                <thead>
-                  <tr>
-                    <th class="text-center"></th>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Offer Price</th>
-                    <th>Offer</th>
-                    <th>Status</th>
-                    <th>List/Unlist</th>
-                    <th class="text-start">Edit</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% cat.reverse().forEach((category,index)=>{%>
-                  <tr>
-                    <td></td>
-                    <td class="text-start"><%=category.name %></td>
-                    <td class="text-start"><%=category.description  %></td>
-                    <td>
-                      <% if(category.categoryOffer){ %>
-                        <%= category.categoryOffer %>
-                        <% }else{ %>
-                          0%
-                        <% } %>
+      <!-- table -->
+      <div class="row">
 
-                    </td>
-                    <td class="text-start">
-                      <% if(category.categoryOffer===0){ %>
-                      <button class="btn btn-info" style="width: 100px">
-                        <a href="#" class="text-white" onclick="addOffer('<%=category._id%>')">Add Offer</a>
-                      </button>
+        <!--  Add new Category was here-->
+        
+        
+        <div class="col-md-11 ml-10">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th class="text-center"></th>
+                  <th>Name</th>
+                  <th>Description</th>
+                  <th>Offer Price</th>
+                  <th>Offer</th>
+                  <th>Status</th>
+                  <th>List/Unlist</th>
+                  <th class="text-start">Edit</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% cat.reverse().forEach((category,index)=>{%>
+                <tr>
+                  <td></td>
+                  <td class="text-start"><%=category.name %></td>
+                  <td class="text-start"><%=category.description  %></td>
+                  <td>
+                    <% if(category.categoryOffer){ %>
+                      <%= category.categoryOffer %>
                       <% }else{ %>
-                      <button class="btn btn-danger"style="width: 100px">
-                        <a href="#" class="text-white" onclick="removeOffer('<%=category._id%>')">Remove</a>
-                      </button>
+                        0%
                       <% } %>
-                    </td>
-                    <td class="text-start">
-                      <% if(category.isListed) {%>
-                      <span class="badge rounded-pill alert-success" style="width: 60px">Listed</span>
-                        <% }else{ %>
-                      <span class="badge rounded-pill alert-danger" style="width: 60px">Unlisted</span>
-                      <% } %>
-                    </td>
-                    <td class="text-start">
-                      <% if(category.isListed) {%>
-                      <button class="btn btn-danger" style="width: 70px">
-                        <a href="/admin/listCategory?id=<%=category._id%>" class="text-white">Unlist</a>
-                      </button>
+
+                  </td>
+                  <td class="text-start">
+                    <% if(category.categoryOffer===0){ %>
+                    <button class="btn btn-info" style="width: 100px">
+                      <a href="#" class="text-white" onclick="addOffer('<%=category._id%>')">Add Offer</a>
+                    </button>
+                    <% }else{ %>
+                    <button class="btn btn-danger"style="width: 100px">
+                      <a href="#" class="text-white" onclick="removeOffer('<%=category._id%>')">Remove</a>
+                    </button>
+                    <% } %>
+                  </td>
+                  <td class="text-start">
+                    <% if(category.isListed) {%>
+                    <span class="badge rounded-pill alert-success" style="width: 60px">Listed</span>
                       <% }else{ %>
-                      <button class="btn btn-success" style="width: 70px">
-                        <a href="/admin/unListCategory?id=<%=category._id%>" class="text-white">List</a>
-                      </button>
-                      <% } %>
-                    </td>
-                    <td class="text-start">
-                      <a href="/admin/editCategory?id=<%=category._id%>" class="btn btn-info text-white">Edit</a>
-                    </td>
-                  </tr>
-                  <% }) %>
-                </tbody>
-              </table>
-            </div>
+                    <span class="badge rounded-pill alert-danger" style="width: 60px">Unlisted</span>
+                    <% } %>
+                  </td>
+                  <td class="text-start">
+                    <% if(category.isListed) {%>
+                    <button class="btn btn-danger" style="width: 70px">
+                      <a href="/admin/listCategory?id=<%=category._id%>" class="text-white">Unlist</a>
+                    </button>
+                    <% }else{ %>
+                    <button class="btn btn-success" style="width: 70px">
+                      <a href="/admin/unListCategory?id=<%=category._id%>" class="text-white">List</a>
+                    </button>
+                    <% } %>
+                  </td>
+                  <td class="text-start">
+                    <a href="/admin/editCategory?id=<%=category._id%>" class="btn btn-info text-white">Edit</a>
+                  </td>
+                </tr>
+                <% }) %>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
+
+
     </div>
     
 

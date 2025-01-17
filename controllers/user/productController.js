@@ -12,7 +12,8 @@ const productDetails = async (req,res)=>{
     console.log("ITS productDetails")
     try{
         const userId  = req.session.user;
-        const userData= await User.findById(userId);
+        const userData= await User.findOne({_id:userId, isBlocked:false});
+        console.log(userData)
         const productId = req.query.id;
         const product = await Product.findById(productId).populate('category');
         const findCategory = product.category;

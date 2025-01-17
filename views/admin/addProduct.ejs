@@ -1,4 +1,5 @@
 <%- include('../partials/admin/header.ejs') %>
+
 <head>
    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css">
 </head>
@@ -34,14 +35,14 @@
 
 </style>
    <section class="content-main" style="margin-left: 25%;">
-       <div class="row">
+       <div class="row col-12 d-flex justify-content-between align-items-center">
            <div class="col-9">
                <div class="content-header">
                    <h2 class="content-title" style="margin-top: 10%;">Add New Product</h2>
                </div>
            </div>
-           <div class="col-lg-6">
-               <div class="card mb-4">
+           <div class="col-lg-12">
+               <div class="card mb-4 col-9">
                    <div class="card-body">
                        <form method="post" action="/admin/addProducts" enctype="multipart/form-data"
                            onsubmit="return validateForm()">
@@ -50,6 +51,9 @@
                                <input type="text" placeholder="Type here" name="productName"
                                    class="form-control border" id="product_name">
                                <div id="productName-error" class="error-message"></div>
+                               <% if(locals.message){ %>
+                                <div class="error-message"> <%= locals.message %></div>
+                               <% } %>
                            </div>
                            <div class="col-lg-4 mb-4">
                                <label class="form-label">Brand</label>
@@ -210,7 +214,7 @@
                    </div>
                </div>
            </div>
-       </div>
+       
    </section>
 <script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
 
@@ -422,5 +426,9 @@
           }
 
 </script>
-     
+
+
+
 <%- include('../partials/admin/footer.ejs') %>
+
+

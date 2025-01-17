@@ -41,12 +41,12 @@ const addCategory = async (req,res)=>{
     console.log(req.body)
 
     try{
-        const existCategory  = await Category.findOne({name: name});
+        const existCategory  = await Category.findOne({name: name.trim()});
         if(existCategory){
             return res.status(400).json({error:"Category already exist"})
         }
         const newCategory = new Category({
-            name,
+            name:name.trim(),
             description});
         await newCategory.save();
         return res.status(200).json({success:true, message:"Category added successfully"});
@@ -168,7 +168,7 @@ const editCategory = async (req,res)=>{
         const id = req.params.id;
     const {categoryName,description} = req.body;
     const category = await Category.findById({_id:id});
-    const existingCategory = await Category.findOne({name:categoryName});
+    const existingCategory = await Category.findOne({name:categoryName.trim()});
     if(existingCategory){
         return res.render('editCategory',{category:category, message:"Category name already exists"})
         //return res.status(400).json({error:"Category name already exists"})
