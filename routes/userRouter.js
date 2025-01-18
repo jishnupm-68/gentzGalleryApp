@@ -3,7 +3,8 @@ const router = express.Router();
 const userController =require("../controllers/user/usercontrollers")
 const passport = require("passport");
 const productController = require('../controllers/user/productController')
-const {userAuth} = require("../middlewares/auth");
+const profileController = require('../controllers/user/profileController')
+const {userAuth, profileAuth} = require("../middlewares/auth");
 
 router.get('/', userController.loadHomePage)
 router.get('/shop',userAuth,userController.loadShopPage)
@@ -38,7 +39,20 @@ router.get('/logout',userController.logout)
 
 
 
+//profile Management
+router.get('/forgotPassword',profileController.loadForgotPasswordPage)
+router.post('/forgotPassword',profileController.forgotEmailValid);
+router.post('/verifyForgotPasswordOtp',profileAuth,profileController.verifyForgotPasswordOtp);
+router.get("/changePassword",profileAuth,profileController.loadChangePassword)
+router.post("/resendOtpForgotPassword",profileAuth, profileController.resendOtpForgotPassword)
+router.post('/resetPassword',profileAuth,profileController.resetPassword)
+router.get('/userProfile',userAuth,profileController.loadUserProfile)
+router.get('/changeEmail', userAuth, profileController.loadChangeEmail)
+router.post('/changeEmail',userAuth,profileController.changeEmail)
+router.post('/verifyEmailOtp',userAuth,profileController.verifyEmailOtp)
+router.get("/changeEmailNew",userAuth, profileController.loadChangeEmailNew)
+router.post('/updateEmail',userAuth,profileController.updateEmail)
 //productMAangement
-router.get('/productDetails', userAuth,productController.productDetails)
+router.get('/productDetails',productController.productDetails)
 
 module.exports = router  

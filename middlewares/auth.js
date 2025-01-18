@@ -21,20 +21,19 @@ const userAuth = (req,res,next) => {
 }
 
 
-// const adminAuth = (req,res,next) => {
-//     User.findOne({isAdmin: true})
-//     .then(data=>{    
-//         if(data){
-//             next();
-//         }else{
-//             res.redirect("/admin/login")
-//         }
-//     })
-//     .catch(error=>{
-//         console.log("Error in admin auth middleware");
-//         res.status(500).send("Internal server error")
-//     })
-// }
+const profileAuth = (req,res,next) => {
+    try{
+        if(req.session.userData){
+            next();
+        }else{
+            res.redirect("/forgotPassword")
+        }
+       }
+    catch(error)
+{  console.log("Error in profile auth middleware");
+        res.status(500).send("Internal server error")
+    }
+}
 
 
 const adminAuth = (req,res,next) => {
@@ -63,5 +62,6 @@ const adminAuth = (req,res,next) => {
 
 module.exports = {
     userAuth
-    ,adminAuth
+    ,adminAuth,
+    profileAuth
 };
