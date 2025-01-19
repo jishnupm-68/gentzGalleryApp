@@ -203,11 +203,12 @@ const loadChangeEmail = async (req,res)=>{
 const changeEmail = async (req,res)=>{
     try{
         const {email} = req.body;
+        console.log("email is", email,req.body,req.session)
         const userId = req.session.user;
         const sessionUser = await User.findOne({_id:userId});
 
-        const userExists =  await User.findOne({email:email});
-        if(userExists.email === sessionUser.email){
+        //const userExists =  await User.findOne({email:email});
+        if(email === sessionUser.email){
             const otp = generateOtp();
             const emailSent = await sentVerificationEmail(email,otp);
             if(emailSent){
@@ -278,6 +279,110 @@ const updateEmail =async (req,res)=>{
 }
 
 
+const loadChangePasswordFromProfile = async (req,res)=>{
+    try{
+        const user= await User.findOne({_id:req.session.user})
+        res.render('changePasswordFromProfile',{user:user})
+
+    }catch(error){
+        console.error("error while rendering the change password page",error)
+        res.redirect('/pageNotFound')
+
+    }
+}
+
+
+
+const verifyEmail = async (req,res)=>{
+    try{
+        const {email} = req.body;
+        console.log("email is", email,req.body,req.session)
+        const userId = req.session.user;
+        const sessionUser = await User.findOne({_id:userId});
+
+        //const userExists =  await User.findOne({email:email});
+        if(email === sessionUser.email){
+            const otp = generateOtp();
+            const emailSent = await sentVerificationEmail(email,otp);
+            if(emailSent){
+                req.session.userOtp = otp;
+                req.session.userData = {email}
+                res.render('changeEmailVerifyOtpForPassword',{user:sessionUser})
+                console.log("OTP SEND",otp)
+                
+            }else{
+                console.log("Email not sent , something went wrong")
+                res.redirect('/login')
+            }
+        }else{
+            console.log("no user with given email id")
+            res.render("changeEmail", {message:"The given email id is not matching with your account"})
+        }
+        }
+    catch(error){
+        console.error("error while changing the email",error)
+        res.redirect('/pageNotFound')
+    }
+}
+
+
+const verifyEmailOtpForPassword =  async(req,res)=>{
+    try{
+        const enteredOtp = Number(req.body.otp);
+        console.log(req.body.otp, req.session.userOtp)
+        if(enteredOtp === req.session.userOtp){
+            
+            res.json({success:true, redirectUrl:"/changePasswordNew"})
+        }else{
+            console.log("error while validating the otp")
+            res.status(400).json({success:false, message:"Invalid otp, please try again"})
+        }
+
+    }catch(error){
+        console.error("error while verifying the otp",error)
+        res.redirect('/pageNotFound')
+
+    }
+}
+
+
+const loadChangePasswordNew = async (req,res)=>{
+    try{
+        const user= await User.findOne({email:req.session.userData.email})
+        res.render('changePasswordNew',{user:user})
+
+    }catch(error){
+        console.error("error while rendering the change password new page",error)
+        res.redirect('/pageNotFound')
+    }
+}
+
+
+const  updatePassword = async(req,res)=>{
+    try{
+        console.log(req.body)
+        const newPassword = req.body.password;
+        const confirmPassword = req.body.confirmPassword;
+        if(newPassword !== confirmPassword){
+            res.render('changePasswordNew', {message:"Password do not match"})
+        }else{
+            const hashedPassword = await bcrypt.hash(newPassword,10);
+            console.log(req.session.userData,req.session)
+            const {email} = req.session.userData;
+            const user = await User.updateOne({email:email},
+                {$set:{password:hashedPassword}}
+            );
+            //req.session.userData = undefined
+            res.redirect('/userProfile');
+        }
+    }catch(error){
+        console.error("error while changing the password",error)
+        res.redirect('/pageNotFound')
+    }
+}
+
+
+
 module.exports = {
     loadForgotPasswordPage,
     forgotEmailValid,
@@ -290,5 +395,10 @@ module.exports = {
     changeEmail,
     verifyEmailOtp,
     loadChangeEmailNew,
-    updateEmail
+    updateEmail,
+    loadChangePasswordFromProfile,
+    verifyEmail,
+    verifyEmailOtpForPassword,
+    loadChangePasswordNew,
+    updatePassword
 }

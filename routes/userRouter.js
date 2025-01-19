@@ -46,12 +46,21 @@ router.post('/verifyForgotPasswordOtp',profileAuth,profileController.verifyForgo
 router.get("/changePassword",profileAuth,profileController.loadChangePassword)
 router.post("/resendOtpForgotPassword",profileAuth, profileController.resendOtpForgotPassword)
 router.post('/resetPassword',profileAuth,profileController.resetPassword)
+
 router.get('/userProfile',userAuth,profileController.loadUserProfile)
+
 router.get('/changeEmail', userAuth, profileController.loadChangeEmail)
 router.post('/changeEmail',userAuth,profileController.changeEmail)
 router.post('/verifyEmailOtp',userAuth,profileController.verifyEmailOtp)
 router.get("/changeEmailNew",userAuth, profileController.loadChangeEmailNew)
 router.post('/updateEmail',userAuth,profileController.updateEmail)
+
+router.get("/changePasswordFromProfile",userAuth,profileController.loadChangePasswordFromProfile)
+router.post("/verifyEmail",userAuth,profileController.verifyEmail)
+router.post('/verifyEmailOtpForPassword', userAuth,profileController.verifyEmailOtpForPassword)
+router.get("/changePasswordNew",userAuth,profileController.loadChangePasswordNew)
+router.post('/updatePassword',userAuth,profileController.updatePassword)
+
 //productMAangement
 router.get('/productDetails',productController.productDetails)
 
