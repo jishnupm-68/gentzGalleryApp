@@ -4,6 +4,7 @@ const userController =require("../controllers/user/usercontrollers")
 const passport = require("passport");
 const productController = require('../controllers/user/productController')
 const profileController = require('../controllers/user/profileController')
+const cartController = require("../controllers/user/cartController")
 const {userAuth, profileAuth} = require("../middlewares/auth");
 
 router.get('/', userController.loadHomePage)
@@ -61,7 +62,23 @@ router.post('/verifyEmailOtpForPassword', userAuth,profileController.verifyEmail
 router.get("/changePasswordNew",userAuth,profileController.loadChangePasswordNew)
 router.post('/updatePassword',userAuth,profileController.updatePassword)
 
+
+
+
+//Address management
+router.get("/addAddress",userAuth,profileController.loadAddAddress)
+router.post("/addAddress", userAuth, profileController.postAddAddress)
+router.get("/editAddress",userAuth,profileController.loadEditAddress)
+router.post('/editAddress',userAuth,profileController.editAddress)
+router.get('/deleteAddress', userAuth, profileController.deleteAddress)
 //productMAangement
 router.get('/productDetails',productController.productDetails)
+
+
+
+//cart management
+router.get('/cart',userAuth,cartController.getCartPage);
+router.post('/addToCart',userAuth,cartController.addToCart);
+
 
 module.exports = router  

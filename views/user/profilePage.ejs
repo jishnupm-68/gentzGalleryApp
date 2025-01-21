@@ -218,30 +218,36 @@
                  aria-labelledby="address-tab"
                >
                  <div class="row">
+                  <% if(userAddress) {%>
+                    <% userAddress.address.forEach(address => { %>
                 
                    <div class="col-lg-6">
                      <div class="card mb-3 mb-lg-0">
                        <div class="card-header">
-                         <h5 class="mb-0"></h5>
+                         <h5 class="mb-0"><%= address.addressType %></h5>
                        </div>
 
 
                        <div class="card-body">
                          <address>
-                        
-                        
+                          <%= address.name %> <br />
+                          <%= address.city %> <br />
+                          <%= address.landMark %> <br />
+                          <%= address.state %>, <%= address.pincode %> <br />
                          </address>
-                         <p></p>
+                         <p><%=address.phone %>, <%= address.altPhone %></p>
                       
                          <div class="d-flex justify-content-between">
-                           <a href="#" class="btn-small">Edit</a>
-                           <a href="#" class="btn-small" onclick="">Delete</a>
+                           <a href="editAddress?id=<%= address._id %>" class="btn-small">Edit</a>
+                           <!-- <a href="deleteAddress?id=<%= address._id %>" class="btn-small" onclick="return confirm('are you sure')">Delete</a> -->
+                           <a href="deleteAddress?id=<%= address._id %>" class="btn-small" onclick="return confirmDelete(event, '<%= address._id %>')">Delete</a>
                          </div>
                         
                        </div>
                      </div>
                    </div>
-                
+                   <% }) %>
+                   <% } else{%>
                    <div class="col-lg-6">
                      <div class="card mb-3 mb-lg-0">
                        <div class="card-header">
@@ -254,7 +260,8 @@
                    </div>
               
                    <div>
-                     <a href="#">
+                    <% } %>
+                     <a href="/addAddress">
                        <button class="btn btn-primary w-70">
                          Add address
                        </button>
@@ -365,6 +372,33 @@
    </div>
  </section>
 </main>
+
+
+
+<script>
+  function confirmDelete(event, addressId) {
+    // Prevent default link navigation
+    event.preventDefault();
+
+    // Show SweetAlert confirmation
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Navigate to the delete URL if confirmed
+        window.location.href = `deleteAddress?id=${addressId}`;
+      }
+    });
+  }
+</script>
+
+
 <%- include("../../views/partials/user/footer") %>
 
 

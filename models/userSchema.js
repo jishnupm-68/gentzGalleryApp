@@ -35,6 +35,10 @@ const userSchema = new Schema({
         type :Boolean,
         default:false
     },
+    address:[{
+        type:Schema.Types.ObjectId,
+        ref:"address"
+    }],
     cart:[{
         type:Schema.Types.ObjectId,
         ref:"Cart"

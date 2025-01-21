@@ -1,326 +1,404 @@
 <%- include("../../views/partials/user/header") %>
-<style>
- .main-container {
-   max-width: 1200px;
-   margin: 0 auto;
-   padding: 20px;
- }
- .shop-topbar {
-   display: flex;
-   justify-content: space-between;
-   align-items: center;
-   margin-bottom: 20px;
- }
+  <style>
+    .main-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .shop-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
 
 
- .search-form {
-   display: flex;
-   align-items: center;
-   background-color: #f1f1f1;
-   border-radius: 25px;
-   overflow: hidden;
-   max-width: 250px;
-   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
- }
+    .search-form {
+      display: flex;
+      align-items: center;
+      background-color: #f1f1f1;
+      border-radius: 25px;
+      overflow: hidden;
+      max-width: 250px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    }
 
 
- .search-input {
-   flex: 1;
-   padding: 8px 10px;
-   font-size: 14px;
-   border: none;
-   outline: none;
-   background-color: transparent;
- }
+    .search-input {
+      flex: 1;
+      padding: 8px 10px;
+      font-size: 14px;
+      border: none;
+      outline: none;
+      background-color: transparent;
+    }
 
 
- .search-button {
-   padding: 8px 15px;
-   background-color: #1e918b;
-   color: #fff;
-   border: none;
-   cursor: pointer;
-   font-size: 14px;
-   border-radius: 15px;
-   margin-right: 5px;
-   transition: background-color 0.3s, transform 0.2s;
- }
+    .search-button {
+      padding: 8px 15px;
+      background-color: #1e918b;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      border-radius: 15px;
+      margin-right: 5px;
+      transition: background-color 0.3s, transform 0.2s;
+    }
 
 
- .search-button:hover {
-   background-color: #0056b3;
-   transform: scale(1.05);
- }
- .sidebar {
-   padding: 20px;
-   border: 1px solid #ddd;
-   background-color: #f9f9f9;
-   border-radius: 8px;
-   margin-bottom: 20px;
-   width: 250px;
-   text-align: center;
- }
+    .search-button:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
+    }
+
+    .sidebar {
+      padding: 20px;
+      border: 1px solid #ddd;
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      width: 250px;
+      text-align: center;
+    }
 
 
- .filter-section {
-   margin-bottom: 20px;
- }
+    .filter-section {
+      margin-bottom: 20px;
+    }
 
 
- .filter-title {
-   font-weight: bold;
-   margin-bottom: 10px;
-   font-size: 16px;
-   color: #333;
- }
+    .filter-title {
+      font-weight: bold;
+      margin-bottom: 10px;
+      font-size: 16px;
+      color: #333;
+    }
 
 
- .filter-item {
-   margin: 5px 0;
- }
+    .filter-item {
+      margin: 5px 0;
+    }
 
 
- .filter-item a {
-   text-decoration: none;
-   color: #333;
- }
+    .filter-item a {
+      text-decoration: none;
+      color: #333;
+    }
 
 
- .filter-item a:hover {
-   color: #007bff;
- }
+    .filter-item a:hover {
+      color: #007bff;
+    }
 
 
- .product-list-container {
-   display: flex;
-   gap: 20px;
- }
+    .product-list-container {
+      display: flex;
+      gap: 20px;
+    }
 
 
- .product-grid {
-   display: flex;
-   flex-wrap: wrap;
-   gap: 20px;
-   width: calc(100% - 270px);
- }
+    .product-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      width: calc(100% - 270px);
+    }
 
 
- .product-card {
-   width: calc(33.333% - 20px);
-   border: 1px solid #ddd;
-   padding: 15px;
-   border-radius: 8px;
-   text-align: center;
-   position: relative;
- }
+    .product-card {
+      width: calc(33.333% - 20px);
+      border: 1px solid #ddd;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      position: relative;
+    }
 
 
- .product-card img {
-   max-width: 100%;
-   height: auto;
-   border-radius: 5px;
- }
+    .product-card img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 5px;
+    }
 
 
- .wishlist-btn {
-   position: absolute;
-   top: 8px;
-   right: 8px;
-   background-color: rgba(237, 247, 247, 0.8);
-   color: #fff;
-   padding: 8px;
-   border-radius: 50%;
-   cursor: pointer;
- }
+    .wishlist-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background-color: rgba(237, 247, 247, 0.8);
+      color: #fff;
+      padding: 8px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
 
 
- .add-to-cart-btn {
-   background-color: #46698f;
-   color: #fff;
-   padding: 10px;
-   border: none;
-   border-radius: 5px;
-   cursor: pointer;
-   width: 100%;
-   margin-top: 10px;
- }
+    .add-to-cart-btn {
+      background-color: #1e918b;
+      color: #fff;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+    }
 
 
- .pagination {
-   display: flex;
-   justify-content: center;
-   gap: 10px;
-   margin: 20px 0;
- }
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 20px 0;
+    }
 
 
- .pagination a {
-   padding: 8px 12px;
-   background-color: #f0f0f0;
-   border: 1px solid #ddd;
-   color: #333;
-   text-decoration: none;
- }
+    .pagination a {
+      padding: 8px 12px;
+      background-color: #f0f0f0;
+      border: 1px solid #ddd;
+      color: #333;
+      text-decoration: none;
+    }
 
 
- .pagination .active {
-   background-color: #007bff;
-   color: #fff;
- }
+    .pagination .active {
+      background-color: #007bff;
+      color: #fff;
+    }
 
 
- .price-filter {
-   padding: 10px;
-   background-color: #f9f9f9;
-   border-radius: 8px;
-   margin-top: 20px;
- }
+    .price-filter {
+      padding: 10px;
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
 
 
- .price-filter .price-options {
-   display: flex;
-   flex-direction: column;
-   gap: 10px;
- }
+    .price-filter .price-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
 
 
- .price-button {
-   padding: 12px 20px;
-   background-color: #f1f1f1;
-   color: #333;
-   border: 1px solid #ddd;
-   border-radius: 30px;
-   cursor: pointer;
-   transition: background-color 0.3s, transform 0.2s;
-   text-align: center;
-   font-size: 14px;
- }
+    .price-button {
+      padding: 12px 20px;
+      background-color: #f1f1f1;
+      color: #333;
+      border: 1px solid #ddd;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+      text-align: center;
+      font-size: 14px;
+    }
 
 
- .price-button:hover {
-   background-color: #007bff;
-   color: white;
-   transform: scale(1.05);
- }
+    .price-button:hover {
+      background-color: #007bff;
+      color: white;
+      transform: scale(1.05);
+    }
 
 
- .price-button:active {
-   transform: scale(0.95);
- }
+    .price-button:active {
+      transform: scale(0.95);
+    }
 
 
- .category-brand-container {
-   text-align: center;
- }
-</style>
+    .category-brand-container {
+      text-align: center;
+    }
+  </style>
 
 
-<div class="main-container">
- <section class="shop-page container">
-   <div class="shop-topbar">
-     <div class="search-bar">
-       <form action="/search" method="POST" class="search-form">
-         <input type="text" name="query" placeholder="Search items..." class="search-input" />
-         <button type="submit" class="search-button">Search</button>
-       </form>
-     </div>
-   </div>
-   
+  <div class="main-container">
+    <section class="shop-page container">
+      <div class="shop-topbar">
+        <div class="search-bar">
+          <form action="/search" method="POST" class="search-form">
+            <input type="text" name="query" placeholder="Search items..." class="search-input" />
+            <button type="submit" class="search-button">Search</button>
+          </form>
+        </div>
+      </div>
 
 
 
-  <div class="product-list-container">
-    <aside class="sidebar">
-        <div class="filter-section">
+
+      <div class="product-list-container">
+        <aside class="sidebar">
+          <div class="filter-section">
             <div class="filter-title">Categories</div>
             <div class="category-brand-container">
-                <ul>
-                    <% if (category && category.length > 0) { %>
-                        <% for (let i = 0; i < category.length; i++) { %>
-                            <li class="filter-item">
-                                <a href="/filter?category=<%= category[i]._id %>"><%= category[i].name %></a>
-                            </li>
-                        <% } %>
-                    <% } else { %>
-                        <li>No categories available</li>
+              <ul>
+                <% if (category && category.length> 0) { %>
+                  <% for (let i=0; i < category.length; i++) { %>
+                    <li class="filter-item">
+                      <a href="/filter?category=<%= category[i]._id %>">
+                        <%= category[i].name %>
+                      </a>
+                    </li>
                     <% } %>
-                </ul>
+                      <% } else { %>
+                        <li>No categories available</li>
+                        <% } %>
+              </ul>
             </div>
-        </div>
+          </div>
 
-        <div class="filter-section">
+          <div class="filter-section">
             <div class="filter-title">Brands</div>
             <div class="category-brand-container">
-                <ul>
-                    <% if (brand && brand.length > 0) { %>
-                        <% for (let i = 0; i < brand.length; i++) { %>
-                            <li class="filter-item">
-                                <a href="/filter?brand=<%= brand[i]._id %>"><%= brand[i].brandName %></a>
-                            </li>
-                        <% } %>
-                    <% } else { %>
-                        <li>No brands available</li>
+              <ul>
+                <% if (brand && brand.length> 0) { %>
+                  <% for (let i=0; i < brand.length; i++) { %>
+                    <li class="filter-item">
+                      <a href="/filter?brand=<%= brand[i]._id %>">
+                        <%= brand[i].brandName %>
+                      </a>
+                    </li>
                     <% } %>
-                </ul>
+                      <% } else { %>
+                        <li>No brands available</li>
+                        <% } %>
+              </ul>
             </div>
-        </div>
+          </div>
 
-        <div class="price-filter">
+          <div class="price-filter">
             <div class="filter-title">Filter by Price</div>
             <form id="price-filter-form" method="GET" action="/filter">
-              <a href="/filterprice?gt=0&lt=500"> <button type="button" name="price" value="under-500" class="price-button">Under ₹500</button></a> 
-              <a href="/filterprice?gt=500&lt=2000"> <button type="button" name="price" value="500-1000" class="price-button">₹500 - ₹2000</button></a> 
-              <a href="/filterprice?gt=2000&lt=5000"> <button type="button" name="price" value="1000-1500" class="price-button">₹2000 - ₹5000</button></a> 
-              <a href="/filterprice?gt=5000&lt=50000"> <button type="button" name="price" value="above-1500" class="price-button">Above ₹5000</button></a> 
+              <a href="/filterprice?gt=0&lt=500"> <button type="button" name="price" value="under-500"
+                  class="price-button">Under ₹500</button></a>
+              <a href="/filterprice?gt=500&lt=2000"> <button type="button" name="price" value="500-1000"
+                  class="price-button">₹500 - ₹2000</button></a>
+              <a href="/filterprice?gt=2000&lt=5000"> <button type="button" name="price" value="1000-1500"
+                  class="price-button">₹2000 - ₹5000</button></a>
+              <a href="/filterprice?gt=5000&lt=50000"> <button type="button" name="price" value="above-1500"
+                  class="price-button">Above ₹5000</button></a>
+
+                  
+
             </form>
-        </div>
-    </aside>
-
-    <main class="product-grid">
-        <% if (products && products.length > 0) { %>
-            <% for (let i = 0; i < products.length; i++) { %>
-                <div class="product-card">
-                    <span class="wishlist-btn" onclick="">❤️</span>
-                    <a href="/productDetails?id=<%= products[i]._id %>">
-                      
-                        <img src="/uploads/product-imagesResized/<%= products[i].productImage[0] %>" alt="<%= products[i].productName %>" />
-                        <h4><%= products[i].productName %></h4>
-                        <p>Brand: <%= products[i].brand %></p>
-                        <p> Price: ₹<%= products[i].salePrice.toLocaleString('en-IN') %>
-                            <span class="text-muted">
-                                <strike>₹<%= products[i].regularPrice.toLocaleString('en-IN') %></strike>
-                            </span>
-                        </p>
-                    </a>
-                    <button class="add-to-cart-btn" onclick="">Add to Cart</button>
-                </div>
-            <% } %>
-        <% } else { %>
-            <p>No products available</p>
-        <% } %>
-    </main>
-</div>
+          </div>
 
 
-   
-
-
-<!-- pagination -->
-<div class="container mt-3">
-    <nav aria-label="Page navigation">
-        <ul class="pagination justify-content-center mb-20" style="margin-right: 200px;">
-            <% for (let i = 1; i <= totalPages; i++) { %>
-                <li class="page-item <%= (i === currentPage) ? 'active' : '' %>">
-                    <a class="page-link" href="?page=<%= i %>">
-                        <%= i %>
-                    </a>
+          <div class="filter-section">
+            <div class="filter-title"></div>
+            <div class="category-brand-container">
+              <ul>
+                <li class="filter-item">
+                  <a href="/filter?filter=New arrivals">New arrivals</a>
                 </li>
-            <% } %>
-        </ul>
-    </nav>
-</div>
 
- </section>
-</div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
-<%- include("../../views/partials/user/footer") %>
+                <li class="filter-item">
+                  <a href="/filter?filter=Featured">Featured</a>
+                </li>
+                <li class="filter-item">
+                  <a href="/filter?filter=Low to High">Price: Low to High</a>
+                </li>
+                <li class="filter-item">
+                  <a href="/filter?filter=High to Low">Price: High to Low</a>
+                </li>
+                <li class="filter-item">
+                  <a href="/filter?filter=Average Ratings">Average Ratings</a>
+                </li>
+                <li class="filter-item">
+                  <a href="/filter?filter=aA-zZ">aA-zZ</a>
+                </li>
+                <li class="filter-item">
+                  <a href="/filter?filter=zZ-aA">zZ-aA</a>
+                </li>
+
+                <li class="filter-item">
+                  
+                  <label for="showOutOfStock">Show Out of Stock <input type="checkbox" id="showOutOfStock" class="p-3" name="showOutOfStock" style="height: 10px; width: 10px;"/> </label>
+                </li>
+
+              </ul>
+            </div>
+          </div>
+
+
+
+        </aside>
+
+        <main class="product-grid">
+          <% if (products && products.length> 0) { %>
+            <% for (let i=0; i < products.length; i++) { %>
+              <div class="product-card">
+                <span class="wishlist-btn" onclick="">❤️</span>
+                <a href="/productDetails?id=<%= products[i]._id %>">
+
+                  <img src="/uploads/product-imagesResized/<%= products[i].productImage[0] %>"
+                    alt="<%= products[i].productName %>" />
+                  <h4>
+                    <%= products[i].productName %>
+                  </h4>
+                  <p>Brand: <%= products[i].brand %>
+                  </p>
+                  <p> Price: ₹<%= products[i].salePrice.toLocaleString('en-IN') %>
+                      <span class="text-muted">
+                        <strike>₹<%= products[i].regularPrice.toLocaleString('en-IN') %></strike>
+                      </span>
+                  </p>
+                </a>
+                <button class="add-to-cart-btn" onclick="">Add to Cart</button>
+              </div>
+              <% } %>
+                <% } else { %>
+                  <p>No products available</p>
+                  <% } %>
+        </main>
+      </div>
+
+      <!-- pagination -->
+      <div class="container mt-3">
+        <nav aria-label="Page navigation">
+          <ul class="pagination justify-content-center mb-20" style="margin-right: 200px;">
+            <% for (let i=1; i <=totalPages; i++) { %>
+              <li class="page-item <%= (i === currentPage) ? 'active' : '' %>">
+                <a class="page-link" href="?page=<%= i %>">
+                  <%= i %>
+                </a>
+              </li>
+              <% } %>
+          </ul>
+        </nav>
+      </div>
+
+    </section>
+  </div>
+
+  <script>
+    // Get the checkbox element
+    const showOutOfStockCheckbox = document.getElementById("showOutOfStock");
+
+    // Function to filter products based on stock
+    showOutOfStockCheckbox.addEventListener("change", async function() {
+        // Get the current filter state (whether to show out-of-stock products)
+        const showOutOfStock = showOutOfStockCheckbox.checked;
+
+        // Make an AJAX request to fetch the filtered products from the server
+        const response = await fetch(`/filter?filterOutOfStock=${showOutOfStock}`);
+        const products = await response.json();
+
+        // Update the product list on the page
+        displayProducts(products);
+    });
+
+    
+</script>
+
+<div id="product-list"></div>
+
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+  <%- include("../../views/partials/user/footer") %>

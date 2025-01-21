@@ -4,7 +4,7 @@ const userAuth = (req,res,next) => {
     if(req.session.user){
         User.findOne({_id:req.session.user,isBlocked:false})
         .then(data=>{
-            console.log(data)
+            //console.log(data)
             if(data && !data.isBlocked){
                 next();
             }else{
@@ -37,7 +37,7 @@ const profileAuth = (req,res,next) => {
 
 
 const adminAuth = (req,res,next) => {
-    console.log("Session", req.session.admin)
+    //console.log("Session", req.session.admin)
     if(req.session.admin){
         User.findOne({isAdmin: true})
     .then(data=>{    
