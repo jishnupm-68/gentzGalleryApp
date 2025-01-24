@@ -348,8 +348,10 @@
                         <strike>₹<%= products[i].regularPrice.toLocaleString('en-IN') %></strike>
                       </span>
                   </p>
+                  <p>stock: <%= products[i].quantity %>
+                  </p>
                 </a>
-                <button class="add-to-cart-btn" onclick="">Add to Cart</button>
+                <button class="add-to-cart-btn" onclick="window.location.href='/productDetails?id=<%= products[i]._id %>'">Add to Cart</button>
               </div>
               <% } %>
                 <% } else { %>

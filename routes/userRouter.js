@@ -79,6 +79,8 @@ router.get('/productDetails',productController.productDetails)
 //cart management
 router.get('/cart',userAuth,cartController.getCartPage);
 router.post('/addToCart',userAuth,cartController.addToCart);
+router.get('/deleteItem',userAuth,cartController.deleteItem);
+router.post('/changeQuantity',userAuth,cartController.changeQuantity)
 
 
 module.exports = router  

@@ -162,20 +162,40 @@
                                   </div>
                                 
                                   <div class="bt-1 border-color-1 mt-30 mb-30"></div>
-                                  <div class="detail-extralink">
+                                  <!-- <div class="detail-extralink">
                                       <div class="detail-qty border radius">
-                                          <a href="#" class="qty-down" onclick="" ><i class="fi-rs-angle-small-down"></i></a>
-                                          <span class="qty-val" id="quantity">1</span>
-                                          <a href="#" class="qty-up" onclick=""><i class="fi-rs-angle-small-up"></i></a>
+                                          <a href="#" class="qty-down" onclick="return decrementValue()" ><i class="fi-rs-angle-small-down"></i></a>
+                                          <div class="qty-val" id="quantity" value="">1</div>
+                                          <a href="#" class="qty-up" onclick="return incrementValue()"><i class="fi-rs-angle-small-up"></i></a>
                                       </div>
                                       <div class="product-extra-link2">
-                                        
-                                      
-                                        
+
                                         <button type="submit" class="button button-add-to-cart" onclick="addToCart('<%= product._id %>')" >Add to Cart</button>
                                           <a aria-label="Add To Wishlist" class="action-btn hover-up" href="#"><i class="fi-rs-heart"></i></a>
                                       </div>
-                                  </div>
+                                  </div> -->
+
+                                    <form action="/addToCart" method="post">
+                                        <div class="detail-extralink">
+                                            <div class="detail-qty border radius">
+                                                <a href="#" class="qty-down" onclick="return decrementValue()" ><i class="fi-rs-angle-small-down"></i></a>
+                                                <div class="qty-val" id="quantity" value="" name="quantity">1</div>
+                                                
+                                                <a href="#" class="qty-up" onclick="return incrementValue()"><i class="fi-rs-angle-small-up"></i></a>
+                                            </div>
+                                            <div class="product-extra-link2">
+                                                <input type="text" style="display: none;"name="quantity" id = "quantityUpdated" value="1">
+                                                <input style="display: none;" name="productId" value="<%= product._id %>">
+                                                <input style="display: none;" name="price" value="<%= product.salePrice %>">
+                                                <button type="submit" class="button button-add-to-cart"  >Add to Cart</button>
+                                              <!-- <button type="submit" class="button button-add-to-cart" onclick="addToCart('<%= product._id %>')" >Add to Cart</button> -->
+                                                <a aria-label="Add To Wishlist" class="action-btn hover-up" href="#"><i class="fi-rs-heart"></i></a>
+                                            </div>
+                                        </div>
+                                    </form>
+
+
+
                                   <ul class="product-meta font-xs color-grey mt-50">
                                       <!-- <li class="mb-5">Stock Code: <a href="#">FWM15VKT</a></li> -->
                                       <li class="mb-5">Tags: <a href="#" rel="tag"></a><%=category.name %> <a href="#" rel="tag"></a> <a href="#" rel="tag"></a> </li>
@@ -270,6 +290,53 @@
     image.addEventListener('mouseleave', function() {
       this.style.transform = 'scale(1)';
     });
+  </script>
+
+
+<!-- quantity changing -->
+  <script>
+    function incrementValue() {
+      var value = parseInt(document.getElementById('quantity').value, 10);
+      value = isNaN(value) ? 0 : value;
+      
+      console.log(value)
+      if(value<5){
+        value++;
+
+      }
+      else{
+        Swal.fire ({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Quantity cannot be more than 5'
+        })
+      }
+      document.getElementById('quantity').value = value;
+      document.getElementById('quantity').innerText = value;
+      document.getElementById('quantityUpdated').innerText = value;
+      document.getElementById('quantityUpdated').value = value;
+    }
+
+    function decrementValue() {
+      var value = parseInt(document.getElementById('quantity').value, 10);
+      value = isNaN(value) ? 0 : value;
+      if (value > 1) {
+        value--;
+        console.log(value)
+      }
+      else{
+        Swal.fire ({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Quantity cannot be less than 1'
+        })
+      }
+      document.getElementById('quantity').value = value;
+      document.getElementById('quantity').innerText = value;
+      document.getElementById('quantityUpdated').value = value;
+      document.getElementById('quantityUpdated').innerText = value;
+      
+    }
   </script>
  
  <%- include("../../views/partials/user/footer") %>

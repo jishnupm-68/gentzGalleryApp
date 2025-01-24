@@ -13,7 +13,7 @@ const productDetails = async (req,res)=>{
     try{
         const userId  = req.session.user;
         const userData= await User.findOne({_id:userId, isBlocked:false});
-        console.log(userData)
+        //console.log(userData)
         const productId = req.query.id;
         const product = await Product.findById(productId).populate('category');
         const findCategory = product.category;

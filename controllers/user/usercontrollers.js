@@ -27,7 +27,7 @@ const loadHomePage = async(req,res)=>{
        
         let productDataResponse = productData.slice(0,4)
         console.log(productData.length,"Is the no of products aVailable",productDataResponse.length)
-        console.log("User from loadhomePage",user)
+       // console.log("User from loadhomePage",user)
         if(user ){
             const userData = await User.findOne({_id:user})
             console.log("userdata while using load homepage",userData.isBlocked)
@@ -228,7 +228,7 @@ const login = async(req,res)=>{
     try {
         const {email,password} = req.body
         const findUser = await User.findOne({isAdmin:0, email:email});
-        console.log(findUser)
+        //console.log(findUser)
 
         if(!findUser){
             return res.render("login",{message:"User not found"})
@@ -254,7 +254,7 @@ const login = async(req,res)=>{
 const googleLogin = async (req,res)=>{
     try{
         const userEmail= req.user.email;
-        console.log("data from req",req.user)
+        //console.log("data from req",req.user)
         const user = await User.findOne({isAdmin:false,email:userEmail});
         if(!user){
             return res.redirect("/signup")
@@ -316,7 +316,7 @@ const loadShopPage = async (req,res)=>{
         const totalPages = Math.ceil(totalProducts/limit);
         const brands = await Brand.find({isBlocked:false});
         const categoriesWithIds = categories.map((category)=>({_id:category._id,name:category.name}));
-        console.log(products[0])
+        //console.log(products[0])
         res.render("shopPage",{
             user:userData,
             products:products,
