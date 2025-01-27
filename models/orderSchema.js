@@ -2,8 +2,16 @@ const mongoose = require('mongoose')
 const {Schema} =  mongoose;
 
 const orderSchema = new Schema({
+    userId: {  // Add userId for direct association
+        type: Schema.Types.ObjectId,
+        ref: "User",
+        required: true
+    },
     orderedItems:[{
+        
         product:{
+            type:Schema.Types.ObjectId, //change
+            ref:"Product",              //change
             required:true
         },
         quantity:{
@@ -12,6 +20,18 @@ const orderSchema = new Schema({
         },price:{
             type:Number,
             default:0
+        },
+        image:{             //new
+            type:String,
+            required:true
+        },
+        productStatus:{         //new
+            type:String,
+            required:true
+        },
+        productName:{
+            type:String,
+            required:true
         }
     }],
     totalPrice:{
@@ -47,6 +67,10 @@ const orderSchema = new Schema({
     couponApplied:{
         type:Boolean,
         default:false
+    },
+   payment:{
+        type:String,
+        required:true
     }
 })
 

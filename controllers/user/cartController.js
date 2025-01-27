@@ -40,6 +40,7 @@ const getCartPage = async(req,res)=>{
 
         // Calculate the grand total
         const grandTotal = cartItems.reduce((total, item) => total + item.total, 0);
+        req.session.grandTotal = grandTotal;
         console.log("cartItems",cartItems,"grandTotal",grandTotal,req.session.user);
         // Render the cart page
         res.render("cart", {
@@ -123,6 +124,7 @@ const addToCart = async (req, res) => {
         user.cart.push(userCart._id);
         await user.save();
       }
+      req.session.grandTotal  =  totalPrice;
       console.log("Cart updated, new product added")
       res.redirect('/cart')
     } catch (error) {
@@ -157,10 +159,7 @@ const deleteItem = async(req,res)=>{
         else{
             console.log("product deleted successfully")
             res.redirect("/cart")
-        }
-    
-       
-        
+        }        
     } catch (error) {
         console.error("unable to delete the product from cart",error);
         res.redirect("/pageNotFound")

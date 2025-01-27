@@ -4,7 +4,8 @@ const userController =require("../controllers/user/usercontrollers")
 const passport = require("passport");
 const productController = require('../controllers/user/productController')
 const profileController = require('../controllers/user/profileController')
-const cartController = require("../controllers/user/cartController")
+const cartController = require("../controllers/user/cartController");
+const orderController = require("../controllers/user/orderController");
 const {userAuth, profileAuth} = require("../middlewares/auth");
 
 router.get('/', userController.loadHomePage)
@@ -81,6 +82,18 @@ router.get('/cart',userAuth,cartController.getCartPage);
 router.post('/addToCart',userAuth,cartController.addToCart);
 router.get('/deleteItem',userAuth,cartController.deleteItem);
 router.post('/changeQuantity',userAuth,cartController.changeQuantity)
+
+
+
+
+
+//order Management
+router.get('/checkout', userAuth, orderController.getCheckoutPage);
+router.post("/orderPlaced", userAuth, orderController.orderPlaced)
+router.get("/orderDetails", userAuth, orderController.getOrderDetailsPage)
+
+
+
 
 
 module.exports = router  

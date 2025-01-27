@@ -1,6 +1,7 @@
 
 const User = require('../../models/userSchema')
 const Address = require('../../models/addressSchema')
+const Order = require("../../models/orderSchema")
 const nodemailer = require('nodemailer')
 const bcrypt = require('bcrypt')
 const env = require('dotenv').config();
@@ -180,7 +181,9 @@ const loadUserProfile = async(req,res)=>{
         const userId = req.session.user;
         const userData = await User.findOne({_id:userId});
         const addressData = await Address.findOne({userId:userId});
-        res.render("profilePage", {user:userData, userAddress:addressData});
+        const order = await Order.find({userId:userId});
+        console.log(order)
+        res.render("profilePage", {user:userData, userAddress:addressData,order:order});
 
     }
     catch(error){

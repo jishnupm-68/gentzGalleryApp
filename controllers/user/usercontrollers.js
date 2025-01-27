@@ -305,7 +305,7 @@ const loadShopPage = async (req,res)=>{
         const products = await Product.find({
             isBlocked:false,
             category:{$in:categoryIds},
-            //quantity:{$gt:0}
+            quantity:{$gt:0}
         }).sort({createdOn:-1}).skip(skip).limit(limit);
 
         const totalProducts = await Product.countDocuments({
@@ -340,7 +340,7 @@ const filterProduct = async (req,res)=>{
     try{
         const advancedFilter =req.query.filter;
         const outOfStock = req.query.filterOutOfStock;
-        console.log(typeof(outOfStock))
+        console.log(typeof(outOfStock),outOfStock)
         let filters = [];
         const user = req.session.user;
         const category = req.query.category;
@@ -352,11 +352,11 @@ const filterProduct = async (req,res)=>{
             isBlocked:false,
            // quantity:{$gt:0}
         }
-        if(JSON.parse(outOfStock)){
-            console.error("in outofstock block")
-            query.quantity=0;
-            
-        }
+        // if(JSON.parse(req.session.filteredProduct) && outOfStock ){
+        //     console.error("in outofstock block")
+        //     query.quantity=0;
+      
+        // }
         if(findCategory){
             query.category = findCategory._id
         }
