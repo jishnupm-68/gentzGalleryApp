@@ -1,10 +1,12 @@
-<%- include("../../views/partials/user/header") %>
-<main class="container">
-    <section class="content-main">
+<%- include('../partials/admin/header.ejs') %>
+
+<main class="container pl-5 " style="margin-left: 16%; width: 90%;" >
+    <section class="content-main ml-5">
         <div class="content-header">
             <div class="mt-10">
-                <h2 class="content-title card-title">Order detail</h2>
-                <p>Details for Order ID: <%= orders.orderId %></p>
+                <h2 class="content-title card-title mt-5">Order detail</h2>
+                <p>Details for Order ID: <%= orders._id %></p>
+                <% console.log("orders from frontEnd", orders) %>
             </div>
         </div>
         <div class="card-body">
@@ -34,8 +36,8 @@
                             <p class="mb-1">
                                 Pay method: <%= orders.payment %> <br>
                                 Status: <%= orders.status %><br>
-                                Grand Total: ₹<%= totalGrand.toLocaleString() %> <br>
-                                Paid Amount: ₹<%= grandTotal.toLocaleString() %> <br>
+                                Grand Total: ₹<%= finalAmount.toLocaleString() %> <br>
+                                Paid Amount: ₹<%= finalAmount.toLocaleString() %> <br>
                                 Discount: ₹<%= discount.toLocaleString() %> <br>
                                 Final Amount: ₹<%= finalAmount.toLocaleString() %>
                             </p>
@@ -51,12 +53,12 @@
                         <div class="text">
                             <h6 class="mb-1">Deliver to</h6>
                             <p class="mb-1">
-                                Address: <%= address.landMark %>, <%= orders.address.city %> <br>
+                                Address: <%= address.landMark %>, <%= address.city %> <br>
                                 <%= address.state %>, <%= address.addressType %> <br>
                                 <%= address.pincode %>
                             </p>
                             <%if(orders.status==="Delivered"){%>
-                                <a href="/downloadInvoice/<%=orders.orderId%>" class="btn btn-sm">Download Invoice</a>
+                                <a href="/downloadInvoice/<%=orders._id%>" class="btn btn-sm">Download Invoice</a>
                             <%}%>
                         </div>
                     </article>
@@ -78,13 +80,11 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                <% console.log("from admin order details",orders) %>
+                            </tbody>
                                 <% if (locals.orders) { %>
-                                    <% console.log("order frim front",orders) %>
-                                    <% orders.orderedItems.forEach((item) => {%>
-                                        <% console.log("item",item.image) %>
-                                   
+                                  <% orders.orderedItems.forEach((item, i) => { %>
                                         <tr>
-                                            
                                             <td class="text-center">
                                                 <a class="itemside" href="#">
                                                     <div class="left">
@@ -94,7 +94,7 @@
                                             </td>
                                             <td class="text-center">
                                                 <div class="info">
-                                                    <%= item.productName || item.productTitle %>
+                                                    <%= item.productName || item.title %>
                                                 </div>
                                             </td>
                                             <td class="text-center">
@@ -106,16 +106,13 @@
                                             <td class="text-center">
                                                 ₹<%=(parseInt(item.price) * parseInt(item.quantity)).toLocaleString()%>
                                             </td>
-
                                             <td class="text-center">
                                                 <% if (orders.status === "Cancel") { %>
                                                     <i>Cancelled</i>
                                                 <% } else { %>
                                                     <select onchange="handleDropdownChange(this)">
                                                         <option value="" disabled selected><%= orders.status %></option>
-                                                        <% console.log("order status",orders.status,orders.status === "Confirmed") %>
-                                                        <% if (orders.status.trim() === "Confirmed") { %>
-                                                            <p> it is confirmed</p>
+                                                        <% if (orders.status === "Confirmed") { %>
                                                             <option value="cancel">Cancel Order</option>
                                                         <% } else if (orders.status === "Shipped" || orders.status === "Delivered") { %>
                                                             <option value="returnrequest">Return Request</option>
@@ -125,11 +122,9 @@
                                                     </select>
                                                 <% } %>
                                             </td>
-
-                                            <% }); %>
                                         </tr>
-                                    <% } %>
-                               
+                                    <% } )%>
+                                <% } %>
                                 <input type="hidden" name="" id="orderId" value="<%= orders._id %>">
                             </tbody>
                         </table>
@@ -140,6 +135,9 @@
         </div>
     </section>
 </main>
+
+<!-- pagination -->
+
 
 <script src="assets/js/vendors/jquery-3.6.0.min.js"></script>
 <script src="assets/js/vendors/bootstrap.bundle.min.js"></script>
@@ -152,7 +150,6 @@
 
 <script>
 function handleDropdownChange(selectElement) {
-    console.log("selectedElement", selectElement, "selectedValue", selectElement.value);
     var selectedValue = selectElement.value;
     var orderId = document.getElementById("orderId").value;
 
@@ -215,5 +212,9 @@ function returnRequestOrder(orderId) {
 }
 </script>
 
-<%- include("../../views/partials/user/footer") %>
 
+
+				
+
+
+<%- include('../partials/admin/footer.ejs') %>

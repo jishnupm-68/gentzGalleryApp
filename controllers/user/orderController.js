@@ -11,6 +11,28 @@ const env = require('dotenv').config();
 
 
 
+const decrementSaleCounts = async (cartItemQuantities) => {
+    try {
+      // Create bulk operations based on cartItemQuantities
+      const bulkOperations = cartItemQuantities.map(item => ({
+        updateOne: {
+          filter: { _id: item.productId }, // Match product by ID
+          update: { $inc: { saleCount: item.quantity , quantity: -item.quantity } }, // Decrement saleCount by quantity
+          
+        },
+      }));
+  
+      // Perform bulkWrite
+      const result = await Product.bulkWrite(bulkOperations);
+      console.log('Bulk decrement result:', result);
+      return result;
+    } catch (error) {
+      console.error('Error decrementing sale counts:', error);
+      throw error;
+    }
+  };
+
+
 const getCheckoutPage = async (req, res) => {
     try {
         const user = req.query.userId
@@ -126,6 +148,7 @@ const orderPlaced = async (req,res)=>{
             console.error("Address not found error")
             return res.json(404).json({error:"Address not found"})
         }
+        console.log("Productids",productIds)
 
         const desiredAddress = findAddress.address.find((item)=>item._id.toString()===addressId.toString());
         if(!desiredAddress){
@@ -173,11 +196,13 @@ const orderPlaced = async (req,res)=>{
 
         let orderDone = await newOrder.save();
         // await User.findOneAndUpdate({_id:userId},{$set:{cart:[]}});
-        await User.findOneAndUpdate(
+        let result = await User.findOneAndUpdate(
             { _id: userId },
             { $set: { cart: [] } },
             { new: true }
         );
+        await Cart.findOneAndDelete({userId:userId});
+        console.log("result of cart updating after order done", result)
         
 
         for (let orderedProduct of orderedProducts) {
@@ -188,6 +213,13 @@ const orderPlaced = async (req,res)=>{
             }
           }
           console.log("orderDone", orderDone, "newOrder",newOrder)
+          if(orderDone){
+  
+              decrementSaleCounts(cartItemQuantities)
+                .then(result => console.log('Decrement successful:', result))
+                .catch(error => console.error('Decrement failed:', error));
+              
+          }
           if (newOrder.payment === "cod") {
             console.log("COD")
             res.json({
@@ -216,7 +248,7 @@ const getOrderDetailsPage = async (req,res)=>{
         const userId = req.session.user;
         const orderId = req.query.id;
         //const addressId = req.session.addressId;
-        const addressId  = await Order.findOne({userId:userId},{address:1,_id:0});
+        const addressId  = await Order.findOne({_id:orderId},{address:1,_id:0});
         const aId= addressId.address
         console.log("addressId",addressId.address,aId)
         const addressData = await Address.findOne({"address._id":aId});
@@ -229,22 +261,22 @@ const getOrderDetailsPage = async (req,res)=>{
         let totalPrice = grandTotal-discount;
 
         console.log("FindOrdeR:",findOrder,address);
-        const cart = await Cart.findOne({ userId:userId }).populate("items.productid");
-        const cartItems = cart.items.map((item) => {
-            const product = item.productid; // Populated product
-            return {
-                name: product.productName,
-                price: product.salePrice,
-                brand:product.brand,
-                category: product.category,
-                stock: product.quantity,
-                quantity: item.quantity,
-                total: product.salePrice * item.quantity,
-                image: product.productImage[0], // First product image
-                productId: product._id,
-            };
-        });
-console.log("cartItems",cartItems)
+//         const cart = await Cart.findOne({ userId:userId }).populate("items.productid");
+//         const cartItems = cart.items.map((item) => {
+//             const product = item.productid; // Populated product
+//             return {
+//                 name: product.productName,
+//                 price: product.salePrice,
+//                 brand:product.brand,
+//                 category: product.category,
+//                 stock: product.quantity,
+//                 quantity: item.quantity,
+//                 total: product.salePrice * item.quantity,
+//                 image: product.productImage[0], // First product image
+//                 productId: product._id,
+//             };
+//         });
+// console.log("cartItems",cartItems)
         res.render("orderDetails",{
             orders: findOrder,
             user: findUser,
@@ -253,7 +285,7 @@ console.log("cartItems",cartItems)
             discount: discount,
             finalAmount : totalPrice,
             address:address,
-            products: cartItems
+            //products: cartItems
         })
         console.log(req.session,req.body, req.params,req.query)
         

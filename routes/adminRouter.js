@@ -74,5 +74,10 @@ router.post('/deleteImage',adminAuth, productController.deleteSingleImage);
 
 
 //order Management
-router.get("/order",adminAuth,orderController.loadOrders)
+router.get("/order",adminAuth,orderController.loadOrders);
+router.post("/updateOrderStatus",adminAuth,orderController.updateOrderStatus);
+router.get('/orderDetails',adminAuth,orderController.getOrderDetailsPageAdmin);
+//stockManagement
+router.get('/stock',adminAuth,orderController.getStockPage)
+router.post("/addQuantity", adminAuth,orderController.addQuantity);
 module.exports = router
