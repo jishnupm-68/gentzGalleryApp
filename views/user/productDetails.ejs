@@ -8,7 +8,9 @@
  <div class="page-header breadcrumb-wrap">
     <div class="container">
         <nav class="breadcrumb" aria-label="breadcrumb">
-            <a href="/shop" rel="nofollow">Home</a>
+            <a href="/" rel="nofollow">Home</a>
+            <span></span>
+            <a href="/shop" rel="nofollow">Shop</a>
             <span></span>
             
             <a href="#" rel="nofollow">Product details</a>
@@ -177,17 +179,33 @@
 
                                     <form action="/addToCart" method="post">
                                         <div class="detail-extralink">
+                                            <% if(quantity<=0) {%>
                                             <div class="detail-qty border radius">
-                                                <a href="#" class="qty-down" onclick="return decrementValue()" ><i class="fi-rs-angle-small-down"></i></a>
+                                                <a href="#" class="qty-down" onclick="" ><i class="fi-rs-angle-small-down"></i></a>
                                                 <div class="qty-val" id="quantity" value="" name="quantity">1</div>
                                                 
-                                                <a href="#" class="qty-up" onclick="return incrementValue()"><i class="fi-rs-angle-small-up"></i></a>
+                                                <a href="#" class="qty-up" onclick=""><i class="fi-rs-angle-small-up"></i></a>
                                             </div>
+
+
+                                            <% }else {%>
+                                                <div class="detail-qty border radius">
+                                                    <a href="#" class="qty-down" onclick="return decrementValue()"  ><i class="fi-rs-angle-small-down"></i></a>
+                                                    <div class="qty-val" id="quantity" value="" name="quantity">1</div>
+                                                    
+                                                    <a href="#" class="qty-up" onclick="return incrementValue()" ><i class="fi-rs-angle-small-up"></i></a>
+                                                </div>
+
+                                                <% } %>
                                             <div class="product-extra-link2">
                                                 <input type="text" style="display: none;"name="quantity" id = "quantityUpdated" value="1">
                                                 <input style="display: none;" name="productId" value="<%= product._id %>">
                                                 <input style="display: none;" name="price" value="<%= product.salePrice %>">
-                                                <button type="submit" class="button button-add-to-cart"  >Add to Cart</button>
+                                                <% if(quantity<=0) {%>
+                                                <button type="submit" class="button button-add-to-cart btn-secondary btn"  disabled>Out of Stock</button>
+                                                <% }else{ %>
+                                                    <button type="submit" class="button button-add-to-cart btn"  >Add to Cart</button>
+                                                    <% } %>
                                               <!-- <button type="submit" class="button button-add-to-cart" onclick="addToCart('<%= product._id %>')" >Add to Cart</button> -->
                                                 <a aria-label="Add To Wishlist" class="action-btn hover-up" href="#"><i class="fi-rs-heart"></i></a>
                                             </div>
@@ -203,7 +221,7 @@
                                          <li>Availability:<span class="out-of-stock text-danger ml-5">Out of Stock</span></li>
  
                                          <% }else{ %>
-                                      <li>Availability:<span class="in-stock text-success ml-5"><%=quantity %></span></li>
+                                      <li id="availability" data-quantity="<%= quantity %>">Availability:<span class="in-stock text-success ml-5" ><%=quantity %></span></li>
                                       <% } %>
                                   </ul>
                               </div>
@@ -297,20 +315,37 @@
   <script>
     function incrementValue() {
       var value = parseInt(document.getElementById('quantity').value, 10);
+      var inputValue = parseInt(document.getElementById('availability').dataset.quantity);
+      console.log("inputValue", inputValue,"value", value)
       value = isNaN(value) ? 0 : value;
-      
-      console.log(value)
-      if(value<5){
+      if(isNaN(value)){
+        value = 1;
+      }else{
+        if(value<5 && inputValue-value>0){
         value++;
 
       }
-      else{
+      else if(inputValue-value<=0){
+        console.log("first else")
+        Swal.fire ({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Out of Stock'
+        })
+      }else{
         Swal.fire ({
           icon: 'error',
           title: 'Oops...',
           text: 'Quantity cannot be more than 5'
         })
       }
+
+      }
+      console.log(inputValue-value)
+      
+      
+      
+      
       document.getElementById('quantity').value = value;
       document.getElementById('quantity').innerText = value;
       document.getElementById('quantityUpdated').innerText = value;

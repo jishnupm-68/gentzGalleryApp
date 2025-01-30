@@ -116,7 +116,7 @@ const deleteItemCheckout = async(req,res)=>{
         return res.redirect("/pageNotFound")}
         else{
             console.log("product deleted successfully")
-            res.redirect("/checkout")
+            res.redirect("/cart")
         }        
     } catch (error) {
         console.error("unable to delete the product from cart",error);
@@ -141,7 +141,7 @@ const orderPlaced = async (req,res)=>{
             return res.json(404).json({error:"User not found"})
         }
         // const productIds = findUser.cart.map((item)=>item.productid);
-        //console.log("Cart", cart)
+        console.log("Cart", cart)
         const productIds = cart.items.map((item)=>item.productid);
         const findAddress = await Address.findOne({"address._id":addressId});
         if(!findAddress){
@@ -149,7 +149,7 @@ const orderPlaced = async (req,res)=>{
             return res.json(404).json({error:"Address not found"})
         }
         console.log("Productids",productIds)
-
+        
         const desiredAddress = findAddress.address.find((item)=>item._id.toString()===addressId.toString());
         if(!desiredAddress){
             console.error("Desired Address not found error")
@@ -157,7 +157,7 @@ const orderPlaced = async (req,res)=>{
         }
         
         const findProducts = await Product.find({_id:{$in:productIds}});
-        //console.log("findPRoducts", findProducts, "productIds", productIds)
+        console.log("findPRoducts", findProducts, "productIds", productIds)
         if(findProducts.length !== productIds.length){
             console.error("products not found")
             return res.json(404).json({error:"Products not found"})
@@ -168,7 +168,7 @@ const orderPlaced = async (req,res)=>{
             quantity: item.quantity
         })
         );
-        console.log("cartItemQuantities", cartItemQuantities)
+        console.log("cartItemQuantities",cart, cartItemQuantities)
         const orderedProducts = findProducts.map((item)=>
         ({
             productName: item.productName,
@@ -231,7 +231,7 @@ const orderPlaced = async (req,res)=>{
             });
           } 
       
-      console.log("order placed successfully");
+      console.log("order placed successfully", cartItemQuantities);
 
           
 
@@ -299,10 +299,58 @@ const getOrderDetailsPage = async (req,res)=>{
 }
 
 
+const cancelOrder = async(req,res)=>{
+    try {
+        console.log(req.body)
+        const orderId = req.body.orderId;
+        const userId = req.session.user;
+        
+        const findOrder = await Order.findOneAndUpdate(
+            {_id:orderId, userId:userId},
+            {status:"Cancelled"},
+            {new:true}
+        )
+        const cancelItemQuantities = findOrder.orderedItems.map((item)=>
+            ({
+                productId:item.product,
+                quantity: -item.quantity
+            })
+            );
+            console.log("findOrder",findOrder,"cancelItemQuantities",cancelItemQuantities)
+            if(findOrder){
+  
+                decrementSaleCounts(cancelItemQuantities)
+                  .then(result => 
+                    
+                    {console.log('Decrement successful:', result)
+                    if (result.modifiedCount === 1) {
+                        return res.json({
+                            success: true,
+                            result, // Send MongoDB update response
+                            message: "Order has been successfully cancelled"
+                        });
+                    } else {
+                        return res.json({
+                            success: false,
+                            result,
+                            message: "Order cancellation failed. No changes made."
+                        });
+                    }}
+                    )
+                  .catch(error => console.error('Decrement failed:', error));
+              
+            }
+        
+    } catch (error) {
+        console.error("Error while cancelling the order",error);
+        res.redirect('/pageNotFound')
+    }
+}
 module.exports = {
     getCheckoutPage,
     deleteItemCheckout,
     orderPlaced,
-    getOrderDetailsPage
+    getOrderDetailsPage,
+    cancelOrder
 
 }

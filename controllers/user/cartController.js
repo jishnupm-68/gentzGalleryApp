@@ -14,6 +14,7 @@ const getCartPage = async(req,res)=>{
             return res.redirect("/login");
         }
 
+        
         // Find the user's cart and populate product details
         const cart = await Cart.findOne({ userId }).populate("items.productid");
 

@@ -67,7 +67,7 @@
 
 
                                                                     <button class="btn btn-sm increment-button"
-                                                                        onclick="changeQuantity('<%= items[i].productId %>', '<%= items[i].quantity %>', 1, '<%= items[i].price %>',  '<%= items[i].id %>', '<%= items[i].stock%>')">+</button>
+                                                                        onclick="changeQuantity('<%= items[i].productId %>', '<%= items[i].quantity %>', 1, '<%= items[i].price %>',   '<%= items[i].stock%>')">+</button>
 
 
 
@@ -78,7 +78,7 @@
                                                                     <input type="text" value="<%= items[i].prodctId %>"
                                                                         style="display: none;" id="productIdNew">
                                                                     <button class="btn btn-sm decrement-button"
-                                                                        onclick="changeQuantity('<%= items[i].productId %>', '<%= items[i].quantity %>', -1, '<%= items[i].price %>',  '<%= items[i].id %>', '<%= items[i].stock%>')">-</button>
+                                                                        onclick="changeQuantity('<%= items[i].productId %>', '<%= items[i].quantity %>', -1, '<%= items[i].price %>', '<%= items[i].stock%>')">-</button>
 
                                                                 </div>
                                                             </div>
@@ -90,6 +90,7 @@
                                                                 <i class="fi-rs-trash"></i>
                                                             </a>
                                                         </td>
+
 
                                                         <% } %>
 
@@ -147,18 +148,20 @@
             </div>
             </div>
         </section>
+        
+     
     </main>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
 
 
         function changeQuantity(productId, cartQuantity, count, productPrice, productQuantity) {
-
-            console.log(`cartProductQuantity${productId}`)
+            console.log(productId, cartQuantity, count, productPrice,"productQuantity", productQuantity)
+           // console.log(`cartProductQuantity${productId}`)
             const cartProductQuantityElement = document.getElementById(`cartProductQuantity${productId}`);
             const productIdElement = document.getElementById(`productIdNew`);
             const temp = productIdElement.value
-            console.log("cartProductQuantityElement:", cartProductQuantityElement, "productIdElement:", temp);
+            //console.log("cartProductQuantityElement:", cartProductQuantityElement, "productIdElement:", temp);
 
             if (!cartProductQuantityElement || !productIdElement) {
                 console.error("Required elements not found for productId:", productId);
@@ -166,7 +169,16 @@
             }
 
             let currentQuantity = parseInt(cartProductQuantityElement.value);
+            let pq = Number(productQuantity)
+            let cq = Number(cartQuantity)
+            
             newQuantity = currentQuantity + count;
+            console.log("stock",productQuantity,"value",  currentQuantity-count)
+            if(newQuantity>productQuantity){
+                Swal.fire("Limit Exceeded", "Out of stock", "error");
+                return;
+                
+            }
             if (newQuantity > 5) {
                 newQuantity = 5;
                 Swal.fire("Limit Exceeded", "You can only add up to 5 items.", "error");

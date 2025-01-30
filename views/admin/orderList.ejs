@@ -32,18 +32,27 @@
                         <td><%= formatedTime %></td>
                         <td><% order.orderedItems.forEach(item => { %><%= item.productName %> <br> <% }) %></td>
                         <td>
+                          <% if(order.status=="Cancelled") {%>
+                            <i class="text-danger">Cancelled</i>
+                          
+                            
+
+                          <% }else{ %>
                             <form action="/admin/updateOrderStatus" method="POST">
-                                <input type="hidden" name="orderId" value="<%= order._id %>">
-                                <select name="status" onchange="this.form.submit()">
-                                  <% const statuses = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Return Request', 'Returned', "Confirmed"]; %>
-                                  <% statuses.forEach(statusOption => { %>
-                                    <option value="<%= statusOption %>" <%= order.status === statusOption ? 'selected' : '' %> >
-                                      <%= statusOption %>
-                                    
-                                    </option>
-                                  <% }); %>
-                                </select>
-                              </form>                          
+                              <input type="hidden" name="orderId" value="<%= order._id %>">
+                              <select name="status" onchange="this.form.submit()">
+                                <% const statuses = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Return Request', 'Returned', "Confirmed"]; %>
+                                <% statuses.forEach(statusOption => { %>
+                                  <option value="<%= statusOption %>" <%= order.status === statusOption ? 'selected' : '' %> >
+                                    <%= statusOption %>
+                                  
+                                  </option>
+                                <% }); %>
+                              </select>
+                            </form> 
+
+                          <% } %>
+                                                     
                         </td>
                         <td><%= order.finalAmount %></td>
                         <td>

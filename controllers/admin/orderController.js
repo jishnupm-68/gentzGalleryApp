@@ -10,7 +10,26 @@ const {v4:uuidv4} = require('uuid');
 const env = require('dotenv').config();
 
 
-
+const decrementSaleCounts = async (cartItemQuantities) => {
+    try {
+      // Create bulk operations based on cartItemQuantities
+      const bulkOperations = cartItemQuantities.map(item => ({
+        updateOne: {
+          filter: { _id: item.productId }, // Match product by ID
+          update: { $inc: { saleCount: -item.quantity , quantity: item.quantity } }, // Decrement saleCount by quantity
+          
+        },
+      }));
+  
+      // Perform bulkWrite
+      const result = await Product.bulkWrite(bulkOperations);
+      console.log('Bulk decrement result:', result);
+      return result;
+    } catch (error) {
+      console.error('Error decrementing sale counts:', error);
+      throw error;
+    }
+  };
 
 
 const loadOrders = async (req,res)=>{
@@ -37,8 +56,31 @@ const loadOrders = async (req,res)=>{
 const updateOrderStatus = async (req,res)=>{
     try {
         const {orderId, status} = req.body;
-        await Order.updateOne({_id:orderId},{$set:{status:status}});
-        console.log("req body from updatingg order status", req.body)
+
+        let update = await Order.findOneAndUpdate({_id:orderId},
+            {$set:{status:status}},
+            {new:true});
+        
+       
+
+        if(status=="Cancelled")
+            {   const items = update.orderedItems.map((item)=>
+                ({
+                    
+                    productId:item.product,
+                        quantity: item.quantity
+                })
+                );
+
+               
+                console.log(status,items,)
+                console.log("items",items)
+                decrementSaleCounts(items)
+                .then(result => console.log('Decrement successful:', result))
+                .catch(error => console.error('Decrement failed:', error));
+              
+        }
+        console.log("req body from updating order status", req.body)
         res.redirect("/admin/order");
         
     } catch (error) {

@@ -339,6 +339,7 @@ const loadShopPage = async (req,res)=>{
 const filterProduct = async (req,res)=>{
     try{
         const advancedFilter =req.query.filter;
+        console.log(" advancedFilter is", advancedFilter, typeof(advancedFilter))
         const outOfStock = req.query.filterOutOfStock;
         console.log(typeof(outOfStock),outOfStock)
         let filters = [];
@@ -350,8 +351,10 @@ const filterProduct = async (req,res)=>{
         const brands = await Brand.find({}).lean();
         const query = {
             isBlocked:false,
-           // quantity:{$gt:0}
+            quantity:{$gt:0}
         }
+
+        console.log("query initiation",query)
         // if(JSON.parse(req.session.filteredProduct) && outOfStock ){
         //     console.error("in outofstock block")
         //     query.quantity=0;
@@ -362,6 +365,27 @@ const filterProduct = async (req,res)=>{
         }
         if(findBrand){
             query.brand = findBrand.brandName
+        }
+        if(outOfStock=="true"){
+            console.log("Called outofstock") 
+            query.quantity={$gte:0};
+            console.log("query is", query)
+        }else{
+            console.log("Called outofstock else") 
+            query.quantity={$gt:0};
+            console.log("query is", query)
+        }
+        if(advancedFilter =="4"){
+            query.rating = {$gte:4};
+        }
+        if(advancedFilter =="3"){
+            query.rating = {$gte:3};
+        }
+        if(advancedFilter =="2"){
+            query.rating = {$gte:2};
+        }
+        if(advancedFilter =="1"){
+            query.rating = {$gte:1};
         }
         let sortOrder = {};
         if(advancedFilter =="Low to High"){
@@ -403,11 +427,11 @@ const filterProduct = async (req,res)=>{
         if (filters.length > 0) {
             query.$or = filters;
         }
-
+        console.log("before finding the products, query, order" ,query, sortOrder)
         let findProducts = await Product.find(query).sort(sortOrder).collation({ locale: "en", strength: 2 }).lean();
-        findProducts.sort((a,b)=>{new Date(b.createdOn) - new Date(a.createdOn)})
+        //findProducts.sort((a,b)=>{new Date(b.createdOn) - new Date(a.createdOn)})
 
-        
+        console.log("After find the product", findProducts)
 
         const categories = await Category.find({isListed:true})
         let itemPerPage =9;
@@ -434,16 +458,20 @@ const filterProduct = async (req,res)=>{
             }
         }
         req.session.filteredProducts = currentProduct;
-        res.render("shopPage",{
-            user:userData,
-            products:currentProduct,
-            category:categories,
-            brand:brands,
-            currentPage:currentPage,
-            totalPages:totalPages,
-            selectedCategory:category||null,
-            selectedBrand:brand||null,
-        })
+        if(findProducts){
+            console.log("Rendering page")
+            res.render("shopPage",{
+                user:userData,
+                products:currentProduct,
+                category:categories,
+                brand:brands,
+                currentPage:currentPage,
+                totalPages:totalPages,
+                selectedCategory:category||null,
+                selectedBrand:brand||null,
+            })
+            console.log("rendered")
+        } 
     }catch(error){
         console.error("Filter error",error)
         res.redirect("/pageNotFound");

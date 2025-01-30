@@ -91,6 +91,8 @@ router.post('/changeQuantity',userAuth,cartController.changeQuantity)
 router.get('/checkout', userAuth, orderController.getCheckoutPage);
 router.post("/orderPlaced", userAuth, orderController.orderPlaced)
 router.get("/orderDetails", userAuth, orderController.getOrderDetailsPage)
+router.post("/cancelOrder", userAuth, orderController.cancelOrder)
+router.get('/deleteItemCheckout',userAuth,orderController.deleteItemCheckout);
 
 
 

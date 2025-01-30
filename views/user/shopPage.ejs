@@ -223,7 +223,7 @@
         <div class="search-bar">
           <form action="/search" method="POST" class="search-form">
             <input type="text" name="query" placeholder="Search items..." class="search-input" />
-            <button type="submit" class="search-button">Search</button>
+            <button type="submit" class="search-button btn">Search</button>
           </form>
         </div>
       </div>
@@ -306,9 +306,7 @@
                 <li class="filter-item">
                   <a href="/filter?filter=High to Low">Price: High to Low</a>
                 </li>
-                <li class="filter-item">
-                  <a href="/filter?filter=Average Ratings">Average Ratings</a>
-                </li>
+                
                 <li class="filter-item">
                   <a href="/filter?filter=aA-zZ">aA-zZ</a>
                 </li>
@@ -316,12 +314,49 @@
                   <a href="/filter?filter=zZ-aA">zZ-aA</a>
                 </li>
 
+                <!-- <li class="filter-item">
+                  <label for="showOutOfStock">
+                    <input 
+                      onclick="toggleOutOfStock()" 
+                      type="checkbox" 
+                      id="showOutOfStock" 
+                      class="p-3" 
+                      name="showOutOfStock" 
+                      style="height: 10px; width: 10px;"
+                    />
+                    Include Out of Stock
+                  </label>
+                </li> -->
                 <li class="filter-item">
-                  
-                  <label for="showOutOfStock">Show Out of Stock <input type="checkbox" id="showOutOfStock" class="p-3" name="showOutOfStock" style="height: 10px; width: 10px;"/> </label>
+                  <label for="showOutOfStock">
+                    <input 
+                      onclick="toggleOutOfStock()" 
+                      type="checkbox" 
+                      id="showOutOfStock" 
+                      class="p-3" 
+                      name="showOutOfStock" 
+                      style="height: 10px; width: 10px;"
+                    />
+                    <span id="stockLabel">Include Out of Stock</span>
+                  </label>
                 </li>
 
               </ul>
+              <div class="price-filter">
+                <div class="filter-title">Filter by Ratings</div>
+                <li class="filter-item">
+                  <a href="/filter?filter=4">4<i class="fi-rs-star"></i> and above</a>
+                </li>
+                <li class="filter-item">
+                  <a href="/filter?filter=3">3<i class="fi-rs-star"></i> and above</a>
+                </li>
+                <li class="filter-item">
+                  <a href="/filter?filter=2">2<i class="fi-rs-star"></i> and above</a>
+                </li>
+                <li class="filter-item">
+                  <a href="/filter?filter=1">1<i class="fi-rs-star"></i> and above</a>
+                </li>
+                </div>
             </div>
           </div>
 
@@ -348,15 +383,24 @@
                         <strike>₹<%= products[i].regularPrice.toLocaleString('en-IN') %></strike>
                       </span>
                   </p>
+                  <% if (products[i].quantity > 0) { %>
                   <p>stock: <%= products[i].quantity %>
                   </p>
+                  <% } else { %>
+                  <p class="text-danger">Out of stock</p>
+                  <% } %>
                 </a>
-                <button class="add-to-cart-btn" onclick="window.location.href='/productDetails?id=<%= products[i]._id %>'">Add to Cart</button>
+                <% if(products[i].quantity > 0) {%>
+                <button class="btn add-to-cart-btn" onclick="window.location.href='/productDetails?id=<%= products[i]._id %>'">Add to Cart</button>
+                <% }else{ %>
+                  <button class="add-to-cart-btn btn" onclick="window.location.href='/productDetails?id=<%= products[i]._id %>'">Currently Unavailable</button>
+                <% } %>
               </div>
               <% } %>
                 <% } else { %>
                   <p>No products available</p>
                   <% } %>
+                  
         </main>
       </div>
 
@@ -379,22 +423,29 @@
   </div>
 
   <script>
-    // Get the checkbox element
-    const showOutOfStockCheckbox = document.getElementById("showOutOfStock");
 
-    // Function to filter products based on stock
-    showOutOfStockCheckbox.addEventListener("change", async function() {
-        // Get the current filter state (whether to show out-of-stock products)
-        const showOutOfStock = showOutOfStockCheckbox.checked;
+// function toggleOutOfStock() {
+//     const isChecked = document.getElementById("showOutOfStock").checked;
+//     console.log(isChecked);
+//     if(isChecked){
+//       window.location.href = `/filter?filterOutOfStock=${isChecked}`;
 
-        // Make an AJAX request to fetch the filtered products from the server
-        const response = await fetch(`/filter?filterOutOfStock=${showOutOfStock}`);
-        const products = await response.json();
+//     }
+    
+//   }
+   
+function toggleOutOfStock() {
+    const checkbox = document.getElementById("showOutOfStock");
+    const label = document.getElementById("stockLabel");
 
-        // Update the product list on the page
-        displayProducts(products);
-    });
+    // Change label text based on checkbox state
+    
 
+    // Redirect to apply filter
+    window.location.href = `/filter?filterOutOfStock=${checkbox.checked}`;
+    label.textContent = checkbox.checked ? "Exclude Out of Stock" : "Include Out of Stock";
+  }
+ 
     
 </script>
 

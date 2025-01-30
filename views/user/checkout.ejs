@@ -70,9 +70,9 @@
                                                     <td>
                                                         <%= product[i].price*product[i].quantity %>
                                                     </td>
-                                                    <td class="action" data-title="Remove" onclick="return confirm('Are you sure you want remove this product from cart?')">
-                                                        <a class="btn btn-sm"
-                                                            href="/deleteItemCheckout?id=<%= product[i].productId %>">
+                                                    <td class="action" data-title="Remove" onclick="return false">
+                                                        <button class="btn btn-sm"
+                                                            type="button" onclick="return confirmRemove('<%= product[i].productId %>')">
                                                             <i class="fi-rs-trash"></i>
                                                         </a>
                                                     </td>
@@ -275,6 +275,24 @@
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
     <script>
+
+
+
+function confirmRemove(productId) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, remove it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = `/deleteItemCheckout?id=${productId}`;
+                }
+            })
+        }
         async function placeOrder(userId, productId) {
             let address = $("input[name='selectedAddress']:checked").val();
             let payment = $("input[name='payment_option']:checked").val();

@@ -4,7 +4,8 @@
         <div class="content-header">
             <div class="mt-10">
                 <h2 class="content-title card-title">Order detail</h2>
-                <p>Details for Order ID: <%= orders.orderId %></p>
+                <p>Details for Order ID: <%= orders._id %></p>
+                <% console.log("Order ID: ", orders.orderId) %>
             </div>
         </div>
         <div class="card-body">
@@ -34,10 +35,10 @@
                             <p class="mb-1">
                                 Pay method: <%= orders.payment %> <br>
                                 Status: <%= orders.status %><br>
-                                Grand Total: ₹<%= totalGrand.toLocaleString() %> <br>
-                                Paid Amount: ₹<%= grandTotal.toLocaleString() %> <br>
+                                 Total: ₹<%= totalGrand.toLocaleString() %> <br>
+                                
                                 Discount: ₹<%= discount.toLocaleString() %> <br>
-                                Final Amount: ₹<%= finalAmount.toLocaleString() %>
+                                Total Amount to be pay: ₹<%= finalAmount.toLocaleString() %>
                             </p>
                         </div>
                     </article>
@@ -79,9 +80,9 @@
                             </thead>
                             <tbody>
                                 <% if (locals.orders) { %>
-                                    <% console.log("order frim front",orders) %>
+                                   
                                     <% orders.orderedItems.forEach((item) => {%>
-                                        <% console.log("item",item.image) %>
+                                       
                                    
                                         <tr>
                                             
@@ -108,25 +109,34 @@
                                             </td>
 
                                             <td class="text-center">
-                                                <% if (orders.status === "Cancel") { %>
-                                                    <i>Cancelled</i>
+                                                <% if (orders.status === "Cancelled") { %>
+                                                    <i class=" text-danger">Cancelled</i>
                                                 <% } else { %>
-                                                    <select onchange="handleDropdownChange(this)">
-                                                        <option value="" disabled selected><%= orders.status %></option>
-                                                        <% console.log("order status",orders.status,orders.status === "Confirmed") %>
-                                                        <% if (orders.status.trim() === "Confirmed") { %>
-                                                            <p> it is confirmed</p>
-                                                            <option value="cancel">Cancel Order</option>
-                                                        <% } else if (orders.status === "Shipped" || orders.status === "Delivered") { %>
-                                                            <option value="returnrequest">Return Request</option>
-                                                        <% } else if (orders.status === "Failed") { %>
-                                                            <option value="retry" disabled>Retry Payment</option>
+
+
+
+                                                    <p class="text-success"><%= orders.status %></p>
+
+                                                    <% console.log("order status",orders.status,orders.status === "Confirmed") %>
+                                                    
+                                                    <form action="" onsubmit="return false" >
+                                                        <% if (orders.status.trim() === "Confirmed" || orders.status.trim() === "Processing"|| orders.status.trim()==="Pending") { %>
+                                                        
+                                                            <!-- Allow the user to cancel -->
+                                                            <button type="submit" class="btn " onclick=" handleDropdownChange()">Cancel</button>
+                                                            
+                                                           
                                                         <% } %>
-                                                    </select>
+                                                        
+                                                    </form>
+
+                                                   
+
+                                                   
                                                 <% } %>
                                             </td>
 
-                                            <% }); %>
+                                           <% }) %> 
                                         </tr>
                                     <% } %>
                                
@@ -151,12 +161,14 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
 <script>
-function handleDropdownChange(selectElement) {
-    console.log("selectedElement", selectElement, "selectedValue", selectElement.value);
-    var selectedValue = selectElement.value;
+function handleDropdownChange() {
+    // console.log("selectedElement", selectElement, "selectedValue", selectElement.value);
+    // var selectedValue = selectElement.value;
     var orderId = document.getElementById("orderId").value;
-
+    var selectedValue = 'cancel'
+    console.log(selectedValue);
     if (selectedValue === "cancel") {
+        console.log("calling toplevel confirmCancelOrder")
         confirmCancelOrder(orderId);
     } else if (selectedValue == "returnrequest") {
         returnRequestOrder(orderId);
@@ -164,6 +176,7 @@ function handleDropdownChange(selectElement) {
 }
 
 function confirmCancelOrder(orderId) {
+    console.log("first function calling confirmCancelOrder")
     Swal.fire({
         title: 'Confirm Cancel Order',
         text: 'Are you sure you want to cancel this order?',
@@ -171,7 +184,8 @@ function confirmCancelOrder(orderId) {
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, cancel it!'
+        confirmButtonText: 'Yes, cancel it!',
+       
     }).then((result) => {
         if (result.isConfirmed) {
             console.log('working');
@@ -181,6 +195,7 @@ function confirmCancelOrder(orderId) {
 }
 
 function cancelOrder(orderId) {
+    console.log("second function calling cancelOrder")
     $.ajax({
         url: '/cancelOrder',
         method: 'POST',
@@ -188,11 +203,14 @@ function cancelOrder(orderId) {
         data: JSON.stringify({ orderId: orderId }),
         success: (response) => {
             if (response.result.modifiedCount === 1) {
+                Swal.fire("Cancelled", "Order has been cancelled", "success");
                 window.location.reload();
+
             }
         },
         error: (error) => {
-            alert(error);
+            Swal.fire("Failed", error, "error")
+            
         }
     });
 }
