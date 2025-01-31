@@ -61,16 +61,12 @@
 
                                                         <td class="text-center" data-title="Stock">
                                                             <div class="detail-qty border radius m-auto">
+                                                                <% if (items[i].stock > 0) {%>
+                                                                   
 
                                                                 <div class="quantity-control">
-
-
-
                                                                     <button class="btn btn-sm increment-button"
                                                                         onclick="changeQuantity('<%= items[i].productId %>', '<%= items[i].quantity %>', 1, '<%= items[i].price %>',   '<%= items[i].stock%>')">+</button>
-
-
-
                                                                     <input class="quantity-input"
                                                                         id="cartProductQuantity<%= items[i].productId %>"
                                                                         value="<%= items[i].quantity %>"
@@ -79,17 +75,52 @@
                                                                         style="display: none;" id="productIdNew">
                                                                     <button class="btn btn-sm decrement-button"
                                                                         onclick="changeQuantity('<%= items[i].productId %>', '<%= items[i].quantity %>', -1, '<%= items[i].price %>', '<%= items[i].stock%>')">-</button>
-
+                                                                    
                                                                 </div>
+                                                                <% } else { %>
+                                                                    
+                                                                    
+                                                                  
+                                                                    <div class="quantity-control">
+                                                                        <button class="btn btn-sm increment-button" disabled
+                                                                            onclick="changeQuantity('<%= items[i].productId %>', '<%= items[i].quantity %>', 1, '<%= items[i].price %>',   '<%= items[i].stock%>')">+</button>
+                                                                        <input class="quantity-input"
+                                                                            id="cartProductQuantity<%= items[i].productId %>"
+                                                                            value="<%= items[i].quantity %>"
+                                                                            style="width: 45px;" type="text" readonly>
+                                                                        <input type="text" value="<%= items[i].prodctId %>"
+                                                                            style="display: none;" id="productIdNew">
+                                                                        <button class="btn btn-sm decrement-button" disabled
+                                                                            onclick="changeQuantity('<%= items[i].productId %>', '<%= items[i].quantity %>', -1, '<%= items[i].price %>', '<%= items[i].stock%>')">-</button>
+                                                                        
+                                                                    </div>
+                                                                <% } %>
                                                             </div>
                                                         </td>
+                                                        
+                                                        <% if(items[i].stock > 0) {%>
+                                                            <td class="action" data-title="Remove">
+                                                                <a class="btn btn-sm" href="#"
+                                                                    onclick="confirmRemove('<%= items[i].productId %>')">
+                                                                    <i class="fi-rs-trash"></i>
+                                                                </a>
+                                                                <p class="text-success pt-4">Stock: <%=items[i].stock %></p>
+                                                            </td>
 
-                                                        <td class="action" data-title="Remove">
-                                                            <a class="btn btn-sm" href="#"
-                                                                onclick="confirmRemove('<%= items[i].productId %>')">
-                                                                <i class="fi-rs-trash"></i>
-                                                            </a>
-                                                        </td>
+                                                            <% }else{ %>
+                                                                <td class="action" data-title="Remove">
+                                                                    
+                                                                    <a style="background-color: red; border: none;" class="btn btn-sm" href="#"
+                                                                        onclick="confirmRemove('<%= items[i].productId %>')">
+                                                                        <i class="fi-rs-trash"></i>
+                                                                    </a>
+
+                                                                        <p class="text-danger pt-4">Item sold out</p>
+                                                                        <p class="text-danger">Please remove this item</p>
+                                                                    <% console.log("PRoduct id to be remove", items[i].productId) %>
+                                                                    <input type="text" value="<%= items[i].productId.toString() %>" data-pId="<%= items[i].productId.toString() %>" style="display: none;" id="pId">
+                                                                </td>
+                                                                <% } %>
 
 
                                                         <% } %>
@@ -134,8 +165,12 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <a href="/checkout?userId=<%= user%>" class="btn "> <i class="fi-rs-box-alt mr-10"></i>
-                                Proceed To CheckOut</a>
+                           
+                            <button  class="btn " onclick="return confirmCheckout()"> <i class="fi-rs-box-alt mr-10"></i>
+                                Proceed To CheckOut</button>
+                                <input type="text" value="<%= user %>" data-user="<%= user %>" style="display: none;" id="user">
+                               
+                          
 
 
                         </div>
@@ -153,6 +188,43 @@
     </main>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+
+function confirmCheckout() {
+    let user = document.getElementById("user").dataset.user;
+
+    var pIdElement = document.getElementById('pId');
+    var pId = pIdElement ? pIdElement.value : null;
+    console.log("Product ID using dataset:", pId);
+
+    
+    console.log("Checking out", pId,user);
+    if(pId==null||pId==undefined){
+        window.location.href = `/checkout?userId=${user}`;    
+    }else{
+        Swal.fire({
+                title: 'Sold out',
+                text: "Some products are not available in stock Please remove them from your cart.",
+                icon: 'warning',
+                // showCancelButton: true,
+                // confirmButtonColor: '#3085d6',
+                // cancelButtonColor: '#d33',
+                // confirmButtonText: 'Yes, remove it!'
+                timer:5000,
+                timerProgressBar: true
+                
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // confirmRemove(pId);
+                    
+                    // window.location.href = `/checkout?userId=${user}`;
+                }
+            })
+
+    }      
+        }
+        
+       
+
 
 
         function changeQuantity(productId, cartQuantity, count, productPrice, productQuantity) {
@@ -203,6 +275,10 @@
                 url: '/changeQuantity',
                 method: 'POST',
                 data: { productId, quantity: currentQuantity, count },
+
+                
+            
+
                 success: (response) => {
                     document.getElementById('total').innerHTML = response.grandTotal;
                 },
@@ -211,8 +287,6 @@
                 }
             });
         }
-
-
 
         function confirmRemove(productId) {
             Swal.fire({

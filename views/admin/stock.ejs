@@ -2,7 +2,7 @@
 <head>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
 </head>
-<section class="content-main" style="margin-left:23%; ">
+<section class="content-main" style="margin-left:20%; ">
     <div class="content-header  ">
         <div class="">
             <h2 class="content-title card-title ">Products</h2>
@@ -28,6 +28,7 @@
             <thead>
                 
                 <tr>
+                    <th scope="col"><b>Image</b></th>
                     <th scope="col"><b>Product name</b></th>
                     <th scope="col"><b>Brand</b></th>
                     <th scope="col"><b>Sale Count</b></th>
@@ -43,6 +44,10 @@
                 <% for(let i=products.length-1;i>=0;i--) {%>
                 
                 <tr>
+                    <td>
+                        <img src="/uploads/product-imagesResized/<%= products[i].productImage[0] %>" alt="#" width="75px" height="75px">
+                    </td>
+
                     <td><%= products[i].productName %>
                     </td>
                     <td><%=products[i].brand %></td>

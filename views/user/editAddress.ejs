@@ -18,7 +18,7 @@
        </div>
        <div class="row mb-3">
            <div class="form-group col-md-4">
-               <label for="landMark">Landmark:</label>
+               <label for="landMark">Door Number/house name with Landmark:</label>
                <input type="text" class="form-control border-3" id="landMark" name="landMark" value=" <%= address.landMark %>" >
            </div>
            <div class="form-group col-md-4">
@@ -107,14 +107,14 @@
            });
            isValid = false;
        }
-       if (!namePattern.test(landMark)) {
-           Swal.fire({
-               title: 'Error',
-               text: 'Landmark should contain alphabets only.',
-               icon: 'error'
-           });
-           isValid = false;
-       }
+    //    if (!namePattern.test(landMark)) {
+    //        Swal.fire({
+    //            title: 'Error',
+    //            text: 'Landmark should contain alphabets only.',
+    //            icon: 'error'
+    //        });
+    //        isValid = false;
+    //    }
        if (!namePattern.test(state)) {
            Swal.fire({
                title: 'Error',

@@ -203,7 +203,7 @@ const getEditProduct = async (req, res) => {
   try {
     const id = req.query.id;
     const product = await Product.findById({ _id: id });
-    const category = await Category.find();
+    const category = await Category.find({isListed:true});
     const brand = await Brand.find({});
     if (product && category && brand) {
       res.render("editProduct", {

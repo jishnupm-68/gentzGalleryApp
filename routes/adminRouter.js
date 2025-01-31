@@ -16,13 +16,13 @@ const brandController = require('../controllers/admin/brandController')
 
 
 
-router.get("/pageError",adminController.pageError)
+router.get("/pageError", adminController.pageError)
 router.get('/login',adminController.loadLogin)
 router.post('/login',adminController.login);
 router.get('/',adminAuth,adminController.loadDashboard)
 //router.get('/',adminController.loadDashboard)
-router.get('/dashboard',adminController.loadDashboard)
-router.get('/logout',adminController.logout);
+router.get('/dashboard',adminAuth,adminController.loadDashboard)
+router.get('/logout',adminAuth,adminController.logout);
 
 
 //customer management
@@ -47,7 +47,7 @@ router.post("/editCategory/:id",adminAuth, categoryController.editCategory)
 
 //brand management
 //router.get("/brands",adminAuth,brandController.getBrandPage);
-router.get("/brands",brandController.getBrandPage);
+router.get("/brands",adminAuth,brandController.getBrandPage);
 router.post("/addBrand",adminAuth,uploads.single("image"),brandController.addBrand);
 router.get("/blockBrand", adminAuth, brandController.blockBrand);
 router.get("/unBlockBrand", adminAuth, brandController.unBlockBrand);

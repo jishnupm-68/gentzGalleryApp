@@ -367,8 +367,14 @@
         <main class="product-grid">
           <% if (products && products.length> 0) { %>
             <% for (let i=0; i < products.length; i++) { %>
-              <div class="product-card">
-                <span class="wishlist-btn" onclick="">❤️</span>
+              <div class="product-card"><span class="wishlist-btn" onclick="">
+                <a aria-label="Add To Wishlist" class=" " href="#" style="background: inherit;"><i class="fi-rs-heart"></i></a></span>
+                <!-- <span class="wishlist-btn" onclick="">❤️</span> -->
+
+
+
+
+                
                 <a href="/productDetails?id=<%= products[i]._id %>">
 
                   <img src="/uploads/product-imagesResized/<%= products[i].productImage[0] %>"
@@ -395,6 +401,11 @@
                 <% }else{ %>
                   <button class="add-to-cart-btn btn" onclick="window.location.href='/productDetails?id=<%= products[i]._id %>'">Currently Unavailable</button>
                 <% } %>
+               
+                <!-- <div class="product-extra-link2">
+                
+                  <a aria-label="Add To Wishlist" class="action-btn hover-up" href="#"><i class="fi-rs-heart"></i></a>
+              </div> -->
               </div>
               <% } %>
                 <% } else { %>
@@ -410,7 +421,7 @@
           <ul class="pagination justify-content-center mb-20" style="margin-right: 200px;">
             <% for (let i=1; i <=totalPages; i++) { %>
               <li class="page-item <%= (i === currentPage) ? 'active' : '' %>">
-                <a class="page-link" href="?page=<%= i %>">
+                <a class="page-link " href="?page=<%= i %>">
                   <%= i %>
                 </a>
               </li>
