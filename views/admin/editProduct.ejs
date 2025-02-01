@@ -129,8 +129,8 @@
                                </div>
                                <div class="col-lg-4">
                                    <div class="mb-4">
-                                       <label class="form-label">Quantity</label>
-                                       <input placeholder="" value="<%= product.quantity %>" name="quantity" type="text" class="form-control border">
+                                       <label class="form-label">Stock</label>
+                                       <input placeholder="" value="<%= product.quantity %>" name="quantity" type="text" class="form-control border" >
                                        <div id="quantity-error" class="error-message"></div>
                                    </div>
                                </div>
@@ -149,22 +149,27 @@
                            <div class="card mb-4">
                                <div class="card-body">
                                    <div class="row gx-2">
-                                       <div class="col-sm-6 mb-3">
+                                       
+                                    <div class="col-sm-6 mb-3">
                                            <label class="form-label">Category</label>
-                                           <select class="form-select border" style="width: 150px;" name="category">
+                                           <select class="form-select border" style="width: 150px;" name="category" >
                                                
 
-                                <% for (let i = 0; i < cat.length; i++) { %>
-                                              
-                                                   <option value="<%= cat[i].name %>">
-                                                    <%= cat[i].name %>                                       
+                                <% cat.forEach((cat)=>{ %>
+                                              <% console.log("from front", currentCategory.name) %>
+                                                   <option value="<%= cat.name %>"  <%= cat.name === currentCategory.name ? 'selected' : '' %> >
+                                                    <%= cat.name %>                                       
                                                    </option>
                                                   
-                                                 <% } %>
+                                                 <% }) %>
                                                    
                                            </select>
                                            <div id="category-error" class="error-message"></div>
                                        </div>
+
+                                       
+                                    
+
                                    </div>
                                </div>
                            </div>

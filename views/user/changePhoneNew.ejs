@@ -1,0 +1,108 @@
+<%- include("../../views/partials/user/header") %>
+
+<!-- content -->
+<section class="p-3 p-md-4 p-xl-5">
+    <div class="container  ">
+      <div class=" ">
+        <div class="row g-0 justify-content-center align-items-center">
+          <!-- here logo -->
+          <!-- <div class="col-12 col-md-6">
+            <img class="img-fluid rounded-start w-100 h-100 object-fit-cover" loading="lazy"
+              src="assets/img/logo/logo-img-1.jpg" alt="GentzGallery Logo">
+              
+          </div> -->
+          <div
+            class="col-12 col-md-6 col-lg-4 d-flex justify-content-center align-items-center  card border-light-subtle shadow-sm">
+            <div class="card-body p-3 p-md-4 p-xl-5" style="background-color: rgb(224, 224, 224);">
+              <div class="row">
+                <div class="col-12">
+                  <div class="mb-5">
+                    <h3 class="h3">Enter your phone number </h3>
+                    <!-- <h3 class="fs-6 fw-normal text-secondary m-0">Please enter your email address to search for your account.</h3> -->
+                  </div>
+                </div>
+              </div>
+              <form action="/updatePhone" method="post" id="loginForm" onsubmit="return validateForm()">
+                <div class="row gy-3 gy-md-4 overflow-hidden">
+
+                  <div class="col-12">
+                    <label for="phone" class="form-label">Phone <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control bg-white" name="phone" id="phone" placeholder="Phone number">
+                  </div>
+                  <div id="errorInPhone" class="error-message"></div>
+                  <%if(locals.message && message.length>0){%>
+                    <div class="alert alert-danger text-center text-warning">
+                    <h6 class="h6 text-danger"> <%=message%></h6>
+                    </div>
+                    <%}%>
+                      <div class="col-12">
+                        <div class="d-grid">
+                          <button class="btn bsb-btn-xl " type="submit">Submit</button>
+                        </div>
+                      </div>        
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+     <!-- from login page -->
+     <script>
+      document.addEventListener("DOMContentLoaded", function () {
+       
+        const phoneInput = document.getElementById("phone");
+        const errorInPhone = document.getElementById("errorInPhone");
+        
+        const signForm = document.getElementById("loginForm");
+
+      
+
+      
+
+        function phoneValidateChecking() {
+          const phoneVal = phoneInput.value;
+          console.log(phoneInput)
+          if (phoneVal.trim() === "") {
+            errorInPhone.style.display = "block";
+            errorInPhone.innerHTML = "Enter a valid phone number";
+          } else if (phoneVal.length !== 10) {
+            errorInPhone.style.display = "block";
+            errorInPhone.innerHTML = "Enter a 10-digit mobile number";
+          } else {
+            errorInPhone.style.display = "none";
+            errorInPhone.innerHTML = "";
+          }
+        }
+
+       
+
+        signForm.addEventListener("submit", function (e) {
+          e.preventDefault(); // Prevent default submission
+
+         
+          phoneValidateChecking();
+          
+
+          if (
+           
+            errorInPhone.innerHTML 
+           
+          ) {
+            console.log("Form has errors");
+          } else {
+            signForm.submit();
+            console.log("Form submitted successfully");
+            // Submit form or perform additional actions
+          }
+        });
+      });
+    </script>
+
+     
+    
+<%- include("../../views/partials/user/footer") %>

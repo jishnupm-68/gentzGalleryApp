@@ -228,7 +228,7 @@ const changeEmail = async (req,res)=>{
             }
         }else{
             console.log("no user with given email id")
-            res.render("changeEmail", {message:"The given email id is not matching with your account"})
+            res.render("changeEmail", {user:sessionUser,message:"The given email id is not matching with your account"})
         }
         }
     catch(error){
@@ -523,6 +523,8 @@ const deleteAddress = async (req,res)=>{
         res.redirect('/pageNotFound')
     }
 }
+
+
 
 module.exports = {
     loadForgotPasswordPage,

@@ -66,8 +66,8 @@ const addToCart = async (req, res) => {
     try {
         console.log("body",req.body)
       const userId = req.session.user; // Assuming user is stored in session
-      const { productId,price,quantity } = req.body; // Expecting data from the frontend
-    
+      let { productId,price,quantity } = req.body; // Expecting data from the frontend
+      quantity = Number(quantity)
       const productid = productId; // Assuming productid is sent as a string from the frontend
   
       // Validate input
@@ -77,7 +77,7 @@ const addToCart = async (req, res) => {
       
   
       // Calculate total price
-      const totalPrice = quantity * price;
+      const totalPrice = Number(quantity) * price;
   
       // Find the user's cart
       let userCart = await Cart.findOne({ userId });
@@ -103,7 +103,7 @@ const addToCart = async (req, res) => {
   
         if (productIndex >= 0) {
           // Product exists in cart, update quantity and total price
-          userCart.items[productIndex].quantity += quantity;
+          userCart.items[productIndex].quantity += Number(quantity);
           userCart.items[productIndex].totalPrice += totalPrice;
         } else {
           // Product does not exist, add new item
@@ -134,12 +134,7 @@ const addToCart = async (req, res) => {
     }
   };
   
-
-
-
-
-
-
+  
 const deleteItem = async(req,res)=>{
     try {
         const productToDeleteId = req.query.id;  // Accessing the id from the query string

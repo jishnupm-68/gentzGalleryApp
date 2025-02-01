@@ -6,6 +6,7 @@ const productController = require('../controllers/user/productController')
 const profileController = require('../controllers/user/profileController')
 const cartController = require("../controllers/user/cartController");
 const orderController = require("../controllers/user/orderController");
+const phoneNumberController = require('../controllers/user/phoneNumberController')
 const {userAuth, profileAuth} = require("../middlewares/auth");
 
 router.get('/', userController.loadHomePage)
@@ -63,6 +64,12 @@ router.post('/verifyEmailOtpForPassword', userAuth,profileController.verifyEmail
 router.get("/changePasswordNew",userAuth,profileController.loadChangePasswordNew)
 router.post('/updatePassword',userAuth,profileController.updatePassword)
 
+
+router.get('/changePhone', userAuth, phoneNumberController.loadChangePhone)
+router.post("/changePhone", userAuth, phoneNumberController.changePhoneEmailVerify)
+router.post('/verifyPhoneOtp', userAuth, phoneNumberController.verifyPhoneOtp)
+router.get("/changePhoneNew",userAuth, phoneNumberController.loadChangePhoneNew)
+router.post('/updatePhone', userAuth, phoneNumberController.updatePhone)
 
 
 

@@ -204,12 +204,15 @@ const getEditProduct = async (req, res) => {
     const id = req.query.id;
     const product = await Product.findById({ _id: id });
     const category = await Category.find({isListed:true});
+    const currentCategory = await Category.findOne({ _id: product.category });
+    console.log("Current category",currentCategory)
     const brand = await Brand.find({});
     if (product && category && brand) {
       res.render("editProduct", {
         product: product,
         cat: category,
         brand: brand,
+        currentCategory: currentCategory,
       });
     } else {
       res.render("adminError");
@@ -222,7 +225,7 @@ const getEditProduct = async (req, res) => {
 
 const editProduct = async (req, res) => {
   console.log("Here for editing the existing product");
-  console.log("body", req.body.brand);
+  console.log("body", req.body);
   console.log("params", req.params);
   console.log("query", req.query);
   console.log("files", req.files);
@@ -254,12 +257,14 @@ const editProduct = async (req, res) => {
         images.push(req.files[i].filename);
       }
     }
+    const newCategoryId = await Category.findOne({name:data.category},{_id:1});
+    console.log("newCAtegoryid",newCategoryId)
     console.log("images in editing ", images);
     const updateFields = {
       productName: data.productName,
       description: data.description,
       brand: data.brand,
-      category: product.category,
+      category: newCategoryId,
       regularPrice: data.regularPrice,
       salePrice: data.salePrice,
       quantity: data.quantity,
@@ -271,8 +276,8 @@ const editProduct = async (req, res) => {
         productImage: { $each: images },
       };
     }
-    await Product.findByIdAndUpdate(id, { $set: updateFields }, { new: true });
-    console.log("Data saved for editing the product");
+    let result =  await Product.findByIdAndUpdate(id, { $set: updateFields }, { new: true });
+    console.log("Data saved for editing the product" ,result, );
     res.redirect("/admin/products");
   } catch (error) {
     console.error("Error in editProduct", error);

@@ -465,6 +465,12 @@
                       <p class="card-text"><strong>Email:</strong> <%= user.email %></p>
                       <a href="/changeEmail" class="btn btn-sm btn-success ml-2">Change Email</a>
                       <a href="/changePasswordFromProfile" class="btn btn-sm btn-success">Change Password</a>
+                     <% if(user.phone) {%>
+                      <a href="/changePhone" class="btn btn-sm btn-success ml-2">Change Phone</a>
+                      <% }else{ %>
+                        <a href="/changePhone" class="btn btn-sm btn-success ml-2">Add Phone</a>
+                      <% } %>
+                      <a href="/logout" class=" btn-sm btn-warning btn" >Logout</a>
                     </div>
                   </div>
                 </div>

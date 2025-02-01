@@ -98,7 +98,7 @@
                                                             </div>
                                                         </td>
                                                         
-                                                        <% if(items[i].stock > 0) {%>
+                                                        <% if(items[i].quantity<=items[i].stock ) {%>
                                                             <td class="action" data-title="Remove">
                                                                 <a class="btn btn-sm" href="#"
                                                                     onclick="confirmRemove('<%= items[i].productId %>')">
