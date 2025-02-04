@@ -41,17 +41,19 @@ const sentVerificationEmail = async(email,otp)=>{
     }
 }
 
-const loadChangePhone = async(req,res)=>{
-    try {
-        const user = await User.findById(req.session.user);
-        res.render("changePhoneEmailVerify",{user:user});
-        console.log("change phone email verification page rendered",user)
-        
-    } catch (error) {
-        console.error("error while rendering the changePhoneEmailVerify page",error);
-        res.redirect('/pageNotFound');
-        
-    }
+
+// render the email confirmation page for changing the phone number
+const loadChangePhone  = (req,res)=>{
+    User.findById(req.session.user)
+    .then(user=>{
+        if(!user) throw {status:401, message:"User not found"};
+        res.status(200).render("changePhoneEmailVerify",{user:user});
+        console.log("change phone email verification page rendered")
+    })
+    .catch((error)=>{
+        console.error("Error while rendering page, some internal error occured",error);
+        res.redirect(301,'/pageNotFound');
+    })
 }
 
 const changePhoneEmailVerify = async (req,res)=>{
@@ -65,15 +67,18 @@ const changePhoneEmailVerify = async (req,res)=>{
             if(emailSent){
                 req.session.userOtp = otp;
                 req.session.userData = {email};
-                res.render("changePhoneVerifyOtp",{user:user});
+                //res.render("changePhoneVerifyOtp",{user:user});
+                res.json({success:true, message:"Otp sent successfully", redirectUrl:"/changePhoneVerifyOtp"})
             }else{
                 console.log("Email not sent , something went wrong");
-                res.redirect('/login');
+                res.json({success:false, message:"Email not sent , something went wrong"})
+                //res.redirect('/login');
             }
            
         }else{
             console.log("user not match")
-            return res.render("changePhoneEmailVerify",{user:user,message:"The given email id is not matching with your account"})
+           // return res.render("changePhoneEmailVerify",{user:user,message:"The given email id is not matching with your account"})
+           res.json({success:false, message:"The given email id is not matching with your account"})
         }
     } catch (error) {
         console.error("error while changing phone number", error);
@@ -83,56 +88,85 @@ const changePhoneEmailVerify = async (req,res)=>{
 
 }
 
-const verifyPhoneOtp = async (req,res)=>{
-    try {
-        const enteredOtp =  Number(req.body.otp);
+const loadChangePhoneVerifyOtp = async (req,res)=>{
+    try{
+    const user = await User.findOne({_id:req.session.user});;
+    res.render("changePhoneVerifyOtp",{user:user});
+}
+    catch(error){
+        console.error("Error while rendering page, some internal error occured",error);
+        res.redirect(301,'/pageNotFound');
+    }
+}
 
+const verifyPhoneOtp =  (req,res)=>{ 
+    const enteredOtp =  Number(req.body.otp);
+    new Promise((resolve,reject)=>{
         if(enteredOtp === req.session.userOtp){
-            res.json({success:true, redirectUrl:"/changePhoneNew"});
+            resolve(true);
         }else{
-            console.log("error while validating the otp");
-            res.json({success:false, message:"Invalid otp, please try again after some time"});
-
+            reject(new Error("Invalid Otp"));
         }
-
-    } catch (error) {
-        console.error("error while verifying the otp",error);
-        return res.redirect("/pageNotFound");
-    }
+    })
+    .then(()=>{
+        res.status(200).json({success:true, redirectUrl:"/changePhoneNew"});
+    })
+    .catch((error)=>{
+        console.log("error while validating the otp",error);
+        res.json({success:false, message:"Invalid otp, please try again after some time"});
+    })   
 }
 
-const  loadChangePhoneNew = async (req,res)=>{
-    try {
-        const user = await User.findOne({email:req.session.userData.email});
-        res.render("changePhoneNew",{user:user});
-
-        
-    } catch (error) {
-        console.error("error while rendering the changePhoneNew page",error);
-        res.redirect('/pageNotFound');
-        
-    }
+const  loadChangePhoneNew =  (req,res)=>{
+    User.findOne({email:req.session.userData.email})
+    .then((user)=>{
+        console.log("New number adding page rendered");
+        res.status(200).render("changePhoneNew",{user:user});
+    })
+    .catch ((error)=>{
+    console.error("error while rendering the changePhoneNew page",error);
+    res.redirect('/pageNotFound');
+    })
 
 }
 
-const updatePhone = async (req,res)=>{
-    try {
-        const {phone}= req.body;
-        const userId = req.session.user;
-        const user = await User.findByIdAndUpdate({_id:userId},{$set:{phone:phone}});
-        req.session.userData = {email:user.email};
-        if(user){
-            res.redirect('/userProfile');
-        }else{
-            console.log("error while updating the number");
-            res.redirect("/pageNotFound")
-        }
-        
-    } catch (error) {
-        console.error("Error while updating the number", error),
-        res.redirect ("/pageNotFound")
-        
-    }
+const updatePhone =  (req,res)=>{
+    console.log(req.body)
+    const {phone}= req.body;
+    const userId = req.session.user;
+
+    new Promise((resolve,reject)=>{
+        User.findByIdAndUpdate({_id:userId},{$set:{phone:phone}})
+            .then((user)=>{
+                if(!user){
+                    reject(new Error("User not found"));
+                }
+                console.log("Phone number updated successfully");
+                req.session.userData = {email:user.email};
+                // resolve({
+                //     success:true,
+                //     message:"Phone number updated successfully",
+                //     redirectUrl:"/userProfile"
+                // })
+                resolve(true)
+            })
+            .catch((error)=>{
+                console.error("Error while updating the number", error),
+                reject({
+                    success:false,
+                    message:"Phone number updatation failed",
+                    redirectUrl:"/changePhoneNew"
+                });
+            })
+    })
+    .then(()=>{
+        res.status(200).json({success:true, message:"Phone number updated successfully", redirectUrl:"/userProfile"});  
+        console.log("success response shared")
+    })
+    .catch ((reject)=>{
+        console.error("Error while updating the number", reject),
+        res.status(500).json(reject);
+    })
 }
 
 module.exports = {
@@ -140,5 +174,6 @@ module.exports = {
     changePhoneEmailVerify,
     verifyPhoneOtp,
     loadChangePhoneNew,
-    updatePhone
+    updatePhone,
+    loadChangePhoneVerifyOtp
 }

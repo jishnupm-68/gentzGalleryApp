@@ -22,7 +22,8 @@
                   </div>
                 </div>
               </div>
-              <form action="/changePhone" method="post" id="loginForm" onsubmit="return validateForm()">
+              <form  id="loginForm" onsubmit="return validateForm()">
+              <!-- <form action="/changePhone" method="post" id="loginForm" onsubmit="return validateForm()"> -->
                 <div class="row gy-3 gy-md-4 overflow-hidden">
 
                   <div class="col-12">
@@ -81,14 +82,52 @@
           const value = emailValidateChecking()
           console.log(value);
           if(value){
-              loginform.submit();
+            $.ajax({
+              url:"/changePhone",
+              method:"POST",
+              data:{
+                email:emailid.value
+              },
+              success:function(response){
+                console.log(response)
+                if(response.success){
+                  Swal.fire({
+                    icon: "success",
+                    title: "Email sent successfully",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true
+                  })
+                  window.location.href = response.redirectUrl; 
+              }else{
+                Swal.fire({
+                  icon: "error",
+                  title: "Error",
+                  text: response.message
+                });
+              }
+            },
+            error: function(error){
+              console.log(error)
+              Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "Something went wrong. Please try again later."
+              });
+            }
+          })
+         
+
+              //loginform.submit();
           }else{
               return false
           }
+          return false
         }
   
         document.addEventListener("DOMContentLoaded", function () {
           loginform.addEventListener("submit", function (e) {
+            e.preventDefault();
             emailValidateChecking();
   
             if (!emailid || !errorInEmail ||  !loginform) {

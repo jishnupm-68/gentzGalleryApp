@@ -29,14 +29,7 @@ const addProducts = async (req, res) => {
       if (req.files && req.files.length > 0) {
         for (let i = 0; i < req.files.length; i++) {
           const originalImagePath = req.files[i].path;
-          //const resizedImagePath  =  path.join(__dirname,"../../GentzGalleryApp/public/uploads/brands/product-imagesResized");
-          //const resizedImagePath  =  path.join(__dirname,"../../public/uploads/product-imagesResized");
-          // const resizedImagePath = path.join(
-          //     __dirname,
-          //     "../../public/uploads/brands",
-          //     `resized-${Date.now()}.jpg` // Add a filename
-          // );
-
+         
           const resizedImagePath = path.join(
             __dirname,
             "../../public/uploads/product-imagesResized",
@@ -48,10 +41,9 @@ const addProducts = async (req, res) => {
             .resize({ width: 440, height: 400 })
             .toFile(resizedImagePath);
 
-          // images.push(req.files[i].filename);
-
+          
           images.push(req.files[i].filename);
-          //images.push(resizedImagePath);
+         
           console.log(
             "images",
             req.files[i].filename,

@@ -22,7 +22,8 @@
                   </div>
                 </div>
               </div>
-              <form action="/changeEmail" method="post" id="loginForm" onsubmit="return validateForm()">
+              <!-- <form action="/changeEmail" method="post" id="loginForm" onsubmit="return validateForm()"> -->
+              <form id="loginForm" onsubmit="return validateForm()">
                 <div class="row gy-3 gy-md-4 overflow-hidden">
 
                   <div class="col-12">
@@ -55,10 +56,12 @@
      <script>
         const emailid = document.getElementById("email");
         const errorInEmail = document.getElementById("errorInEmail");
-        const loginform = document.getElementById("loginform");
+        const loginform = document.getElementById("loginForm");
   
         function emailValidateChecking(e) {
+          console.log("called emailValidateChecking");
           const emailval = emailid.value;
+          console.log(emailval,"Validation called");
           const emailpattern =
             /^[a-zA-Z0-9._-]+@([a-zA-Z0-9.-]+)\.([a-zA-Z]{2,4})$/;
   
@@ -74,17 +77,67 @@
         }
   
         function validateForm(){
+          console.log("called validateForm");
           const value = emailValidateChecking()
           console.log(value);
           if(value){
-              loginform.submit();
+              console.log("form submitted");
+              const emailval = emailid.value;
+              $.ajax({
+                  url:"changeEmail",
+                  type:"POST",
+                  data:{email:emailval},
+                  success:function(response){
+                      console.log(response);
+                      if(response.success){
+                        console.log("success");
+                        Swal.fire({
+                          icon: "success",
+                          title: "Email verified successfully",
+                          text: "",
+                          showConfirmButton: false,
+                          timer: 3000,
+                          timerProgressBar: true
+                        }).then(()=>{
+                          location.href = response.redirectUrl;
+                        })
+                      }else{
+                        Swal.fire({
+                          icon: "error",
+                          title: "Failed to change email",
+                          text: "The email do not match with this account",
+                          showConfirmButton: false,
+                          timer: 3000,
+                          timerProgressBar: true
+                        })
+                        console.log("Failure")
+                      }
+                  },
+                  error: function(error){
+                    console.error("Error:", error);
+                    Swal.fire({
+                      icon: "error",
+                      title: "Failed to change email",
+                      text: response.message,
+                      showConfirmButton: false,
+                      timer: 3000,
+                      timerProgressBar: true
+                    })
+                    // Handle error here
+                  }
+              })
+             // loginform.submit();
           }else{
               return false
           }
         }
   
+
+
         document.addEventListener("DOMContentLoaded", function () {
           loginform.addEventListener("submit", function (e) {
+            e.preventDefault();
+            console.log("called 1")
             emailValidateChecking();
   
             if (!emailid || !errorInEmail ||  !loginform) {
@@ -97,4 +150,9 @@
           });
         });
       </script>
-<%- include("../../views/partials/user/footer") %>
+
+     
+
+      <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      <%- include("../../views/partials/user/footer") %>

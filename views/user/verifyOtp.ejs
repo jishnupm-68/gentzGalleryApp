@@ -35,6 +35,7 @@
       display: "none";
     }
   </style>
+   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body class="full-wrapper">
@@ -177,79 +178,6 @@
 
 
 
-                <!-- <form action="/signup" method="post" id="signForm">
-                  <div class="row gy-3 gy-md-4 overflow-hidden">
-                    <div class="col-12">
-                      <label for="name" class="form-label"> Name <span class="text-danger">*</span></label>
-                      <input type="text" class="form-control" name="name" id="name" placeholder="Name">
-                    </div>
-                    <div id="errorInName" class="error-message"></div>
-                    
-                    <div class="col-12">
-                      <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                      <input type="email" class="form-control" name="email" id="email" placeholder="name@example.com">
-                    </div>
-                    <div id="errorInEmail" class="error-message"></div>
-                    <div class="col-12">
-                      <label for="phone" class="form-label">Phone <span class="text-danger">*</span></label>
-                      <input type="text" class="form-control" name="phone" id="phone" placeholder="Phone number">
-                    </div>
-                    <div id="errorInPhone" class="error-message"></div>
-                    <div class="col-12">
-                      <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
-                      <input type="password" class="form-control" name="password" id="password" value="">
-                    </div>
-                    <div id="errorInPassword" class="error-message"></div>
-                    <div class="col-12">
-                      <label for="confirmPassword" class="form-label">Confirm Password <span
-                          class="text-danger">*</span></label>
-                      <input type="password" class="form-control" name="confirmPassword" id="confirmPassword" value="">
-                    </div>
-                    <div id="errorInConfirmPassword" class="error-message"></div>
-                    <%if(locals.message && message.length>0){%>
-                      <div class="alert alert-danger text-center">
-                        <%=message%>
-                      </div>
-                      <%}%>
-                        <div class="col-12">
-                          <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="" name="iAgree" id="iAgree" required>
-                            <label class="form-check-label text-secondary" for="iAgree">
-                              I agree to the <a href="#!" class="link-primary text-decoration-none">terms and
-                                conditions</a>
-                            </label>
-                          </div>
-                        </div>
-                        <div class="col-12">
-                          <div class="d-grid">
-                            <button class="btn bsb-btn-xl btn-primary" type="submit">Sign up</button>
-                          </div>
-                        </div>
-                  </div>
-                </form> -->
-                <!-- <div class="row">
-                  <div class="col-12">
-                    <hr class="mt-5 mb-4 border-secondary-subtle">
-                    <p class="m-0 text-secondary text-center">Already have an account? <a href="/login"
-                        class="link-primary text-decoration-none">Sign in</a></p>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-12">
-                    <p class="mt-5 mb-4">Or sign in with</p>
-                    <div class="d-grid">
-                      <a href="/auth/google" class="btn bsb-btn-xl btn-outline-primary">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                          class="bi bi-google" viewBox="0 0 16 16">
-                          <path
-                            d="M15.545 6.558a9.42 9.42 0 0 1 .139 1.626c0 2.434-.87 4.492-2.384 5.885h.002C11.978 15.292 10.158 16 8 16A8 8 0 1 1 8 0a7.689 7.689 0 0 1 5.352 2.082l-2.284 2.284A4.347 4.347 0 0 0 8 3.166c-2.087 0-3.86 1.408-4.492 3.304a4.792 4.792 0 0 0 0 3.063h.003c.635 1.893 2.405 3.301 4.492 3.301 1.078 0 2.004-.276 2.722-.764h-.003a3.702 3.702 0 0 0 1.599-2.431H8v-3.08h7.545z" />
-                        </svg>
-                        <span class="ms-2 fs-6">Google</span>
-                      </a>
-
-                    </div>
-                  </div>
-                </div> -->
               </div>
             </div>
           </div>
@@ -358,16 +286,10 @@
         </div>
       </div>
     </div>
+    </footer>
     <!-- Footer End-->
     <!--? Search model Begin -->
-    <div class="search-model-box">
-      <div class="h-100 d-flex align-items-center justify-content-center">
-        <div class="search-close-btn">+</div>
-        <form class="search-model-form">
-          <input type="text" id="search-input" placeholder="Searching key.....">
-        </form>
-      </div>
-    </div>
+   
     <!-- Search model end -->
     <!-- Scroll Up -->
     <div id="back-top">
@@ -417,112 +339,7 @@
 
 
 
-    <!-- <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const nameInput = document.getElementById("name");
-        const emailInput = document.getElementById("email");
-        const phoneInput = document.getElementById("phone");
-        const passwordInput = document.getElementById("password");
-        const confirmPasswordInput = document.getElementById("confirmPassword");
-        const errorInName = document.getElementById("errorInName");
-        const errorInEmail = document.getElementById("errorInEmail");
-        const errorInPhone = document.getElementById("errorInPhone");
-        const errorInPassword = document.getElementById("errorInPassword");
-        const errorInConfirmPassword = document.getElementById("errorInConfirmPassword");
-        const signForm = document.getElementById("signForm");
-
-        function nameValidateChecking() {
-          const nameVal = nameInput.value;
-          const namePattern = /^[A-Za-z\s]+$/;
-          if (nameVal.trim() === "") {
-            errorInName.style.display = "block";
-            errorInName.innerHTML = "Please enter a valid name";
-          } else if (!namePattern.test(nameVal)) {
-            errorInName.style.display = "block";
-            errorInName.innerHTML = "Name can only contain alphabets and spaces";
-          } else {
-            errorInName.style.display = "none";
-            errorInName.innerHTML = "";
-          }
-        }
-
-        function emailValidateChecking() {
-          const emailVal = emailInput.value;
-          const emailPattern = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
-          if (!emailPattern.test(emailVal)) {
-            errorInEmail.style.display = "block";
-            errorInEmail.innerHTML = "Invalid format";
-          } else {
-            errorInEmail.style.display = "none";
-            errorInEmail.innerHTML = "";
-          }
-        }
-
-        function phoneValidateChecking() {
-          const phoneVal = phoneInput.value;
-          console.log(phoneInput)
-          if (phoneVal.trim() === "") {
-            errorInPhone.style.display = "block";
-            errorInPhone.innerHTML = "Enter a valid phone number";
-          } else if (phoneVal.length !== 10) {
-            errorInPhone.style.display = "block";
-            errorInPhone.innerHTML = "Enter a 10-digit mobile number";
-          } else {
-            errorInPhone.style.display = "none";
-            errorInPhone.innerHTML = "";
-          }
-        }
-
-        function passwordValidateChecking() {
-          const passwordVal = passwordInput.value;
-          const confirmPasswordVal = confirmPasswordInput.value;
-          const alpha = /[A-Za-z]/;
-          const digit = /\d/;
-          if (passwordVal.length < 8) {
-            errorInPassword.style.display = "block";
-            errorInPassword.innerHTML = "Should contain at least 8 characters";
-          } else if (!alpha.test(passwordVal) || !digit.test(passwordVal)) {
-            errorInPassword.style.display = "block";
-            errorInPassword.innerHTML = "Should contain both numbers and alphabets";
-          } else {
-            errorInPassword.style.display = "none";
-            errorInPassword.innerHTML = "";
-          }
-
-          if (passwordVal !== confirmPasswordVal) {
-            errorInConfirmPassword.style.display = "block";
-            errorInConfirmPassword.innerHTML = "Passwords do not match";
-          } else {
-            errorInConfirmPassword.style.display = "none";
-            errorInConfirmPassword.innerHTML = "";
-          }
-        }
-
-        signForm.addEventListener("submit", function (e) {
-          e.preventDefault(); // Prevent default submission
-
-          nameValidateChecking();
-          emailValidateChecking();
-          phoneValidateChecking();
-          passwordValidateChecking();
-
-          if (
-            errorInName.innerHTML ||
-            errorInEmail.innerHTML ||
-            errorInPhone.innerHTML ||
-            errorInPassword.innerHTML ||
-            errorInConfirmPassword.innerHTML
-          ) {
-            console.log("Form has errors");
-          } else {
-            signForm.submit();
-            console.log("Form submitted successfully");
-            // Submit form or perform additional actions
-          }
-        });
-      });
-    </script> -->
-
+  
 
     <script>
       document.getElementById("otp").focus();
@@ -566,9 +383,11 @@
                   if (response.success) {
                       Swal.fire({
                           icon: "success",
-                          title: "OTP Verified Successfully",
+                          title: "OTP Verified and Account created successfully",
                           showConfirmButton: false,
-                          timer: 1500,
+                          timer: 5000,
+                          timerProgressBar: true,
+                          
                       }).then(() => {
                           window.location.href = response.redirectUrl;
                       });

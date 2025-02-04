@@ -37,24 +37,12 @@
    <link rel="stylesheet" href="./PublicOut/css/slicknav.min.css" type="text/css">
    <link rel="stylesheet" href="./PublicOut/css/style.css" type="text/css">
    <link rel="stylesheet" href="./PublicOut/user-assets/css/maind134.css">
-   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
-   
+   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
    <script src="https://kit.fontawesome.com/b001ffdfea.js" crossorigin="anonymous"></script>
-
-
-
-
-
-    
-
-
-    
-
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css" />
-    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css" />
+   <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
 
 
     <style>
@@ -229,33 +217,27 @@
                   </div>
                 </div>
               </div>
-
-
-             
-               
-                    
-                        <div class="heading_s1">
-                            <h3 class="h3">Verify Your Email </h3>
+                <div class="heading_s1">
+                    <h3 class="h3">Verify Your Email </h3>
+                </div>
+                <form id="otpForm" action="/verifyEmailOtp" method="post" onsubmit="return validateOtpForm()">
+                    <div class="form-group">
+                        <label for="otp">Enter OTP:</label>
+                        <input type="text" id="otp" name="otp" class="form-control bg-white"  maxlength="6" pattern="\d*" />
+                    </div>
+                    <button type="submit" class="btn  p-1" id="verifyButton">Verify Email</button>
+                    <div class="form-group text-center">
+                        <div id="otpTimer" class="otp-timer text-danger">
+                          <h5 class="h5">
+                            <span id="timerValue" class="text-danger"> </span>
+                          </h5>
                         </div>
-                        <form id="otpForm" action="/verifyEmailOtp" method="post" onsubmit="return validateOtpForm()">
-                            <div class="form-group">
-                                <label for="otp">Enter OTP:</label>
-                                <input type="text" id="otp" name="otp" class="form-control bg-white"  maxlength="6" pattern="\d*" />
-                            </div>
-                            <button type="submit" class="btn  p-1" id="verifyButton">Verify Email</button>
-                            <div class="form-group text-center">
-                                <div id="otpTimer" class="otp-timer text-danger">
-                                  <h5 class="h5">
-                                    <span id="timerValue" class="text-danger"> </span>
-                                  </h5>
-                                </div>
-                                <button id="resendButton" type="button" class="btn btn-secondary p-1" onclick="resendOtp()">Resend OTP</button>
-                            </div>
-                            <% if (locals.message && message.length > 0) { %>
-                            <div class="alert alert-danger"><%= message %></div>
-                            <% } %>
-                        </form>
-
+                        <button id="resendButton" type="button" class="btn btn-secondary p-1" onclick="resendOtp()">Resend OTP</button>
+                    </div>
+                    <% if (locals.message && message.length > 0) { %>
+                    <div class="alert alert-danger"><%= message %></div>
+                    <% } %>
+                </form>
             </div>
           </div>
         </div>
@@ -366,22 +348,15 @@
         </div>
       </div>
     </div>
+    
     <!-- Footer End-->
     <!--? Search model Begin -->
-    <div class="search-model-box">
-      <div class="h-100 d-flex align-items-center justify-content-center">
-        <div class="search-close-btn">+</div>
-        <form class="search-model-form">
-          <input type="text" id="search-input" placeholder="Searching key.....">
-        </form>
-      </div>
-    </div>
     <!-- Search model end -->
     <!-- Scroll Up -->
     <div id="back-top">
       <a title="Go to Top" href="#"> <i class="fas fa-level-up-alt"></i></a>
     </div>
-
+  </footer>
     <!-- JS here -->
     <!-- Jquery, Popper, Bootstrap -->
     <script src="./assets/js/vendor/modernizr-3.5.0.min.js"></script>
@@ -490,7 +465,7 @@
                       Swal.fire({
                           icon: "error",
                           title: "Error",
-                          text: response.message, // Fixed this line to use the actual response message
+                          text: response.message, 
                       });
                   }
               },
@@ -557,6 +532,8 @@
 </body>
 
 </html>
+
+
 
 
 

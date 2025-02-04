@@ -41,7 +41,7 @@ const loadOrders = async (req,res)=>{
         let endIndex = startIndex + itemsPerPage;
         let totalPages = Math.ceil(orders.length/itemsPerPage);
         const currentOrder = orders.slice(startIndex,endIndex);
-        //currentOrder.forEach(order=>order.orderId= uuidv4());
+       
         console.log("Order", currentOrder,"currentPage",currentPage,"totalPages",totalPages)
         res.render("orderList", {orders:currentOrder, currentPage:currentPage, totalPages:totalPages});
         

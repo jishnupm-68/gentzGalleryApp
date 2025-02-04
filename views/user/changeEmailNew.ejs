@@ -45,14 +45,6 @@
 
 
 
-
-
-    
-
-
-    
-
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css" />
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
 
@@ -138,14 +130,7 @@
                                         <li><a href="shop.html">Men</a></li>
                                         <li><a href="about.html">Boys</a></li>
                                         <li><a href="contact.html">Contact</a></li>
-                                        <!-- <li><a href="blog.html">Blog</a>
-                                            <ul class="submenu">
-                                                <li><a href="blog.html">Blog</a></li>
-                                                <li><a href="blog_details.html">Blog Details</a></li>
-                                                <li><a href="elements.html">Elements</a></li>
-                                                <li><a href="product_details.html">Product Details</a></li>
-                                            </ul>
-                                        </li> -->
+                                       
                                         <% if(locals.user ) { %>
                                             <div class="dropdown">
                                                <li><a href="" class="sign-in-link"><%=locals.user.name %></a></li> 
@@ -160,9 +145,7 @@
                                             <li><a href="/signup">Signup</a></li>
 
                                             <% } %>
-                                        
-                                        
-                                   
+
                                     </ul>
                                 </nav>
                             </div>   
@@ -228,6 +211,7 @@
                   </div>
                 </div>
                 <form action="/updateEmail" method="post" id="signForm" onsubmit="return validateForm()">
+                <!-- <form id="signForm" onsubmit="return validateForm()"> -->
                   <div class="row gy-3 gy-md-4 overflow-hidden">
                     <div class="col-12">
                         <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
@@ -411,13 +395,13 @@
 
 
 
-
     <script>
       const emailid = document.getElementById("email");
       const errorInEmail = document.getElementById("errorInEmail");
-      const loginform = document.getElementById("signform");
+      const loginform = document.getElementById("signForm");
 
       function emailValidateChecking(e) {
+        console.log("email checking")
         const emailval = emailid.value;
         const emailpattern =
           /^[a-zA-Z0-9._-]+@([a-zA-Z0-9.-]+)\.([a-zA-Z]{2,4})$/;
@@ -434,9 +418,51 @@
       }
 
       function validateForm(){
+        console.log("Called formValidate")
         const value = emailValidateChecking()
         console.log(value);
         if(value){
+          // $.ajax({
+          //   url: 'updateEmail',
+          //   method: 'POST',
+          //   data: {email:emailid.value},
+          //   success: function(response){
+          //     console.log("response",response)
+          //     if(response.success){
+          //       Swal.fire({
+          //       icon: 'success',
+          //       title: 'Email Updated Successfully',
+          //       showConfirmButton: false,
+          //       timer: 3500
+          //     })
+
+          //     }else{
+          //       Swal.fire({
+          //         icon: 'error',
+          //         title: 'Error Occurred',
+          //         text:   "Error while updating the Email Address",
+          //         showConfirmButton: false,
+          //         timer: 3500
+          //       })
+          //     }
+
+          //   },
+          //   error: function(error){
+          //     Swal.fire({
+          //       icon: 'error',
+          //       title: 'Error Occurred',
+          //       text:   "Error while updating the Email Address",
+          //       showConfirmButton: false,
+          //       timer: 3500
+          //     })
+          //   }
+          // })
+          Swal.fire({
+                icon: 'success',
+                title: 'Email Updated Successfully',
+                showConfirmButton: false,
+                timer: 2500
+              })
             loginform.submit();
         }else{
             return false
@@ -444,7 +470,9 @@
       }
 
       document.addEventListener("DOMContentLoaded", function () {
-        loginform.addEventListener("submit", function (e) {
+        loginForm.addEventListener("submit", function (e) {
+          console.log("Called on submit");
+          e.preventDefault();
           emailValidateChecking();
 
           if (!emailid || !errorInEmail ||  !loginform) {
@@ -456,10 +484,12 @@
           }
         });
       });
-    </script>
+    </script> 
 
+    
 
-
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 
 </html>
