@@ -107,18 +107,18 @@
                                                 ₹<%=(parseInt(item.price) * parseInt(item.quantity)).toLocaleString()%>
                                             </td>
                                             <td class="text-center">
-                                                <% if (orders.status === "Cancel") { %>
-                                                    <i>Cancelled</i>
+                                                <% if (item.productStatus === "Cancelled") { %>
+                                                    <i class="text-danger">Cancelled</i>
                                                 <% } else { %>
-                                                    <select onchange="handleDropdownChange(this)">
-                                                        <option value="" disabled selected><%= orders.status %></option>
-                                                        <% if (orders.status === "Confirmed") { %>
+                                                    <select onchange="handleDropdownChange('Cancel','<%= item.product %>')">
+                                                        <option value="" disabled selected><%= item.productStatus %></option>
+                                                        <!-- <% if (item.productStatus === "Confirmed") { %>
                                                             <option value="cancel">Cancel Order</option>
-                                                        <% } else if (orders.status === "Shipped" || orders.status === "Delivered") { %>
+                                                        <% } else if (item.productStatus === "Shipped" || item.productStatus === "Delivered") { %>
                                                             <option value="returnrequest">Return Request</option>
-                                                        <% } else if (orders.status === "Failed") { %>
+                                                        <% } else if (item.productStatus === "Failed") { %>
                                                             <option value="retry" disabled>Retry Payment</option>
-                                                        <% } %>
+                                                        <% } %> -->
                                                     </select>
                                                 <% } %>
                                             </td>
@@ -149,11 +149,13 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
 <script>
-function handleDropdownChange(selectElement) {
-    var selectedValue = selectElement.value;
+function handleDropdownChange(selectElement,productId) {
+    var selectedValue = selectElement
+    console.log(productId);
     var orderId = document.getElementById("orderId").value;
 
-    if (selectedValue === "cancel") {
+    if (selectedValue === "Cancel") {
+        console.log("Confirmcancel")
         confirmCancelOrder(orderId);
     } else if (selectedValue == "returnrequest") {
         returnRequestOrder(orderId);

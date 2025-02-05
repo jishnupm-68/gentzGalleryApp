@@ -516,6 +516,7 @@
                           <thead><tr><th>Order</th><th>Status</th><th>Total</th><th>Actions</th></tr></thead>
                           <tbody>
                             <% if(order) { %>
+                              
                               <% order.forEach(order => { %>
                                 <tr>
                                   <td>
@@ -523,7 +524,11 @@
                                       <%= item.productName %><br>
                                     <% }) %>
                                   </td>
-                                  <td><%= order.status %></td>
+                                  <td>
+                                    <% order.orderedItems.forEach(item => { %>
+                                      <%= item.productStatus %><br>
+                                    <% }) %>
+                                  </td>
                                   <td><%= order.finalAmount %></td>
                                   <td><a href="/orderDetails?id=<%= order._id %>" class="btn-small d-block">View</a></td>
                                 </tr>

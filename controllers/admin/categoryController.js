@@ -33,9 +33,6 @@ const categoryInfo = async(req,res)=>{
 }
 
 
-
-
-
 const addCategory = async (req,res)=>{
     const {name,description} = req.body;
     console.log(req.body)
@@ -56,8 +53,6 @@ const addCategory = async (req,res)=>{
     }
 
 }
-
-
 
 const addCategoryOffer = async (req,res)=>{
     try{

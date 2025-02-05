@@ -12,8 +12,6 @@ const loadLogin = (req,res)=>{
 
 }
 
-
-
 const login =  async(req,res)=>{
 
     try {
@@ -34,13 +32,9 @@ const login =  async(req,res)=>{
         }
     } catch (error) {
         console.error("Error while login", error)
-        return res.redirect('/pageError')
-        
-        
+        return res.redirect('/pageError')        
     }
 }
-
-
 
 const loadDashboard =  async (req,res)=>{
     if(req.session.admin){
@@ -56,19 +50,9 @@ const loadDashboard =  async (req,res)=>{
 }
 
 
-
-
-
-
-
-
-
-
-
 const pageError = (req,res)=>{
     res.render('adminError')
 }
-
 
 const logout = async(req,res)=>{
     try{
@@ -92,5 +76,4 @@ module.exports = {
     loadDashboard,
     pageError,
     logout
-
 }

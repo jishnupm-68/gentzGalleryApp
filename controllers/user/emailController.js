@@ -87,7 +87,6 @@ const changeEmail = async (req,res)=>{
     }
 }
 
-
 const loadVerifyEmailOtp = async(req,res)=>{
     try {
         let sessionUser= await User.findOne({_id:req.session.user});
@@ -110,7 +109,7 @@ const verifyEmailOtp  =  async(req,res)=>{
             res.json({success:true, redirectUrl:"/changeEmailNew"})
         }else{
             console.log("error while validating the otp")
-            res.status(400).json({success:false, message:"Invalid otp, please try again"})
+            res.json({success:false, message:"Invalid otp, please try again"})
         }
 
     }catch(error){
@@ -133,7 +132,6 @@ const loadChangeEmailNew = async (req,res)=>{
     }
 }
 
-
 const updateEmail =async (req,res)=>{
     try{
         const {email} = req.body;
@@ -142,19 +140,16 @@ const updateEmail =async (req,res)=>{
         req.session.userData = {email:email}
         if(user){
             console.log(" email updation successful")
-            res.redirect('/userProfile')
-           // res.json({success:true, message:"Email successfully updated",redirectUrl:"/userProfile"})
+            res.json({success:true, message:"Email successfully updated",redirectUrl:"/userProfile"})
 
         }else{
             console.log("unable to update email")
             res.json({success:false, message:"Email updatation failed"})
-            //res.render("changeEmail", {user:sessionUser,message:"The given email id is not matching with your account"})
-        }
-       
+        }    
     }catch(error){
         console.error("error while changing the email",error)
         res.redirect('/pageNotFound')
-}
+    }
 }
 
 

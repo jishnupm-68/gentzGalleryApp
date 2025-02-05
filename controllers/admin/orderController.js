@@ -1,4 +1,3 @@
-
 const Order = require("../../models/orderSchema");
 const User = require("../../models/userSchema");
 const Address = require('../../models/addressSchema');
@@ -6,9 +5,7 @@ const Product = require('../../models/productSchema');
 const Cart  = require("../../models/cartSchema");
 const mongoose = require('mongoose');
 const {v4:uuidv4} = require('uuid');
-
 const env = require('dotenv').config();
-
 
 const decrementSaleCounts = async (cartItemQuantities) => {
     try {
@@ -20,7 +17,6 @@ const decrementSaleCounts = async (cartItemQuantities) => {
           
         },
       }));
-  
       // Perform bulkWrite
       const result = await Product.bulkWrite(bulkOperations);
       console.log('Bulk decrement result:', result);
@@ -30,7 +26,6 @@ const decrementSaleCounts = async (cartItemQuantities) => {
       throw error;
     }
   };
-
 
 const loadOrders = async (req,res)=>{
     try {
@@ -51,34 +46,28 @@ const loadOrders = async (req,res)=>{
     }
 }
 
-
-
 const updateOrderStatus = async (req,res)=>{
     try {
-        const {orderId, status} = req.body;
-
-        let update = await Order.findOneAndUpdate({_id:orderId},
-            {$set:{status:status}},
+        console.log(req.body)
+        const {orderId, productId, status} = req.body;
+        let update = await Order.findOneAndUpdate({_id:orderId, "orderedItems.product":productId},
+            {$set:{"orderedItems.$.productStatus":status}},
             {new:true});
-        
-       
-
+            console.log("updated data",update)
         if(status=="Cancelled")
             {   const items = update.orderedItems.map((item)=>
                 ({
                     
                     productId:item.product,
-                        quantity: item.quantity
+                    quantity: item.quantity
                 })
                 );
-
                
-                console.log(status,items,)
+               
                 console.log("items",items)
                 decrementSaleCounts(items)
                 .then(result => console.log('Decrement successful:', result))
-                .catch(error => console.error('Decrement failed:', error));
-              
+                .catch(error => console.error('Decrement failed:', error));             
         }
         console.log("req body from updating order status", req.body)
         res.redirect("/admin/order");
@@ -130,7 +119,6 @@ const getOrderDetailsPageAdmin = async (req,res)=>{
 
 }
 
-
 const getStockPage = async (req,res)=>{
     try {
         const product = await Product.find({}).lean();
@@ -152,7 +140,6 @@ const getStockPage = async (req,res)=>{
     }
 }
 
-
 const addQuantity = async (req,res)=>{
     try {
         console.log(req.body)
@@ -170,40 +157,11 @@ const addQuantity = async (req,res)=>{
 
 }
 
-
-
 module.exports = {
     loadOrders,
     updateOrderStatus,
     getOrderDetailsPageAdmin,
     getStockPage,
     addQuantity
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

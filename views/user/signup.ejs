@@ -26,8 +26,7 @@
   <link rel="stylesheet" href="assets/css/nice-select.css">
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-  <link rel="stylesheet"
-    href="https://unpkg.com/bs-brain@2.0.4/components/registrations/registration-4/assets/css/registration-4.css">
+  <link rel="stylesheet" href="https://unpkg.com/bs-brain@2.0.4/components/registrations/registration-4/assets/css/registration-4.css">
   <style>
     .error-message {
       color: red;
@@ -59,24 +58,24 @@
             <div class="header-left d-flex align-items-center">
               <!-- Logo -->
               <div class="logo">
-                <a href="index.html"><img src="assets/img/logo/logo.png" alt=""></a>
+                <a href="/"><img src="assets/img/logo/logo.png" alt=""></a>
               </div>
               <!-- Main-menu -->
               <div class="main-menu  d-none d-lg-block">
                 <nav>
                   <ul id="navigation">
                     <li><a href="/">Home</a></li>
-                    <li><a href="shop.html">shop</a></li>
-                    <li><a href="about.html">About</a></li>
-                    <li><a href="blog.html">Blog</a>
+                    <li><a href="/shop">shop</a></li>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Blog</a>
                       <ul class="submenu">
-                        <li><a href="blog.html">Blog</a></li>
+                        <!-- <li><a href="blog.html">Blog</a></li>
                         <li><a href="blog_details.html">Blog Details</a></li>
                         <li><a href="elements.html">Elements</a></li>
                         <li><a href="product_details.html">Product Details</a></li>
-                      </ul>
+                      </ul> -->
                     </li>
-                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="#">Contact</a></li>
                   </ul>
                 </nav>
               </div>
@@ -85,7 +84,7 @@
               <!-- Social -->
               <div class="header-social d-none d-md-block">
                 <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="https://bit.ly/sai4ull"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
                 <a href="#"><i class="fab fa-pinterest-p"></i></a>
               </div>
               <!-- Search Box -->
@@ -141,7 +140,8 @@
                     </div>
                   </div>
                 </div>
-                <form action="/signup" method="post" id="signForm">
+                <form  id="signForm">
+                <!-- <form action="/signup" method="post" id="signForm"> -->
                   <div class="row gy-3 gy-md-4 overflow-hidden">
                     <div class="col-12">
                       <label for="name" class="form-label"> Name <span class="text-danger">*</span></label>
@@ -325,6 +325,7 @@
         </div>
       </div>
     </div>
+    </footer>
     <!-- Footer End-->
     <!--? Search model Begin -->
     <div class="search-model-box">
@@ -399,6 +400,7 @@
         const signForm = document.getElementById("signForm");
 
         function nameValidateChecking() {
+          console.log("nameValidateChecking")
           const nameVal = nameInput.value;
           const namePattern = /^[A-Za-z\s]+$/;
           if (nameVal.trim() === "") {
@@ -414,6 +416,7 @@
         }
 
         function emailValidateChecking() {
+          console.log("emailValidateChecking")
           const emailVal = emailInput.value;
           const emailPattern = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
           if (!emailPattern.test(emailVal)) {
@@ -426,6 +429,7 @@
         }
 
         function phoneValidateChecking() {
+          console.log("phoneValidateChecking")
           const phoneVal = phoneInput.value;
           console.log(phoneInput)
           if (phoneVal.trim() === "") {
@@ -441,6 +445,7 @@
         }
 
         function passwordValidateChecking() {
+          console.log("passwordValidateChecking")
           const passwordVal = passwordInput.value;
           const confirmPasswordVal = confirmPasswordInput.value;
           const alpha = /[A-Za-z]/;
@@ -466,6 +471,8 @@
         }
 
         signForm.addEventListener("submit", function (e) {
+         // function validateForm(){
+          console.log("signfomr submitting")
           e.preventDefault(); // Prevent default submission
 
           nameValidateChecking();
@@ -480,18 +487,63 @@
             errorInPassword.innerHTML ||
             errorInConfirmPassword.innerHTML
           ) {
+            e.preventDefault();
             console.log("Form has errors");
           } else {
-            signForm.submit();
-            console.log("Form submitted successfully");
-            // Submit form or perform additional actions
 
+            console.log("Form has no errors");
+
+            $.ajax({
+              url: "/signup",
+              type: "POST",
+              data: { 
+                name: nameInput.value,
+                email: emailInput.value,
+                phone: phoneInput.value,
+                password: passwordInput.value,
+                confirmPassword: confirmPasswordInput.value,
+              },
+              success: function (response) {
+                console.log("Response:", response);
+                if(response.success){
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: response.message,
+                    showConfirmButton: false,
+                    timer: 2500})
+                    window.location.href = response.redirectUrl;
+                }else{
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: response.message,
+                    showConfirmButton: false,
+                    timer: 2500})
+                }
+              },
+              error: function (xhr, status, error) {
+                console.log("AJAX Error:", xhr.responseText, status, error);
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: xhr.responseText,
+                  showConfirmButton: false,
+                  timer: 2500})
+              },
+                // Handle success response from the server
+            })
+            //signForm.submit();
+            console.log("Form submitted successfully");
+           
             
           }
         });
       });
-    </script>
-
+    </script> 
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
 
 
 </body>

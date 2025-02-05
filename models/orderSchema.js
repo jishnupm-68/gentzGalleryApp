@@ -27,7 +27,8 @@ const orderSchema = new Schema({
         },
         productStatus:{         //new
             type:String,
-            required:true
+            required:true,
+            enum:['Pending', "Processing","Confirmed", "Shipped","Delivered","Cancelled","Return Request","Returned"]
         },
         productName:{
             type:String,

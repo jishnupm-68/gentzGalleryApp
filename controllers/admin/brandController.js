@@ -79,8 +79,6 @@ const addBrand = async (req, res) => {
     }
 };
 
-  
-
 
 const blockBrand = async(req,res)=>{
     try{
@@ -94,7 +92,6 @@ const blockBrand = async(req,res)=>{
 
     }
 }
-
 
 const unBlockBrand = async(req,res)=>{
     try{

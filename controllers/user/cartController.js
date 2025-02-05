@@ -3,8 +3,6 @@ const Product = require('../../models/productSchema');
 const Cart = require('../../models/cartSchema');
 const mongoose = require("mongoose");
 
-
-
 //load the cart page with cart items
 const getCartPage = async(req,res)=>{
 
@@ -58,23 +56,18 @@ const getCartPage = async(req,res)=>{
 }
 
 
-
-
-
-
 const addToCart = async (req, res) => {
     try {
         console.log("body",req.body)
-      const userId = req.session.user; // Assuming user is stored in session
-      let { productId,price,quantity } = req.body; // Expecting data from the frontend
+      const userId = req.session.user;
+      let { productId,price,quantity } = req.body; 
       quantity = Number(quantity)
-      const productid = productId; // Assuming productid is sent as a string from the frontend
+      const productid = productId; 
   
       // Validate input
       if (!mongoose.Types.ObjectId.isValid(productid)) {
         return res.status(400).send({ message: "Invalid product ID" });
       }
-      
   
       // Calculate total price
       const totalPrice = Number(quantity) * price;
@@ -163,8 +156,6 @@ const deleteItem = async(req,res)=>{
     }
 }
   
-
-
 const changeQuantity =async (req,res)=>{
     try {
         let { productId, quantity, count } = req.body;

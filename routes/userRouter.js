@@ -5,18 +5,20 @@ const signupController = require("../controllers/user/signupController")
 const loginController = require("../controllers/user/loginController")
 const filterController = require("../controllers/user/filterController")
 const addressController = require("../controllers/user/addressController")
-const userController =require("../controllers/user/usercontrollers")
+const homePageController =require("../controllers/user/homePageController")
 const emailController = require("../controllers/user/emailController")
 const passport = require("passport");
 const productController = require('../controllers/user/productController')
 const profileController = require('../controllers/user/profileController')
 const cartController = require("../controllers/user/cartController");
-const orderController = require("../controllers/user/orderController");
-const phoneNumberController = require('../controllers/user/phoneNumberController')
+const preOrderController = require("../controllers/user/preOrderController");
+const postOrderController = require("../controllers/user/postOrderController");
+const phoneNumberController = require('../controllers/user/phoneNumberController');
+const forgotPasswordController = require("../controllers/user/forgotPasswordController");
 const {userAuth, profileAuth} = require("../middlewares/auth");
 
-router.get('/', userController.loadHomePage)
-router.get('/shop',userAuth,userController.loadShopPage)
+router.get('/', homePageController.loadHomePage)
+router.get('/shop',userAuth,homePageController.loadShopPage)
 //router.get('/shop',userController.loadShopPage)
 router.get('/filter',userAuth,filterController.filterProduct)
 //router.get('/filter',userController.filterProduct)
@@ -28,6 +30,7 @@ router.post('/search',filterController.searchProducts)
 // user profile creation routes
 router.get('/signup',signupController.loadSignup)
 router.post('/signup', signupController.signup)
+router.get('/verifyOtp',signupController.loadVerifyOtp)
 router.post("/verifyOtp",signupController.verifyOtp)
 router.post('/resendOtp', signupController.resendOtp)
 router.get('/auth/google', passport.authenticate('google',{scope:['profile','email']}))
@@ -38,7 +41,7 @@ router.get('/auth/google', passport.authenticate('google',{scope:['profile','ema
 
 
 
-router.get('/pageNotFound', userController.pageNotFound);
+router.get('/pageNotFound', homePageController.pageNotFound);
 
 //login
 router.get('/login',loginController.loadLogin)
@@ -50,13 +53,13 @@ router.get('/auth/google/callback',passport.authenticate('google',{failureRedire
 
 
 //profile Management
-router.get('/forgotPassword',profileController.loadForgotPasswordPage)
-router.post('/forgotPassword',profileController.forgotEmailValid);
-router.get('/verifyOtpForgotPassword',profileController.loadForgotPasswordVerifyOtp)
-router.post('/verifyForgotPasswordOtp',profileAuth,profileController.verifyForgotPasswordOtp);
-router.get("/changePassword",profileAuth,profileController.loadChangePassword)
-router.post("/resendOtpForgotPassword",profileAuth, profileController.resendOtpForgotPassword)
-router.post('/resetPassword',profileAuth,profileController.resetPassword)
+router.get('/forgotPassword',forgotPasswordController.loadForgotPasswordPage)
+router.post('/forgotPassword',forgotPasswordController.forgotEmailValid);
+router.get('/verifyOtpForgotPassword',forgotPasswordController.loadForgotPasswordVerifyOtp)
+router.post('/verifyForgotPasswordOtp',profileAuth,forgotPasswordController.verifyForgotPasswordOtp);
+router.get("/changePassword",profileAuth,forgotPasswordController.loadChangePassword)
+router.post("/resendOtpForgotPassword",profileAuth, forgotPasswordController.resendOtpForgotPassword)
+router.post('/resetPassword',profileAuth,forgotPasswordController.resetPassword)
 
 router.get('/userProfile',userAuth,profileController.loadUserProfile)
 
@@ -106,11 +109,13 @@ router.post('/changeQuantity',userAuth,cartController.changeQuantity)
 
 
 //order Management
-router.get('/checkout', userAuth, orderController.getCheckoutPage);
-router.post("/orderPlaced", userAuth, orderController.orderPlaced)
-router.get("/orderDetails", userAuth, orderController.getOrderDetailsPage)
-router.post("/cancelOrder", userAuth, orderController.cancelOrder)
-router.get('/deleteItemCheckout',userAuth,orderController.deleteItemCheckout);
+router.get('/checkout', userAuth, preOrderController.getCheckoutPage);
+router.post("/orderPlaced", userAuth, preOrderController.orderPlaced)
+router.get('/deleteItemCheckout',userAuth,preOrderController.deleteItemCheckout);
+
+router.get("/orderDetails", userAuth, postOrderController.getOrderDetailsPage)
+router.post("/cancelOrder", userAuth, postOrderController.cancelOrder)
+
 
 
 

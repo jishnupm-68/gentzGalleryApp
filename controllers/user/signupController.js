@@ -70,23 +70,26 @@ const signup = async (req, res) => {
         const { name, email, phone, password, confirmPassword } = req.body;
 
         if (password !== confirmPassword) {
-            return res.render("signup", { message: "Password do not Match" });
+            console.log("Password donot match")
+            return res.json({ success: false , message: "Password do not Match" });
         }
 
         const findUser = await User.findOne({ email });
         if (findUser) {
-            return res.render("signup", { message: "User with this email already exists" });
+            console.log("User already exists")
+            return res.json({ success: false, message: "User with this email already exists" });
         }
 
         const otp = generateOtp();
         const emailSent = await sentVerificationEmail(email, otp);
         if (!emailSent) {
-            return res.json("email-error");
+            return res.json({success:false, message:"Failed to send otp"});
         }
 
         req.session.userOtp = otp;
         req.session.userData = { name, phone, email, password };
-        res.render("verifyOtp");
+        //res.render("verifyOtp");
+        res.status(200).json({success:true, message:"Otp sent successfully", redirectUrl:"/verifyOtp"})
         console.log("OTP SENT", otp);
         return; // Prevent further execution
 
@@ -95,6 +98,17 @@ const signup = async (req, res) => {
         res.status(500).render("pageNotFound"); // Ensure correct response
     }
 };
+
+const loadVerifyOtp = async (req,res)=>{
+    try{
+        console.log("rendering verify otp page for signup")
+        return res.status(200).render("verifyOtp")
+
+    }catch(error){
+        console.log("Home page not loading : ",error)
+        res.redirect('/pageNotFound')
+    }
+}
 
 //function for verifying the otp and saving the USER profile
 const verifyOtp = async (req,res)=>{
@@ -128,6 +142,7 @@ const verifyOtp = async (req,res)=>{
     }
 }
 
+//function for resending the otp
 const resendOtp = async(req,res)=>{
     try {
         const {email} = req.session.userData;
@@ -153,6 +168,7 @@ const resendOtp = async(req,res)=>{
 module.exports={
     loadSignup,
     signup,
+    loadVerifyOtp,
     verifyOtp,
     resendOtp,
 }

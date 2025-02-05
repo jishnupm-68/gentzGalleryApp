@@ -22,7 +22,7 @@
                     </thead>
                     <tbody>
                      <% if(orders) {%>
-                       
+                       <% console.log("from admin",orders) %>
                        <% orders.forEach(order => { %>
                         
                       <tr>
@@ -32,26 +32,32 @@
                         <td><%= formatedTime %></td>
                         <td><% order.orderedItems.forEach(item => { %><%= item.productName %> <br> <% }) %></td>
                         <td>
-                          <% if(order.status=="Cancelled") {%>
-                            <i class="text-danger">Cancelled</i>
+                          <% order.orderedItems.forEach(item => { %>
+                          <% if(item.productStatus=="Cancelled") {%>
+                            <i class="text-danger">Cancelled</i> <br>
                           
                             
+                            
+                          <% } else{ %>
+                            
+                           
 
-                          <% }else{ %>
-                            <form action="/admin/updateOrderStatus" method="POST">
+                             <form action="/admin/updateOrderStatus" method="POST">
                               <input type="hidden" name="orderId" value="<%= order._id %>">
+                              <input type="hidden" name="productId" value="<%= item.product %>">
                               <select name="status" onchange="this.form.submit()">
                                 <% const statuses = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Return Request', 'Returned', "Confirmed"]; %>
                                 <% statuses.forEach(statusOption => { %>
-                                  <option value="<%= statusOption %>" <%= order.status === statusOption ? 'selected' : '' %> >
+                                  <option value="<%= statusOption %>" <%= item.productStatus === statusOption ? 'selected' : '' %> >
                                     <%= statusOption %>
                                   
                                   </option>
                                 <% }); %>
                               </select>
-                            </form> 
+
 
                           <% } %>
+                          <% }) %>
                                                      
                         </td>
                         <td><%= order.finalAmount %></td>
@@ -94,6 +100,9 @@
 <script src="assets/js/main.js" type="text/javascript"></script>
 <script src="https://cdn.jsdelivr.net/npm/easyinvoice/dist/easyinvoice.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+
+
 
 <script>
 function handleDropdownChange(selectElement) {
@@ -157,6 +166,10 @@ function returnRequestOrder(orderId) {
         }
     });
 }
+
+
+
+
 </script>
 
 

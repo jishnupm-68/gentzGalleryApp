@@ -2,15 +2,16 @@
 <main class="container">
     <section class="content-main">
         <div class="content-header">
-            <div class="mt-10">
+            <div class="mt-1">
                 <h2 class="content-title card-title">Order detail</h2>
                 <p>Details for Order ID: <%= orders._id %></p>
-                <% console.log("Order ID: ", orders.orderId) %>
+                <% console.log("Order ID: ", orders._id) %>
+                <input type="text" name="orderId" id="orderId" value="<%= orders._id %>" hidden>
             </div>
         </div>
         <div class="card-body">
             <!-- Customer Information -->
-            <div class="row mb-10 mt-10 order-info-wrap background-info">
+            <div class="row mb-10  order-info-wrap background-info">
                 <div class="col-md-4">
                     <article class="icontext align-items-start ml-130">
                         <span class="icon icon-sm rounded-circle bg-primary-light">
@@ -82,10 +83,11 @@
                                 <% if (locals.orders) { %>
                                    
                                     <% orders.orderedItems.forEach((item) => {%>
+                                        
                                        
                                    
                                         <tr>
-                                            
+                                            <input type="text" name="product" id="product" value="<%= item.product %>" style="display: none;">
                                             <td class="text-center">
                                                 <a class="itemside" href="#">
                                                     <div class="left">
@@ -109,30 +111,27 @@
                                             </td>
 
                                             <td class="text-center">
-                                                <% if (orders.status === "Cancelled") { %>
+                                                <% if (item.productStatus == "Cancelled") { %>
                                                     <i class=" text-danger">Cancelled</i>
                                                 <% } else { %>
 
 
 
-                                                    <p class="text-success"><%= orders.status %></p>
+                                                    <p class="text-success"><%= item.productStatus %></p>
 
-                                                    <% console.log("order status",orders.status,orders.status === "Confirmed") %>
+                                                    <% console.log(item.productStatus, "order status",orders.status,orders.status === "Confirmed") %>
                                                     
                                                     <form action="" onsubmit="return false" >
-                                                        <% if (orders.status.trim() === "Confirmed" || orders.status.trim() === "Processing"|| orders.status.trim()==="Pending") { %>
+                                                        <% if (item.productStatus.trim() === "Confirmed" || item.productStatus.trim() === "Processing"|| item.productStatus.trim()==="Pending") { %>
                                                         
                                                             <!-- Allow the user to cancel -->
-                                                            <button type="submit" class="btn " onclick=" handleDropdownChange()">Cancel</button>
-                                                            
+                                                            <button type="submit" id="cancelButton<% item.product %>" class="btn " onclick=" handleDropdownChange('<%= item.product %>', 'Cancelled')">Cancel</button>
+                                                            <% console.log("id FROM FRONT",item.product) %>
                                                            
                                                         <% } %>
                                                         
                                                     </form>
-
-                                                   
-
-                                                   
+   
                                                 <% } %>
                                             </td>
 
@@ -161,21 +160,22 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
 <script>
-function handleDropdownChange() {
-    // console.log("selectedElement", selectElement, "selectedValue", selectElement.value);
-    // var selectedValue = selectElement.value;
-    var orderId = document.getElementById("orderId").value;
+function handleDropdownChange(productId) {
+  
+    console.log("productId = ", productId.toString());
+    var product = productId.toString();
     var selectedValue = 'cancel'
     console.log(selectedValue);
     if (selectedValue === "cancel") {
         console.log("calling toplevel confirmCancelOrder")
-        confirmCancelOrder(orderId);
+        confirmCancelOrder(product);
     } else if (selectedValue == "returnrequest") {
-        returnRequestOrder(orderId);
+        returnRequestOrder(product);
     }
 }
 
-function confirmCancelOrder(orderId) {
+
+function confirmCancelOrder(product) {
     console.log("first function calling confirmCancelOrder")
     Swal.fire({
         title: 'Confirm Cancel Order',
@@ -189,18 +189,19 @@ function confirmCancelOrder(orderId) {
     }).then((result) => {
         if (result.isConfirmed) {
             console.log('working');
-            cancelOrder(orderId);
+            cancelOrder(product);
         }
     });
 }
 
-function cancelOrder(orderId) {
+function cancelOrder(product) {
+    const orderId = document.getElementById("orderId")
     console.log("second function calling cancelOrder")
     $.ajax({
         url: '/cancelOrder',
         method: 'POST',
         contentType: 'application/json',
-        data: JSON.stringify({ orderId: orderId }),
+        data: JSON.stringify({ productId: product, orderId: orderId.value }),
         success: (response) => {
             if (response.result.modifiedCount === 1) {
                 Swal.fire("Cancelled", "Order has been cancelled", "success");
@@ -215,12 +216,12 @@ function cancelOrder(orderId) {
     });
 }
 
-function returnRequestOrder(orderId) {
+function returnRequestOrder(product) {
     $.ajax({
         url: '/returnrequestOrder',
         method: 'POST',
         contentType: 'application/json',
-        data: JSON.stringify({ orderId: orderId }),
+        data: JSON.stringify({ productId: product }),
         success: (response) => {
             if (response.result.modifiedCount === 1) {
                 window.location.reload();

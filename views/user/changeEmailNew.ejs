@@ -210,8 +210,8 @@
                     </div>
                   </div>
                 </div>
-                <form action="/updateEmail" method="post" id="signForm" onsubmit="return validateForm()">
-                <!-- <form id="signForm" onsubmit="return validateForm()"> -->
+                <!-- <form action="/updateEmail" method="post" id="signForm" onsubmit="return validateForm()"> -->
+                <form id="signForm" onsubmit="return validateForm()">
                   <div class="row gy-3 gy-md-4 overflow-hidden">
                     <div class="col-12">
                         <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
@@ -338,6 +338,7 @@
       </div>
     </div>
     <!-- Footer End-->
+     </footer>
     <!--? Search model Begin -->
     <div class="search-model-box">
       <div class="h-100 d-flex align-items-center justify-content-center">
@@ -395,19 +396,21 @@
 
 
 
+   
     <script>
+          document.addEventListener("DOMContentLoaded", function () {
       const emailid = document.getElementById("email");
       const errorInEmail = document.getElementById("errorInEmail");
       const loginform = document.getElementById("signForm");
 
-      function emailValidateChecking(e) {
-        console.log("email checking")
-        const emailval = emailid.value;
-        const emailpattern =
-          /^[a-zA-Z0-9._-]+@([a-zA-Z0-9.-]+)\.([a-zA-Z]{2,4})$/;
+      function emailValidateChecking() {
+        console.log("email checking");
+        const emailval = emailid.value.trim();
+        const emailpattern = /^[a-zA-Z0-9._-]+@([a-zA-Z0-9.-]+)\.([a-zA-Z]{2,4})$/;
 
         if (!emailpattern.test(emailval)) {
           errorInEmail.style.display = "block";
+          errorInEmail.style.color = "red";
           errorInEmail.innerHTML = "Invalid Format";
           return false;
         } else {
@@ -417,76 +420,70 @@
         }
       }
 
-      function validateForm(){
-        console.log("Called formValidate")
-        const value = emailValidateChecking()
-        console.log(value);
-        if(value){
-          // $.ajax({
-          //   url: 'updateEmail',
-          //   method: 'POST',
-          //   data: {email:emailid.value},
-          //   success: function(response){
-          //     console.log("response",response)
-          //     if(response.success){
-          //       Swal.fire({
-          //       icon: 'success',
-          //       title: 'Email Updated Successfully',
-          //       showConfirmButton: false,
-          //       timer: 3500
-          //     })
+      function validateForm() {
+        console.log("Called formValidate");
 
-          //     }else{
-          //       Swal.fire({
-          //         icon: 'error',
-          //         title: 'Error Occurred',
-          //         text:   "Error while updating the Email Address",
-          //         showConfirmButton: false,
-          //         timer: 3500
-          //       })
-          //     }
-
-          //   },
-          //   error: function(error){
-          //     Swal.fire({
-          //       icon: 'error',
-          //       title: 'Error Occurred',
-          //       text:   "Error while updating the Email Address",
-          //       showConfirmButton: false,
-          //       timer: 3500
-          //     })
-          //   }
-          // })
-          Swal.fire({
-                icon: 'success',
-                title: 'Email Updated Successfully',
-                showConfirmButton: false,
-                timer: 2500
-              })
-            loginform.submit();
-        }else{
-            return false
+        if (!emailValidateChecking()) {
+          console.log("Validation failed");
+          return false; // Stop execution
         }
+
+        fetch("updateEmail", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email: emailid.value }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("Response:", data);
+            if (data.success) {
+              Swal.fire({
+                icon: "success",
+                title: data.message,
+                showConfirmButton: false,
+                timer: 3500,
+              }).then(() => {
+                window.location.href = data.redirectUrl;
+              });
+            } else {
+              Swal.fire({
+                icon: "error",
+                title: "Error Occurred",
+                text: data.message,
+                showConfirmButton: false,
+                timer: 3500,
+              });
+            }
+          })
+          .catch((error) => {
+            Swal.fire({
+              icon: "error",
+              title: "Error Occurred",
+              text: "Error while updating the Email Address",
+              showConfirmButton: false,
+              timer: 3500,
+            });
+          });
+
+        return false; // Prevent form from submitting normally
       }
 
-      document.addEventListener("DOMContentLoaded", function () {
-        loginForm.addEventListener("submit", function (e) {
-          console.log("Called on submit");
-          e.preventDefault();
-          emailValidateChecking();
+      loginform.addEventListener("submit", function (e) {
+        console.log("Called on submit");
+        e.preventDefault(); // Prevent default form submission
 
-          if (!emailid || !errorInEmail ||  !loginform) {
-            console.error("One or more elements not found");
-          }
+        if (!emailValidateChecking()) {
+          console.log("Validation failed. Stopping form submission.");
+          return false;
+        }
 
-          if (errorInEmail.innerHTML ) {
-            e.preventDefault();
-          }
-        });
+        validateForm(); // Proceed with AJAX call if validation passes
       });
-    </script> 
+    });
 
-    
+    </script>
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
