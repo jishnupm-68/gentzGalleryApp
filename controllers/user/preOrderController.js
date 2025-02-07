@@ -8,21 +8,14 @@ const mongoose = require("mongoose");
 const env = require('dotenv').config();
 
 
-
-
-
 const decrementSaleCounts = async (cartItemQuantities) => {
     try {
-      // Create bulk operations based on cartItemQuantities
       const bulkOperations = cartItemQuantities.map(item => ({
         updateOne: {
-          filter: { _id: item.productId }, // Match product by ID
-          update: { $inc: { saleCount: item.quantity , quantity: -item.quantity } }, // Decrement saleCount by quantity
-          
+          filter: { _id: item.productId }, 
+          update: { $inc: { saleCount: item.quantity , quantity: -item.quantity } },          
         },
       }));
-  
-      // Perform bulkWrite
       const result = await Product.bulkWrite(bulkOperations);
       console.log('Bulk decrement result:', result);
       return result;
@@ -30,8 +23,7 @@ const decrementSaleCounts = async (cartItemQuantities) => {
       console.error('Error decrementing sale counts:', error);
       throw error;
     }
-  };
-
+};
 
 const getCheckoutPage = async (req, res) => {
     try {
@@ -39,14 +31,9 @@ const getCheckoutPage = async (req, res) => {
         const findUser = await User.findOne({ _id: user });
         const addressData = await Address.findOne({userId:user})
         const oid = new mongoose.Types.ObjectId(user);
-        
-        
-     
-        
-
         const cart = await Cart.findOne({ userId:user }).populate("items.productid");
         const cartItems = cart.items.map((item) => {
-            const product = item.productid; // Populated product
+            const product = item.productid; 
             return {
                 name: product.productName,
                 price: product.salePrice,
@@ -55,12 +42,10 @@ const getCheckoutPage = async (req, res) => {
                 stock: product.quantity,
                 quantity: item.quantity,
                 total: product.salePrice * item.quantity,
-                image: product.productImage[0], // First product image
+                image: product.productImage[0], 
                 productId: product._id,
             };
         });
-
-
 
         const gTotal = req.session.grandTotal;
         // const today = new Date().toString();
@@ -87,23 +72,20 @@ const getCheckoutPage = async (req, res) => {
         }else{
             res.redirect('/shop')
         }
-
-        console.log("user", user,"oid",oid,req.session.grandTotal);
-        
+        console.log("user", user,"oid",oid,req.session.grandTotal);      
     } catch (error) {
         console.error("error while rendering the checkout page", error);
         res.redirect('/pageNotFound');   
     }
 }
 
-
 const deleteItemCheckout = async(req,res)=>{
     try {
-        const productToDeleteId = req.query.id;  // Accessing the id from the query string
+        const productToDeleteId = req.query.id;  
         console.log('Item ID:', productToDeleteId);
-        const userId = req.session.user;  // User ID from the session
+        const userId = req.session.user;  
         const updatedCart = await Cart.findOneAndUpdate(
-            {userId:userId}, // to find the user from cart
+            {userId:userId},
             {
                 $pull:{
                     items: {productid: new mongoose.Types.ObjectId(productToDeleteId)}
@@ -120,14 +102,10 @@ const deleteItemCheckout = async(req,res)=>{
         }        
     } catch (error) {
         console.error("unable to delete the product from cart",error);
-        res.redirect("/pageNotFound")
-        
+        res.redirect("/pageNotFound")     
     }
 }
   
-
-
-
 const orderPlaced = async (req,res)=>{
     try{
         console.log(req.body)
@@ -148,14 +126,12 @@ const orderPlaced = async (req,res)=>{
             console.error("Address not found error")
             return res.json(404).json({error:"Address not found"})
         }
-        console.log("Productids",productIds)
-        
+        console.log("Productids",productIds) 
         const desiredAddress = findAddress.address.find((item)=>item._id.toString()===addressId.toString());
         if(!desiredAddress){
             console.error("Desired Address not found error")
             return res.json(404).json({error:"Address not found"})
-        }
-        
+        } 
         const findProducts = await Product.find({_id:{$in:productIds}});
         console.log("findPRoducts", findProducts, "productIds", productIds)
         if(findProducts.length !== productIds.length){
@@ -179,9 +155,7 @@ const orderPlaced = async (req,res)=>{
             quantity: cartItemQuantities.find((cartItem)=>cartItem.productId.toString()===item._id.toString()).quantity
         })
         );
-
         console.log("orderedProducts", orderedProducts)
-
         const newOrder = new Order({
             orderedItems:orderedProducts,
             totalPrice:totalPrice,
@@ -193,18 +167,16 @@ const orderPlaced = async (req,res)=>{
             status: "Pending",
             orderDate: new Date()
         })
-
         let orderDone = await newOrder.save();
-        // await User.findOneAndUpdate({_id:userId},{$set:{cart:[]}});
-        let result = await User.findOneAndUpdate(
-            { _id: userId },
-            { $set: { cart: [] } },
-            { new: true }
-        );
-        await Cart.findOneAndDelete({userId:userId});
-        console.log("result of cart updating after order done", result)
-        
-
+        const [updatedUser, deletedCart] = await Promise.all([
+            User.findOneAndUpdate(
+                { _id: userId },
+                { $set: { cart: [] } },
+                { new: true }
+            ),
+            Cart.findOneAndDelete({ userId: userId })
+        ]); 
+        console.log("result of cart updating after order done", updatedUser)   
         for (let orderedProduct of orderedProducts) {
             const product = await Product.findOne({ _id: orderedProduct._id });
             if (product) {
@@ -214,11 +186,9 @@ const orderPlaced = async (req,res)=>{
           }
           console.log("orderDone", orderDone, "newOrder",newOrder)
           if(orderDone){
-  
               decrementSaleCounts(cartItemQuantities)
                 .then(result => console.log('Decrement successful:', result))
-                .catch(error => console.error('Decrement failed:', error));
-              
+                .catch(error => console.error('Decrement failed:', error));      
           }
           if (newOrder.payment === "cod") {
             console.log("COD")
@@ -229,24 +199,16 @@ const orderPlaced = async (req,res)=>{
               quantity: cartItemQuantities,
               orderId: orderDone._id,
             });
-          } 
-      
+          }  
       console.log("order placed successfully", cartItemQuantities);
-
-          
-
     }catch(error){
         console.error("error while placing the order", error)
         res.redirect('/pageNotFound')
     }
-
 }
-
 
 module.exports = {
     getCheckoutPage,
     deleteItemCheckout,
     orderPlaced,
-    
-
 }

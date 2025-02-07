@@ -7,20 +7,14 @@ const Cart = require('../../models/cartSchema');
 const mongoose = require("mongoose");
 const env = require('dotenv').config();
 
-
-
 const decrementSaleCounts = async (cartItemQuantities) => {
     try {
-      // Create bulk operations based on cartItemQuantities
       const bulkOperations = cartItemQuantities.map(item => ({
         updateOne: {
-          filter: { _id: item.productId }, // Match product by ID
-          update: { $inc: { saleCount: item.quantity , quantity: -item.quantity } }, // Decrement saleCount by quantity
-          
+          filter: { _id: item.productId }, 
+          update: { $inc: { saleCount: item.quantity , quantity: -item.quantity } },         
         },
       }));
-  
-      // Perform bulkWrite
       const result = await Product.bulkWrite(bulkOperations);
       console.log('Bulk decrement result:', result);
       return result;
@@ -29,7 +23,6 @@ const decrementSaleCounts = async (cartItemQuantities) => {
       throw error;
     }
   };
-
 
 const getOrderDetailsPage = async (req,res)=>{
     try {
@@ -47,24 +40,7 @@ const getOrderDetailsPage = async (req,res)=>{
         let grandTotal = findOrder.finalAmount;
         let discount = findOrder.discount;
         let totalPrice = grandTotal-discount;
-
         console.log("FindOrdeR:",findOrder,address);
-//         const cart = await Cart.findOne({ userId:userId }).populate("items.productid");
-//         const cartItems = cart.items.map((item) => {
-//             const product = item.productid; // Populated product
-//             return {
-//                 name: product.productName,
-//                 price: product.salePrice,
-//                 brand:product.brand,
-//                 category: product.category,
-//                 stock: product.quantity,
-//                 quantity: item.quantity,
-//                 total: product.salePrice * item.quantity,
-//                 image: product.productImage[0], // First product image
-//                 productId: product._id,
-//             };
-//         });
-// console.log("cartItems",cartItems)
         res.render("orderDetails",{
             orders: findOrder,
             user: findUser,
@@ -73,19 +49,13 @@ const getOrderDetailsPage = async (req,res)=>{
             discount: discount,
             finalAmount : totalPrice,
             address:address,
-            //products: cartItems
         })
-        console.log(req.session,req.body, req.params,req.query)
-        
-        
+        console.log(req.session,req.body, req.params,req.query)  
     } catch (error) {
         console.error("error while loading the order details page", error)
-        res.redirect('/pageNotFound')
-        
+        res.redirect('/pageNotFound')   
     }
-
 }
-
 
 const cancelOrder = async(req,res)=>{
     try {
@@ -101,8 +71,7 @@ const cancelOrder = async(req,res)=>{
         const cancelOrder = await Order.findOne(
             {"orderedItems.product":productId, userId:userId, _id:orderId},
             {"orderedItems.$":1},
-        )
-       
+        )       
         const cancelItemQuantities = cancelOrder.orderedItems.map((item)=>
             ({
                 productId:item.product,
@@ -111,15 +80,13 @@ const cancelOrder = async(req,res)=>{
             );
             console.log("findCancelled order",findOrder,"cancelItemQuantities",cancelItemQuantities)
             if(findOrder){
-  
                 decrementSaleCounts(cancelItemQuantities)
-                  .then(result => 
-                    
+                  .then(result =>                     
                     {console.log('Decrement successful:', result)
                     if (result.modifiedCount === 1) {
                         return res.json({
                             success: true,
-                            result, // Send MongoDB update response
+                            result, 
                             message: "Order has been successfully cancelled"
                         });
                     } else {
@@ -130,16 +97,13 @@ const cancelOrder = async(req,res)=>{
                         });
                     }}
                     )
-                  .catch(error => console.error('Decrement failed:', error));
-              
-            }
-        
+                  .catch(error => console.error('Decrement failed:', error));           
+            }       
     } catch (error) {
         console.error("Error while cancelling the order",error);
         res.redirect('/pageNotFound')
     }
 }
-
 
 module.exports = {
     getOrderDetailsPage,

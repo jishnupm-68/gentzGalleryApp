@@ -1,40 +1,32 @@
 
-
 const User = require('../../models/userSchema');
 
 const customerInfo = async (req, res) => {
     try {
-        // Extract search and pagination from query parameters
         let search = req.query.search || '';
         let page = parseInt(req.query.page) || 1;
-
-        // Ensure page is valid
         if (page < 1) page = 1;
-
         const limit = 3;
-
-        // Fetch user data with pagination and search
-        const userData = await User.find({
-            isAdmin: false,
-            $or: [
-                { name: { $regex: search, $options: "i" } },
-                { email: { $regex: search, $options: "i" } },
-            ],
-        })
+        const [userData, count] = await Promise.all([
+            User.find({
+                isAdmin: false,
+                $or: [
+                    { name: { $regex: search, $options: "i" } },
+                    { email: { $regex: search, $options: "i" } },
+                ],
+            })
             .limit(limit)
             .skip((page - 1) * limit)
-            .exec();
-
-        // Count total documents matching the query
-        const count = await User.countDocuments({
-            isAdmin: false,
-            $or: [
-                { name: { $regex: search, $options: "i" } },
-                { email: { $regex: search, $options: "i" } },
-            ],
-        });
-
-        // Render the 'customers' view with the required data
+            .lean(),
+        
+            User.countDocuments({
+                isAdmin: false,
+                $or: [
+                    { name: { $regex: search, $options: "i" } },
+                    { email: { $regex: search, $options: "i" } },
+                ],
+            }),
+        ]);
         res.render('customers', {
             users: userData,
             currentPage: page,
@@ -53,8 +45,10 @@ const customerBlocked = async(req,res)=>{
     try{
         let id = req.query.id.trim();
         await User.findByIdAndUpdate(id,{$set:{isBlocked:true}});
+        console.log("customer blocked successfully")
         res.redirect('/admin/users');
     }catch(error){
+        console.error("Error in customerBlocked:", error);
         res.redirect('/admin/pageError')
     }
 }
@@ -64,14 +58,12 @@ const customerUnblocked = async(req,res)=>{
     try{
         await User.findByIdAndUpdate(id,{$set:{isBlocked:false}});
         res.redirect('/admin/users');
-
+        console.log("customer unblocked successfully")
     }catch(error){
+        console.error("Error in customerUnblocked:", error);
         res.redirect('/admin/pageError')
-
     }
-
 }
-
 
 module.exports = {
     customerInfo,

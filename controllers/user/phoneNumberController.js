@@ -23,7 +23,6 @@ const sentVerificationEmail = async(email,otp)=>{
                 pass: process.env.NODEMAILER_PASSWORD
             }
         })
-
         const mailOption = {
             from: process.env.NODEMAILER_EMAIL,
             to : email,
@@ -33,14 +32,12 @@ const sentVerificationEmail = async(email,otp)=>{
         }
         const info = await transporter.sendMail(mailOption);
         console.log("Email sent", info.messageId, otp);
-        return true
-        
+        return true       
     } catch (error) {
         console.log("error while senting the email",error);
         return res.redirect("/pageNotFound");  
     }
 }
-
 
 // render the email confirmation page for changing the phone number
 const loadChangePhone  = (req,res)=>{
@@ -67,33 +64,27 @@ const changePhoneEmailVerify = async (req,res)=>{
             if(emailSent){
                 req.session.userOtp = otp;
                 req.session.userData = {email};
-                //res.render("changePhoneVerifyOtp",{user:user});
-                res.json({success:true, message:"Otp sent successfully", redirectUrl:"/changePhoneVerifyOtp"})
+                res.json({success:true, message:"Otp sent successfully", redirectUrl:"/changePhoneVerifyOtp"}) // success message to changePhoneVerifyOtp page
             }else{
                 console.log("Email not sent , something went wrong");
                 res.json({success:false, message:"Email not sent , something went wrong"})
-                //res.redirect('/login');
-            }
-           
+            }           
         }else{
             console.log("user not match")
-           // return res.render("changePhoneEmailVerify",{user:user,message:"The given email id is not matching with your account"})
-           res.json({success:false, message:"The given email id is not matching with your account"})
+            res.json({success:false, message:"The given email id is not matching with your account"}) // error message to changePhoneEmailVerify page
         }
     } catch (error) {
         console.error("error while changing phone number", error);
-        res.redirect('/pageNotFound');
-        
+        res.redirect('/pageNotFound');      
     }
-
 }
 
 const loadChangePhoneVerifyOtp = async (req,res)=>{
     try{
     const user = await User.findOne({_id:req.session.user});;
     res.render("changePhoneVerifyOtp",{user:user});
-}
-    catch(error){
+    console.log("change phone verify otp page rendered")
+    }catch(error){
         console.error("Error while rendering page, some internal error occured",error);
         res.redirect(301,'/pageNotFound');
     }
@@ -134,7 +125,6 @@ const updatePhone =  (req,res)=>{
     console.log(req.body)
     const {phone}= req.body;
     const userId = req.session.user;
-
     new Promise((resolve,reject)=>{
         User.findByIdAndUpdate({_id:userId},{$set:{phone:phone}})
             .then((user)=>{

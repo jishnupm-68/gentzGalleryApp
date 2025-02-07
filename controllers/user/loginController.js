@@ -20,20 +20,16 @@ const loadLogin = async(req,res)=>{
             return res.redirect("/")
         }
     } catch (error) {
-        res.redirect('pageNotfound')
-        
+        console.log("Home page not loading : ",error)
+        res.redirect('pageNotfound')       
     }
-
 }
-
-
 
 const login = async(req,res)=>{
     try {
         const {email,password} = req.body
         const findUser = await User.findOne({isAdmin:0, email:email});
         //console.log(findUser)
-
         if(!findUser){
             return res.render("login",{message:"User not found"})
         }
@@ -49,10 +45,8 @@ const login = async(req,res)=>{
         res.redirect('/')
     } catch (error) {
         console.log("Login error", error);
-        res.render("login",{message:"Login failed, please try again after some time"})
-        
+        res.render("login",{message:"Login failed, please try again after some time"})       
     }
-
 }
 
 const logout = async (req,res)=>{
@@ -63,8 +57,7 @@ const logout = async (req,res)=>{
                 return res.redirect("/pageNotFound")
             }
             return res.redirect('/')
-        })
-        
+        })        
     } catch (error) {
         console.log("Logout error",error)
         res.redirect("/pageNotFound")
@@ -85,24 +78,19 @@ const googleLogin = async (req,res)=>{
         }
         if(user.isBlocked){
             return res.render("login",{message:"User is blocked by admin"})
-        }
-       
+        }     
         req.session.user = user._id;
         res.redirect('/')
-
     }
     catch(error){
         console.error("error while logging in with google",error)
         res.redirect("/pageNotFound")
-
     }
 }
-
 
 module.exports= {
     loadLogin,  
     login,
     logout,
     googleLogin,
-
 }

@@ -8,8 +8,10 @@ const sharp = require("sharp");
 
 const getProductAddPage = async (req, res) => {
   try {
-    const category = await Category.find({ isListed: true });
-    const brand = await Brand.find({ isBlocked: false });
+    const [category, brand] = await Promise.all([
+      Category.find({ isListed: true }),
+      Brand.find({ isBlocked: false }),
+    ]);
     res.render("addProduct", { cat: category, brand: brand });
   } catch (error) {
     console.log("Error in getProductAddPage", error);
@@ -29,21 +31,16 @@ const addProducts = async (req, res) => {
       if (req.files && req.files.length > 0) {
         for (let i = 0; i < req.files.length; i++) {
           const originalImagePath = req.files[i].path;
-         
           const resizedImagePath = path.join(
             __dirname,
             "../../public/uploads/product-imagesResized",
-            req.files[i].filename // Add a filename
+            req.files[i].filename 
           );
-
           console.log("debugging", originalImagePath, resizedImagePath);
           await sharp(originalImagePath)
             .resize({ width: 440, height: 400 })
             .toFile(resizedImagePath);
-
-          
           images.push(req.files[i].filename);
-         
           console.log(
             "images",
             req.files[i].filename,
@@ -73,11 +70,12 @@ const addProducts = async (req, res) => {
       await newProduct.save();
       return res.redirect("/admin/addProducts");
     } else {
-      const category = await Category.find({ isListed: true });
-       const brand = await Brand.find({ isBlocked: false });
-     return res.render("addProduct", { cat: category, brand: brand,message:
-      "Product name already exists, please try again with another name" });
-      
+      const [category, brand] = await Promise.all([
+         Category.find({ isListed: true }),
+         Brand.find({ isBlocked: false }),
+      ]);
+      return res.render("addProduct", { cat: category, brand: brand,
+      message: "Product name already exists, please try again with another name" });
 
       //return res.status(400).json({ message: "Product already exists" });
     }
@@ -92,40 +90,40 @@ const getAllProducts = async (req, res) => {
     const search = req.query.search || "";
     const page = req.query.page || 1;
     const limit = 4;
-
-    const productData = await Product.find({
-      $or: [
-        { productName: { $regex: new RegExp(".*" + search + ".*", "i") } },
-        { brand: { $regex: new RegExp(".*" + search + ".*", "i") } },
-      ],
-    })
-      .limit(limit * 1)
+    const [productData, count, categories, brands] = await Promise.all([
+      Product.find({
+          $or: [
+              { productName: { $regex: new RegExp(".*" + search + ".*", "i") } },
+              { brand: { $regex: new RegExp(".*" + search + ".*", "i") } },
+          ],
+      })
+      .limit(limit)
       .skip((page - 1) * limit)
       .populate("category")
-      .exec();
-
-    const count = await Product.find({
-      $or: [
-        { productName: { $regex: new RegExp(".*" + search + ".*", "i") } },
-        { brand: { $regex: new RegExp(".*" + search + ".*", "i") } },
-      ],
-    }).countDocuments();
-
-    const category = await Category.find({ isListed: true });
-    const brand = await Category.find({ isListed: true });
+      .exec(),
+      Product.countDocuments({
+          $or: [
+              { productName: { $regex: new RegExp(".*" + search + ".*", "i") } },
+              { brand: { $regex: new RegExp(".*" + search + ".*", "i") } },
+          ],
+      }),
+      Category.find({ isListed: true }),
+      Brand.find({ isListed: true }) 
+  ]);
     console.log(count, limit);
-    if (category && brand) {
+    if (categories && brands) {
       res.render("products", {
         data: productData,
         currentPage: page,
         totalPages: Math.ceil(count / limit),
-        cat: category,
-        brand: brand,
+        cat: categories,
+        brand: brands,
       });
     } else {
       res.render("adminError");
     }
   } catch (error) {
+    console.log("Error in getAllProducts", error);
     res.redirect("/admin/pageError");
   }
 };
@@ -194,11 +192,13 @@ const unBlockProduct = async (req, res) => {
 const getEditProduct = async (req, res) => {
   try {
     const id = req.query.id;
-    const product = await Product.findById({ _id: id });
-    const category = await Category.find({isListed:true});
+    const [product, category, brand] = await Promise.all([ 
+      Product.findById({ _id: id }),
+      Category.find({isListed:true}),
+      Brand.find({})
+    ]);
     const currentCategory = await Category.findOne({ _id: product.category });
     console.log("Current category",currentCategory)
-    const brand = await Brand.find({});
     if (product && category && brand) {
       res.render("editProduct", {
         product: product,
@@ -216,22 +216,20 @@ const getEditProduct = async (req, res) => {
 };
 
 const editProduct = async (req, res) => {
-  console.log("Here for editing the existing product");
-  console.log("body", req.body);
-  console.log("params", req.params);
-  console.log("query", req.query);
-  console.log("files", req.files);
+  console.log("editing the existing product");
   try {
     const id = req.query.id;
-    const product = await Product.findOne({ _id: id });
     const data = req.body;
-    const existingProduct = await Product.findOne({
-      productName: data.productName.trim(),
-      id: { $ne: id },
-    });
-    const category = await Category.find();
-    const brand = await Brand.find({});
-
+    const [product, existingProduct, category, brand] = await Promise.all([
+      Product.findOne({ _id: id }),
+      Product.findOne({
+        productName: data.productName.trim(),
+        id: { $ne: id },
+      }),
+      Category.find(),
+      Brand.find(),
+    ]);
+    
     if (existingProduct) {
       return res.render("editProduct", {
         product: product,

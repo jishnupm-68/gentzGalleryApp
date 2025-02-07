@@ -124,11 +124,21 @@
                                                     <form action="" onsubmit="return false" >
                                                         <% if (item.productStatus.trim() === "Confirmed" || item.productStatus.trim() === "Processing"|| item.productStatus.trim()==="Pending") { %>
                                                         
-                                                            <!-- Allow the user to cancel -->
+                                                            <!-- Allow the user to cancel the order -->
                                                             <button type="submit" id="cancelButton<% item.product %>" class="btn " onclick=" handleDropdownChange('<%= item.product %>', 'Cancelled')">Cancel</button>
-                                                            <% console.log("id FROM FRONT",item.product) %>
-                                                           
-                                                        <% } %>
+                                                            
+                                                        <% }%>
+                                                        
+                                                    </form>
+
+                                                    <form action="" onsubmit="return false" >
+                                                        <% if (item.productStatus.trim() === "Delivered" ) { %>
+                                                        
+                                                            <!-- Allow the user to return the order -->
+                                                            <button type="submit" id="returnButton<% item.product %>" class="btn " onclick="">Return</button>
+                                                            
+                                                        <% }%>
+                                                          
                                                         
                                                     </form>
    

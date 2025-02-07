@@ -165,9 +165,14 @@
                                     </tbody>
                                 </table>
                             </div>
-                           
-                            <button  class="btn " onclick="return confirmCheckout()"> <i class="fi-rs-box-alt mr-10"></i>
+                           <% if(items.length>0) {%>
+                            <button  class="btn btn-md rounded font-sm hover-up" onclick="return confirmCheckout()"> <i class="fi-rs-box-alt mr-10"></i>
                                 Proceed To CheckOut</button>
+                                <% }else {%>
+                                    <button  class="btn btn-md rounded font-sm hover-up" onclick="return confirmCheckout()" disabled> <i class="fi-rs-box-alt mr-10"></i>
+                                        Proceed To CheckOut</button>
+                                <% } %>
+
                                 <input type="text" value="<%= user %>" data-user="<%= user %>" style="display: none;" id="user">
                                
                           
@@ -188,8 +193,8 @@
     </main>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-
-function confirmCheckout() {
+        //function for validating stock and cart quantity
+        function confirmCheckout() {
     let user = document.getElementById("user").dataset.user;
 
     var pIdElement = document.getElementById('pId');
@@ -204,29 +209,18 @@ function confirmCheckout() {
         Swal.fire({
                 title: 'Sold out',
                 text: "Some products are not available in stock Please remove them from your cart.",
-                icon: 'warning',
-                // showCancelButton: true,
-                // confirmButtonColor: '#3085d6',
-                // cancelButtonColor: '#d33',
-                // confirmButtonText: 'Yes, remove it!'
+                icon: 'warning',               
                 timer:5000,
-                timerProgressBar: true
-                
+                timerProgressBar: true               
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // confirmRemove(pId);
                     
-                    // window.location.href = `/checkout?userId=${user}`;
                 }
             })
-
     }      
         }
         
-       
-
-
-
+        //function for changing quantity
         function changeQuantity(productId, cartQuantity, count, productPrice, productQuantity) {
             console.log(productId, cartQuantity, count, productPrice,"productQuantity", productQuantity)
            // console.log(`cartProductQuantity${productId}`)
@@ -260,33 +254,29 @@ function confirmCheckout() {
                 Swal.fire("Limit Exceeded", "You must add at least one", "error")
             }
 
-
-
-            
-
             // Update DOM
             const newSubtotal = newQuantity * productPrice;
             cartProductQuantityElement.value = newQuantity;
             document.getElementById(`subTotal${productId}`).innerHTML = newSubtotal;
 
-            // AJAX Request
+            // AJAX Request for changing quantity
             $.ajax({
                 url: '/changeQuantity',
                 method: 'POST',
                 data: { productId, quantity: currentQuantity, count },
 
-                
-            
-
                 success: (response) => {
                     document.getElementById('total').innerHTML = response.grandTotal;
+                    if(productQuantity ==1){
+                        location.reload();
+                    }                    
                 },
                 error: (error) => {
                     console.error("Error updating quantity:", error);
                 }
             });
         }
-
+        //function for removing the cart product
         function confirmRemove(productId) {
             Swal.fire({
                 title: 'Are you sure?',

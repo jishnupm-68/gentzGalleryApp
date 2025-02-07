@@ -21,40 +21,31 @@ const sentVerificationEmail =  async(email,otp)=>{
                 pass:process.env.NODEMAILER_PASSWORD
             }
         })
-
         const mailOptions ={
             from: process.env.NODEMAILER_EMAIL,
             to: email,
             subject: "Verification Code",
             text: `Your verification code is ${otp}`,
             html: `<b>Your Verification Code for changing the password: ${otp}</b> `
-        }
-        
+        }       
         const info = await transporter.sendMail(mailOptions);
         console.log("Email sent", info.messageId, otp)
-        return true
-    
-} catch (error) {
-    console.error("ERror while sending email",error)
-    return false
-    
-}
-
-
+        return true    
+    } catch (error) {
+        console.error("ERror while sending email",error)
+        return false   
+    }
 }
 
 const loadForgotPasswordPage =async (req,res)=>{
     try {
         console.log("rendering the page for verify email to change the password")
-        res.status(200).render('forgotPassword')
-        
+        res.status(200).render('forgotPassword')  
     } catch (error) {
         console.log("error while rendering the page for verify email to change the password",error)
-        res.redirect('pageError')
-        
+        res.redirect('pageError')   
     }
 }
-
 
 const forgotEmailValid = async (req,res)=>{
     try {
@@ -72,28 +63,22 @@ const forgotEmailValid = async (req,res)=>{
                 return
             }else{
                 console.log("Email not sent, something went wrong");
-                res.status(500).json({success:false, message:"Failed to send otp"})
-                
+                res.status(500).json({success:false, message:"Failed to send otp"})            
             }
         }else{
             console.log("User not found, please try again with registered email")
             res.status(404).json({success:false, message:"User not found, please try again with registered email"})
-        }
-        
-       
-        
+        }   
     } catch (error) {
         console.error("Error in forgotPassword",error)
-        res.redirect('/pageNotFound')
-        
+        res.redirect('/pageNotFound')       
     }
 }
 
 const loadForgotPasswordVerifyOtp = async (req,res)=>{
     try {
         console.log("rendering verify otp page for password change")
-        res.status(200).render('forgotPasswordVerifyOtp')
-        
+        res.status(200).render('forgotPasswordVerifyOtp')        
     } catch (error) {
         console.error("error while rendering the forgot password verify otp page",error);
         res.redirect('/pageNotFound')
@@ -112,11 +97,9 @@ const verifyForgotPasswordOtp = async(req,res)=>{
             console.log(enteredOtp === storedOtp,"error while validating the otp")
             res.json({success:false, message:"Invalid otp, please try again"})
         }
-
     }catch(error){
         console.error("error while verifying the otp for password change", error)
-        res.status(500).json({success:false, message:"An error occured, please try again"})
-    
+        res.status(500).json({success:false, message:"An error occured, please try again"})    
     }
 }
 
@@ -124,11 +107,9 @@ const loadChangePassword = async(req,res)=>{
     try{
         console.log("rendering page for adding the new password")
         res.render("changePassword")
-
     }catch(error){
         console.log("error while rendering the change password new page",error)
         res.redirect('/pageNotFound')
-
     }
 }
 
@@ -150,8 +131,7 @@ const resendOtpForgotPassword = async(req,res)=>{
         }
     } catch (error) {
         console.error("Error while sending otp", error)
-        res.status(500).json({success:false, message: "Internal server error, please try again"})
-        
+        res.status(500).json({success:false, message: "Internal server error, please try again"})        
     }
 }
 
@@ -174,8 +154,8 @@ const resetPassword = async(req,res)=>{
             res.status(200).json({success:true, message:"Password changed successfully" , redirectUrl:"/login"})
         }
     }catch(error){
+        console.log("error while changing the password",error)
         res.redirect('/pageNotFound')
-
     }
 }
 

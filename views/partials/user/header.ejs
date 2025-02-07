@@ -26,8 +26,6 @@
     <link rel="stylesheet" href="assets/css/style.css">
 
 
-
-
     <link rel="stylesheet" href="./PublicOut/css/bootstrap.min.css" type="text/css">
    <link rel="stylesheet" href="./PublicOut/css/font-awesome.min.css" type="text/css">
    <link rel="stylesheet" href="./PublicOut/css/elegant-icons.css" type="text/css">
@@ -43,33 +41,23 @@
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
    <script src="https://kit.fontawesome.com/b001ffdfea.js" crossorigin="anonymous"></script>
 
-
-
-
-
-    
-
-
-    
-
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css" />
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
 
 
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel/slick/slick.css"/>
-<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel/slick/slick-theme.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel/slick/slick-theme.css"/>
     <style>
          .header__nav__option .sign-in-link {
-   font-size: 16px;
-   color: #333;
-   margin-right: 15px;
-   text-decoration: none;
-   font-weight: 600;
-    }
-    .header__nav__option .sign-in-link:hover {
-    color: #ff7f50;
-    }
+        font-size: 16px;
+        color: #333;
+        margin-right: 15px;
+        text-decoration: none;
+        font-weight: 600;
+        }
+        .header__nav__option .sign-in-link:hover {
+        color: #ff7f50;
+        }
 
         .dropdown{
             position: relative;
@@ -101,18 +89,6 @@
             position: relative;
             z-index: 500;
         }
-
-        /* .tab-content {
-  min-height: 500px; 
-  overflow-x: visible; 
-  position: absolute;
-} */
-
-
-
-
-
-
     </style>
 
 
@@ -130,7 +106,9 @@
             </div>
         </div>
     </div>
-    <!-- Preloader Start-->
+    <!-- Preloader end-->
+    
+    <!-- header start -->
     <header>
         <!-- Header Start -->
         <div class="header-area ">
@@ -140,7 +118,7 @@
                         <div class="header-left d-flex align-items-center">
                             <!-- Logo -->
                             <div class="logo">
-                                <a href="index.html"><img src="assets/img/logo/logo.png" alt=""></a>
+                                <a href="/"><img src="assets/img/logo/logo.png" alt=""></a>
                             </div>
                             <!-- Main-menu -->
                             <div class="main-menu  d-none d-lg-block">
@@ -148,9 +126,9 @@
                                     <ul id="navigation">
                                         <li><a href="/">Home</a></li>
                                         <li><a href="/shop">Shop</a></li> 
-                                        <li><a href="shop.html">Men</a></li>
-                                        <li><a href="about.html">Boys</a></li>
-                                        <li><a href="contact.html">Contact</a></li>
+                                        <li><a href="#">Men</a></li>
+                                        <li><a href="#">Boys</a></li>
+                                        <li><a href="#">Contact</a></li>
                                         <!-- <li><a href="blog.html">Blog</a>
                                             <ul class="submenu">
                                                 <li><a href="blog.html">Blog</a></li>
@@ -163,8 +141,11 @@
                                             <div class="dropdown">
                                                <li><a href="" class="sign-in-link"><%=locals.user.name %></a></li> 
                                                 <div class="dropdown-content">
-                                                    <a href="/userProfile">Profile</a>
-                                                    <a href="/logout">Logout</a>
+                                                    
+                                                        <a href="/userProfile">Profile</a>
+                                                        <a href="/logout">Logout</a>
+                                                   
+                                                   
 
                                                 </div>
                                             </div>
@@ -184,18 +165,19 @@
                             <!-- Social -->
                             <div class="header-social d-none d-md-block">
                                 <a href="#"><i class="fab fa-twitter"></i></a>
-                                <a href="https://bit.ly/sai4ull"><i class="fab fa-facebook-f"></i></a>
+                                <a href="#"><i class="fab fa-facebook-f"></i></a>
                                 <a href="#"><i class="fab fa-pinterest-p"></i></a>
+                                <a href="/Wishlist" ><i class="fas fa-heart "></i></a>
                             </div>
                             <!-- Search Box -->
                             <div class="search d-none d-md-block">
                                 <ul class="d-flex align-items-center">
-                                    <li class="mr-15">
+                                    <!-- <li class="mr-15">
                                         <div class="nav-search search-switch">
                                             <i class="ti-search"></i>
                                         </div>
-                                    </li>
-                                    <li>
+                                    </li> -->
+                                    
                                         <div class="card-stor">
                                             <a href="/cart"><img src="assets/img/gallery/card.svg" alt=""></a>
                                             <span></span>

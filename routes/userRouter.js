@@ -15,6 +15,7 @@ const preOrderController = require("../controllers/user/preOrderController");
 const postOrderController = require("../controllers/user/postOrderController");
 const phoneNumberController = require('../controllers/user/phoneNumberController');
 const forgotPasswordController = require("../controllers/user/forgotPasswordController");
+const wishlistController = require("../controllers/user/wishlistController");
 const {userAuth, profileAuth} = require("../middlewares/auth");
 
 router.get('/', homePageController.loadHomePage)
@@ -51,7 +52,6 @@ router.get('/auth/google/callback',passport.authenticate('google',{failureRedire
 
 
 
-
 //profile Management
 router.get('/forgotPassword',forgotPasswordController.loadForgotPasswordPage)
 router.post('/forgotPassword',forgotPasswordController.forgotEmailValid);
@@ -85,8 +85,6 @@ router.post('/verifyPhoneOtp', userAuth, phoneNumberController.verifyPhoneOtp)
 router.get("/changePhoneNew",userAuth, phoneNumberController.loadChangePhoneNew)
 router.post('/updatePhone', userAuth, phoneNumberController.updatePhone)
 
-
-
 //Address management
 router.get("/addAddress",userAuth,addressController.loadAddAddress)
 router.post("/addAddress", userAuth,addressController.postAddAddress)
@@ -96,15 +94,11 @@ router.get('/deleteAddress', userAuth, addressController.deleteAddress)
 //productMAangement
 router.get('/productDetails',productController.productDetails)
 
-
-
 //cart management
 router.get('/cart',userAuth,cartController.getCartPage);
 router.post('/addToCart',userAuth,cartController.addToCart);
 router.get('/deleteItem',userAuth,cartController.deleteItem);
 router.post('/changeQuantity',userAuth,cartController.changeQuantity)
-
-
 
 
 
@@ -116,6 +110,11 @@ router.get('/deleteItemCheckout',userAuth,preOrderController.deleteItemCheckout)
 router.get("/orderDetails", userAuth, postOrderController.getOrderDetailsPage)
 router.post("/cancelOrder", userAuth, postOrderController.cancelOrder)
 
+
+
+//wishlist management
+
+router.get('/Wishlist',userAuth,wishlistController.loadWishlist)
 
 
 

@@ -9,7 +9,6 @@ const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt")
 
 
-
 const pageNotFound = (req,res)=>{
     try{
     res.render('page-404')
@@ -22,7 +21,6 @@ function generateOtp(){
     return Math.floor(100000+Math.random()*900000).toString()
 
 }
-
 
 async function sentVerificationEmail(email,otp){
     
@@ -56,7 +54,6 @@ async function sentVerificationEmail(email,otp){
     }
 }
  
-
 const securePassword =async (password)=>{
     try{
         const  passwordHash = await bcrypt.hash(password,10)
@@ -65,7 +62,6 @@ const securePassword =async (password)=>{
 
     }
 }
-
 
 const loadHomePage = async(req,res)=>{
     try{
@@ -77,9 +73,7 @@ const loadHomePage = async(req,res)=>{
             category:{$in:categories.map(category=>category._id)},
             quantity:{$gt:0}
         })
-
-        productData.sort((a,b)=>{new Date(b.createdOn)-new Date(a.createdOn)})
-       
+        productData.sort((a,b)=>{new Date(b.createdOn)-new Date(a.createdOn)})       
         let productDataResponse = productData.slice(0,4)
         console.log(productData.length,"Is the no of products aVailable",productDataResponse.length)
        // console.log("User from loadhomePage",user)
@@ -102,33 +96,37 @@ const loadHomePage = async(req,res)=>{
     }catch(error){
         console.log("home page not found");
         res.status(500).send("server error");
-    }
-     
+    }   
 }
-
 
 const loadShopPage = async (req,res)=>{
     try{
         const userId = req.session.user;
-        const userData = await User.findOne({_id:userId});
-        const categories = await Category.find({isListed:true});
+        const [userData, categories] = await Promise.all([
+            User.findOne({ _id: userId }),
+            Category.find({ isListed: true })
+        ]);        
         const categoryIds = categories.map((category) => category._id.toString());
         const page = parseInt(req.query.page)||1;
         const limit = 9;
         const skip = (page-1)*limit;
-        const products = await Product.find({
-            isBlocked:false,
-            category:{$in:categoryIds},
-            quantity:{$gt:0}
-        }).sort({createdOn:-1}).skip(skip).limit(limit);
-
-        const totalProducts = await Product.countDocuments({
-            isBlocked:false,
-            category:{$in:categoryIds},
-            //quantity:{$gt:0}
-        });
-        const totalPages = Math.ceil(totalProducts/limit);
-        const brands = await Brand.find({isBlocked:false});
+        const [products, totalProducts, brands] = await Promise.all([
+            Product.find({
+                isBlocked: false,
+                category: { $in: categoryIds },
+                quantity: { $gt: 0 }
+            })
+            .sort({ createdOn: -1 })
+            .skip(skip)
+            .limit(limit)
+            .lean(),
+            Product.countDocuments({
+                isBlocked: false,
+                category: { $in: categoryIds }
+            }),       
+            Brand.find({ isBlocked: false }).lean() 
+        ]);       
+        const totalPages = Math.ceil(totalProducts/limit);   
         const categoriesWithIds = categories.map((category)=>({_id:category._id,name:category.name}));
         //console.log(products[0])
         res.render("shopPage",{
@@ -138,21 +136,17 @@ const loadShopPage = async (req,res)=>{
             brand:brands,
             currentPage:page,
             totalPages:totalPages
-
-        })
-       
+        })      
     }catch(error){
+        console.log("error while loading the shop page",error)
         res.redirect("/pageNotFound")
-
     }
-
 }
 
 module.exports = {
     loadHomePage,
     pageNotFound,
-    loadShopPage,
-    
+    loadShopPage,  
 }
 
 

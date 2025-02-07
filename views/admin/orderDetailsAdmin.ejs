@@ -1,6 +1,6 @@
 <%- include('../partials/admin/header.ejs') %>
 
-<main class="container pl-5 " style="margin-left: 16%; width: 90%;" >
+<main class="container pl-5 " style="margin-left: 13%; width: 90%;" >
     <section class="content-main ml-5">
         <div class="content-header">
             <div class="mt-10">
@@ -76,7 +76,7 @@
                                     <th width="10%">Unit Price</th>
                                     <th width="10%">Quantity</th>
                                     <th class="text-center" width="10%" class="text-end">Total</th>
-                                    <th width="10%">Action</th>
+                                    <th width="10%">Status</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -110,16 +110,37 @@
                                                 <% if (item.productStatus === "Cancelled") { %>
                                                     <i class="text-danger">Cancelled</i>
                                                 <% } else { %>
-                                                    <select onchange="handleDropdownChange('Cancel','<%= item.product %>')">
+                                                    <i class="text-secondary"><%= item.productStatus %></i>
+
+                                                    <!-- <select onchange="handleDropdownChange('Cancel','<%= item.product %>')">
                                                         <option value="" disabled selected><%= item.productStatus %></option>
-                                                        <!-- <% if (item.productStatus === "Confirmed") { %>
+                                                        <% if (item.productStatus === "Confirmed") { %>
                                                             <option value="cancel">Cancel Order</option>
                                                         <% } else if (item.productStatus === "Shipped" || item.productStatus === "Delivered") { %>
                                                             <option value="returnrequest">Return Request</option>
                                                         <% } else if (item.productStatus === "Failed") { %>
                                                             <option value="retry" disabled>Retry Payment</option>
-                                                        <% } %> -->
-                                                    </select>
+                                                        <% } %>
+                                                    </select> -->
+                                                    <form action="/admin/updateOrderStatus" method="POST">
+                                                        <input type="hidden" name="orderId" value="<%= orders._id %>">
+                                                        <input type="hidden" name="productId" value="<%= item.product %>">
+                                                        <select name="status" onchange="this.form.submit()">
+                                                          <% const statuses = ['Pending', 'Processing','Cancelled', 'Shipped', 'Delivered',  'Return Request', 'Returned']; %>
+                                                          <% let currentIndex = statuses.indexOf(item.productStatus) %>
+                                                          <% statuses.forEach((statusOption, index) => { %>
+                                                            <% if(index<=currentIndex) {%>
+                                                                <option value="<%= statusOption %>" <%= item.productStatus === statusOption ? 'selected' : '' %>  disabled>
+                                                                  <%= statusOption %>
+                                                                </option>
+                                                                <% }else {%>
+                                                            <option value="<%= statusOption %>" <%= item.productStatus === statusOption ? 'selected' : '' %> >
+                                                              <%= statusOption %> 
+                                                            </option>
+                                                            <% } %>
+                                                          <% }); %>
+                                                        </select>
+                                                       </form>
                                                 <% } %>
                                             </td>
                                         </tr>

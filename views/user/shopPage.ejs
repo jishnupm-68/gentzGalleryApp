@@ -13,7 +13,6 @@
       margin-bottom: 20px;
     }
 
-
     .search-form {
       display: flex;
       align-items: center;
@@ -24,7 +23,6 @@
       box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
     }
 
-
     .search-input {
       flex: 1;
       padding: 8px 10px;
@@ -33,7 +31,6 @@
       outline: none;
       background-color: transparent;
     }
-
 
     .search-button {
       padding: 8px 15px;
@@ -46,7 +43,6 @@
       margin-right: 5px;
       transition: background-color 0.3s, transform 0.2s;
     }
-
 
     .search-button:hover {
       background-color: #0056b3;
@@ -63,11 +59,9 @@
       text-align: center;
     }
 
-
     .filter-section {
       margin-bottom: 20px;
     }
-
 
     .filter-title {
       font-weight: bold;
@@ -76,28 +70,23 @@
       color: #333;
     }
 
-
     .filter-item {
       margin: 5px 0;
     }
-
 
     .filter-item a {
       text-decoration: none;
       color: #333;
     }
 
-
     .filter-item a:hover {
       color: #007bff;
     }
-
 
     .product-list-container {
       display: flex;
       gap: 20px;
     }
-
 
     .product-grid {
       display: flex;
@@ -105,7 +94,6 @@
       gap: 20px;
       width: calc(100% - 270px);
     }
-
 
     .product-card {
       width: calc(33.333% - 20px);
@@ -116,25 +104,22 @@
       position: relative;
     }
 
-
     .product-card img {
       max-width: 100%;
       height: auto;
       border-radius: 5px;
     }
 
-
     .wishlist-btn {
       position: absolute;
       top: 8px;
       right: 8px;
-      background-color: rgba(237, 247, 247, 0.8);
+      background-color:    rgba(237, 247, 247, 0.8);
       color: #fff;
       padding: 8px;
       border-radius: 50%;
       cursor: pointer;
     }
-
 
     .add-to-cart-btn {
       background-color: #1e918b;
@@ -147,14 +132,12 @@
       margin-top: 10px;
     }
 
-
     .pagination {
       display: flex;
       justify-content: center;
       gap: 10px;
       margin: 20px 0;
     }
-
 
     .pagination a {
       padding: 8px 12px;
@@ -164,12 +147,10 @@
       text-decoration: none;
     }
 
-
     .pagination .active {
       background-color: #007bff;
       color: #fff;
     }
-
 
     .price-filter {
       padding: 10px;
@@ -178,13 +159,11 @@
       margin-top: 20px;
     }
 
-
     .price-filter .price-options {
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
-
 
     .price-button {
       padding: 12px 20px;
@@ -198,24 +177,20 @@
       font-size: 14px;
     }
 
-
     .price-button:hover {
       background-color: #007bff;
       color: white;
       transform: scale(1.05);
     }
 
-
     .price-button:active {
       transform: scale(0.95);
     }
-
 
     .category-brand-container {
       text-align: center;
     }
   </style>
-
 
   <div class="main-container">
     <section class="shop-page container">
@@ -227,9 +202,6 @@
           </form>
         </div>
       </div>
-
-
-
 
       <div class="product-list-container">
         <aside class="sidebar">
@@ -244,10 +216,10 @@
                         <%= category[i].name %>
                       </a>
                     </li>
-                    <% } %>
+                  <% } %>
                       <% } else { %>
                         <li>No categories available</li>
-                        <% } %>
+                      <% } %>
               </ul>
             </div>
           </div>
@@ -265,8 +237,8 @@
                     </li>
                     <% } %>
                       <% } else { %>
-                        <li>No brands available</li>
-                        <% } %>
+                    <li>No brands available</li>
+                  <% } %>
               </ul>
             </div>
           </div>
@@ -282,17 +254,15 @@
                   class="price-button">₹2000 - ₹5000</button></a>
               <a href="/filterprice?gt=5000&lt=50000"> <button type="button" name="price" value="above-1500"
                   class="price-button">Above ₹5000</button></a>
-
-                  
-
             </form>
           </div>
-
-
           <div class="filter-section">
             <div class="filter-title"></div>
             <div class="category-brand-container">
               <ul>
+                <li class="filter-item">
+                  <a href="/filter?filter=Popularity">Popularity</a>
+                </li>
                 <li class="filter-item">
                   <a href="/filter?filter=New arrivals">New arrivals</a>
                 </li>
@@ -367,10 +337,14 @@
         <main class="product-grid">
           <% if (products && products.length> 0) { %>
             <% for (let i=0; i < products.length; i++) { %>
-              <div class="product-card"><span class="wishlist-btn" onclick="">
-                <a aria-label="Add To Wishlist" class=" " href="#" style="background: inherit;"><i class="fi-rs-heart"></i></a></span>
+              <div class="product-card">
+                <a href="/addToWishlist?id=<%= products[i]._id %>" class="wishlist-btn">
+                  <i class="fas fa-heart"></i>
+              </a>
+                <!-- <span class="wishlist-btn" onclick="">
+                <a aria-label="Add To Wishlist" class=" " href="#" style="background: inherit;"><i class="fi-rs-heart"></i></a></span> -->
                 <!-- <span class="wishlist-btn" onclick="">❤️</span> -->
-
+                
 
 
 
@@ -397,7 +371,14 @@
                   <% } %>
                 </a>
                 <% if(products[i].quantity > 0) {%>
-                <button class="btn add-to-cart-btn" onclick="window.location.href='/productDetails?id=<%= products[i]._id %>'">Add to Cart</button>
+               
+                <form action="/addToCart" method="post">
+                  <input type="hidden" name="productId" value="<%= products[i]._id %>">
+                  <input type="hidden" name="quantity" value="1">
+                  <input type="hidden" name="price" id="price" value="<%= products[i].salePrice %>">
+                  <button type="submit" class="btn add-to-cart-btn" style="background-color: #088178;">Add to Cart</button>
+             </form>
+
                 <% }else{ %>
                   <button class="add-to-cart-btn btn" onclick="window.location.href='/productDetails?id=<%= products[i]._id %>'">Currently Unavailable</button>
                 <% } %>
@@ -435,16 +416,6 @@
 
   <script>
 
-// function toggleOutOfStock() {
-//     const isChecked = document.getElementById("showOutOfStock").checked;
-//     console.log(isChecked);
-//     if(isChecked){
-//       window.location.href = `/filter?filterOutOfStock=${isChecked}`;
-
-//     }
-    
-//   }
-   
 function toggleOutOfStock() {
     const checkbox = document.getElementById("showOutOfStock");
     const label = document.getElementById("stockLabel");

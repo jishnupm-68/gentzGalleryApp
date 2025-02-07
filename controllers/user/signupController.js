@@ -8,13 +8,10 @@ const bcrypt = require("bcrypt")
 //function for generating the otp
 function generateOtp(){
     return Math.floor(100000+Math.random()*900000).toString()
-
 }
-
 
 //function for senting the otp via mail
 async function sentVerificationEmail(email,otp){
-
     try{
         const transporter = nodemailer.createTransport({
             service :"gmail",
@@ -25,18 +22,15 @@ async function sentVerificationEmail(email,otp){
                 user: process.env.NODEMAILER_EMAIL,
                 pass:process.env.NODEMAILER_PASSWORD
             },   
-        })
-        
+        })     
         const info =await transporter.sendMail({
             from:process.env.NODEMAILER_EMAIL,
             to:email,
             subject:"Verify your account",
             text: ` Your OTP is ${otp}`,
             html: `<b>Your OTP : ${otp}</b> `,
-        })
-        
+        })        
         return info.accepted.length>0
-
     }catch(error){
         console.log("Error sending Email",error)
     }
@@ -68,31 +62,26 @@ const loadSignup = async (req,res)=>{
 const signup = async (req, res) => {
     try {
         const { name, email, phone, password, confirmPassword } = req.body;
-
         if (password !== confirmPassword) {
             console.log("Password donot match")
             return res.json({ success: false , message: "Password do not Match" });
         }
-
         const findUser = await User.findOne({ email });
         if (findUser) {
             console.log("User already exists")
             return res.json({ success: false, message: "User with this email already exists" });
         }
-
         const otp = generateOtp();
         const emailSent = await sentVerificationEmail(email, otp);
         if (!emailSent) {
             return res.json({success:false, message:"Failed to send otp"});
         }
-
         req.session.userOtp = otp;
         req.session.userData = { name, phone, email, password };
         //res.render("verifyOtp");
         res.status(200).json({success:true, message:"Otp sent successfully", redirectUrl:"/verifyOtp"})
         console.log("OTP SENT", otp);
         return; // Prevent further execution
-
     } catch (error) {
         console.error("signup error", error);
         res.status(500).render("pageNotFound"); // Ensure correct response
@@ -103,7 +92,6 @@ const loadVerifyOtp = async (req,res)=>{
     try{
         console.log("rendering verify otp page for signup")
         return res.status(200).render("verifyOtp")
-
     }catch(error){
         console.log("Home page not loading : ",error)
         res.redirect('/pageNotFound')
@@ -126,8 +114,7 @@ const verifyOtp = async (req,res)=>{
                 phone:user.phone,
                 googleId:new Date(),
                 password: passwordHash
-            })
-           
+            })    
             await saveUserData.save()
             console.log("user data saved successfully")
             req.session.user =saveUserData._id;
@@ -135,7 +122,6 @@ const verifyOtp = async (req,res)=>{
         }else{
             res.status(400).json({success:false, message:"Invalid otp, please try again"})
         }
-
     }catch(error){
         console.error("Error while verifying the otp", error);
         res.status(500).json({success:false, message:"An error occured"})
@@ -160,8 +146,7 @@ const resendOtp = async(req,res)=>{
         }
     } catch (error) {
         console.error("Error while sending otp", error)
-        res.status(500).json({success:false, message: "Internal server error, please try again"})
-        
+        res.status(500).json({success:false, message: "Internal server error, please try again"})    
     }
 }
 

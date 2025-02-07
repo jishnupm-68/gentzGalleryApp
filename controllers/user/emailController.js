@@ -1,4 +1,3 @@
-
 const User = require('../../models/userSchema')
 const Address = require('../../models/addressSchema')
 const Order = require("../../models/orderSchema")
@@ -59,7 +58,6 @@ const changeEmail = async (req,res)=>{
         console.log("email is", email)
         const userId = req.session.user;
         const sessionUser = await User.findOne({_id:userId});
-
         //const userExists =  await User.findOne({email:email});
         if(email === sessionUser.email){
             const otp = generateOtp();
@@ -67,10 +65,8 @@ const changeEmail = async (req,res)=>{
             if(emailSent){
                 req.session.userOtp = otp;
                 req.session.userData = {email}
-                //res.render('changeEmailVerifyOtp',{user:sessionUser})
-                res.json({success:true, message:"OTP successfully sent", redirectUrl:"/verifyEmailOtp"})
-                console.log("OTP SEND",otp)
-                
+                res.json({success:true, message:"OTP successfully sent", redirectUrl:"/verifyEmailOtp"}) //render changeEmailVerifyOtp
+                console.log("OTP SEND",otp)                
             }else{
                 console.log("Email not sent , something went wrong")
                 res.redirect('/login')
@@ -78,7 +74,6 @@ const changeEmail = async (req,res)=>{
         }else{
             console.log("no user with given email id")
             res.json({success:false, message:"No user with given email id"})
-            //res.render("changeEmail", {user:sessionUser,message:"The given email id is not matching with your account"})
         }
         }
     catch(error){
@@ -92,11 +87,9 @@ const loadVerifyEmailOtp = async(req,res)=>{
         let sessionUser= await User.findOne({_id:req.session.user});
         res.status(200).render('changeEmailVerifyOtp',{user:sessionUser})
         console.log("rendered change email verify otp page")
-
     } catch (error) {
         console.error("error while rendering the verify email otp page",error);
-        res.redirect('/pageNotFound')
-        
+        res.redirect('/pageNotFound')       
     }
 }
 
@@ -111,11 +104,9 @@ const verifyEmailOtp  =  async(req,res)=>{
             console.log("error while validating the otp")
             res.json({success:false, message:"Invalid otp, please try again"})
         }
-
     }catch(error){
         console.error("error while verifying the otp",error)
         res.redirect('/pageNotFound')
-
     }
 }
 
@@ -124,13 +115,12 @@ const loadChangeEmailNew = async (req,res)=>{
     try{
         const user= await User.findOne({email:req.session.userData.email})
         res.render('changeEmailNew',{user:user})
-
     }catch(error){
         console.error("error while rendering the change email new page",error)
         res.redirect('/pageNotFound')
-
     }
 }
+
 
 const updateEmail =async (req,res)=>{
     try{
@@ -152,7 +142,6 @@ const updateEmail =async (req,res)=>{
     }
 }
 
-
 module.exports = {
     loadChangeEmail,
     changeEmail,
@@ -160,5 +149,4 @@ module.exports = {
     verifyEmailOtp,
     loadChangeEmailNew,
     updateEmail
-
 }

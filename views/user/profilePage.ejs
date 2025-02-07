@@ -623,10 +623,10 @@
 
 <script>
   function confirmDelete(event, addressId) {
-    // Prevent default link navigation
+ 
     event.preventDefault();
 
-    // Show SweetAlert confirmation
+    
     Swal.fire({
       title: 'Are you sure?',
       text: "You won't be able to revert this!",
@@ -637,26 +637,23 @@
       confirmButtonText: 'Yes, delete it!'
     }).then((result) => {
       if (result.isConfirmed) {
-        // Navigate to the delete URL if confirmed
+        
         window.location.href = `deleteAddress?id=${addressId}`;
       }
     });
   }
 
-
-
-
   document.querySelectorAll('.dashboard-menu .nav-link').forEach(tab => {
   tab.addEventListener('click', function (event) {
-    event.preventDefault(); // Prevents scrolling to the tab content
+    event.preventDefault(); 
     let tabID = this.getAttribute('data-bs-target');
 
-    // Remove active class from all tab panes
+    
     document.querySelectorAll('.tab-pane').forEach(tabPane => {
       tabPane.classList.remove('show', 'active');
     });
 
-    // Add active class to the clicked tab's content
+    
     document.querySelector(tabID).classList.add('show', 'active');
   });
 });

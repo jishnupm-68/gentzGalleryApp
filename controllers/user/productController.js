@@ -2,12 +2,6 @@ const Product = require("../../models/productSchema");
 const Category = require("../../models/categorySchema");
 const User = require("../../models/userSchema");
 
-
-
-
-
-
-
 const productDetails = async (req,res)=>{
     console.log("ITS productDetails")
     try{
@@ -21,35 +15,20 @@ const productDetails = async (req,res)=>{
         const category = await Category.findById(findCategory);
         const productOffer = product.productOffer ||0;
         const totalOffer = categoryOffer + productOffer
-
-
-
         const query = {
             isBlocked:false,
            // quantity:{$gt:0}
         }
         if(findCategory){
             query.category = findCategory._id
-        }
-        
+        }      
         let findProducts = await Product.find(query).limit(4).lean();
         findProducts.sort((a,b)=>{
             new Date(b.createdOn) - new Date(a.createdOn)
         })
-
         let similiarProductsLength = findProducts.length;
-
-
-        
         let currentPage = parseInt(req.query.page) || 1;
-        
-        let currentProduct = findProducts
-        
-        
-
-
-
-
+        let currentProduct = findProducts        
         console.log("USer", "product",product,product.ratings, product.ratings.comment, "totalOffer",totalOffer,"category",findCategory,"quantity", product.quantity)
         res.render("productDetails",{
             user:userData,
@@ -64,14 +43,9 @@ const productDetails = async (req,res)=>{
     }catch(error){
         console.error("error while fetching productDetails",error)
         res.redirect("/pageNotFound")
-
     }
-
 }
-
-
 
 module.exports= {
     productDetails,
-
 }

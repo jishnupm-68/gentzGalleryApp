@@ -7,20 +7,15 @@ const bcrypt = require('bcrypt')
 const env = require('dotenv').config();
 const session = require("express-session");
 
-
-
 const loadAddAddress = async(req,res)=>{
     try{
-        const user = req.session.user
+        const user = await User.findOne({_id:req.session.user});
         res.render('addAddress',{user:user})
-
     }catch(error){
         console.error("error while rendering the add address page",error)
         res.redirect('/pageNotFound')
-
     }
 }
-
 
 const postAddAddress = async (req,res)=>{
     try {
@@ -45,42 +40,40 @@ const postAddAddress = async (req,res)=>{
             })
             await newAddress.save();
             res.redirect('/userProfile')
+            console.log("address added successfully")
         }else{
               userAddress.address.push({addressType, name, city, landMark, state, pinCode:pincode,phone, altPhone});
               await userAddress.save();
               res.redirect('/userProfile')
+              console.log("address updated successfully")
         }
     } catch (error) {
         console.error("error while adding the address", error)
         res.redirect('/pageNotFound')
-        
     }
 }
 
 const loadEditAddress = async (req,res)=>{
     try {
         const addressId = req.query.id;
-        const user = req.session.user;
-        const currentAddress = await Address.findOne({
-            "address._id":addressId,
-        })
+        const [user,currentAddress] = await Promise.all([
+            User.findOne({_id:req.session.user}),
+            Address.findOne({"address._id":addressId})
+        ]);
         if(!currentAddress){
             console.error("The  address is not found");
             return res.redirect('/pageNotFound');
         }
-
         const addressData = currentAddress.address.find((item)=>{
             return item._id.toString() === addressId.toString();
         })
-        
         if(!addressData){
             return res.redirect('/pageNotFound');
         }
         res.render('editAddress',{user:user, address:addressData})
     } catch (error) {
         console.error("error while rendering the edit address page", error)
-        res.redirect('/pageNotFound')
-        
+        res.redirect('/pageNotFound')      
     }
 }
 
@@ -115,13 +108,10 @@ const editAddress = async(req,res)=>{
                 }
             }
         )
-
-        res.redirect('/userProfile');
-        
+     res.redirect('/userProfile');     
     } catch (error) {
         console.error("error while editing the address", error)
-        res.redirect('/pageNotFound')
-        
+        res.redirect('/pageNotFound')   
     }
 }
 
@@ -143,8 +133,6 @@ const deleteAddress = async (req,res)=>{
         res.redirect('/pageNotFound')
     }
 }
-
-
 
 module.exports = {
     loadAddAddress,

@@ -8,7 +8,7 @@
       font-size: 16px;
       font-weight: bold;
       color: #fff;
-      background-color: #ff6b6b;
+      background-color: #1e918b;
       border: none;
       border-radius: 5px;
       transition: background-color 0.3s, transform 0.3s;
@@ -18,10 +18,9 @@
 
 
   .btn:hover {
-      background-color: #ff4c4c;
+      background-color: #1e918b;
       transform: translateY(-2px);
   }
-
 
   .btn:active {
       transform: translateY(1px);
@@ -33,16 +32,14 @@
       background-color: rgba(255, 255, 255, 0.8);
       padding: 10px;
       border-radius: 50%;
-      color: #ff6b6b;
+      color: #fff;
       font-size: 18px;
       z-index: 10;
       transition: background-color 0.3s, color 0.3s, transform 0.3s;
   }
-
-
   .wishlist-btn:hover {
       background-color: rgba(255, 255, 255, 1);
-      color: #ff4c4c;
+      color: #1e918b;
       transform: translateY(-2px);
   }
 
@@ -237,15 +234,21 @@
                                             </a>
                                         </div>
                                         <a href="/addToWishlist?id=<%= products[i]._id %>" class="wishlist-btn">
-                                            <i class="fas fa-heart"></i>
+                                            <i class="fas fa-heart "></i>
                                         </a>
                                     </div>
               
               
                                     <div class="product-content-wrap">
                                         <h6><%= products[i].productName %></h6>
-                                        <h5><%= products[i].productPrice %></h5>
-                                        <a href="/addToCart?id=<%= products[i]._id %>" class="btn add-to-cart-btn" style="background-color: #088178;">Add to Cart</a>
+                                        <h5>₹<%= products[i].salePrice %></h5>
+                                        <form action="/addToCart" method="post">
+                                             <input type="hidden" name="productId" value="<%= products[i]._id %>">
+                                             <input type="hidden" name="quantity" value="1">
+                                             <input type="hidden" name="price" id="price" value="<%= products[i].salePrice %>">
+                                             <button type="submit" class="btn add-to-cart-btn" style="background-color: #088178;">Add to Cart</button>
+                                        </form>
+                                      
                                     </div>
                                 </div>
                             </div>
