@@ -177,7 +177,7 @@
                                   <label for="otp">Enter OTP:</label>
                                   <input type="text" id="otp" name="otp" class="form-control" required maxlength="6" pattern="\d*" />
                               </div>
-                              <button type="submit" class="btn text-light" style="background-color: #088178;">Verify Email</button>
+                              <button id="verifyButton" type="submit" class="btn text-light" style="background-color: #088178;">Verify Email</button>
                               <div class="form-group text-center">
                                   <div id="otpTimer" class="otp-timer text-danger">
                                     <h3 class="h3">
@@ -382,7 +382,7 @@
   
               if (timer <= 0) {
                   clearInterval(timerInterval);
-  
+                  document.getElementById("verifyButton").disabled = true;
                   // Enable the resend button and mark the timer as expired
                   document.getElementById("resendButton").disabled = false;
                   document.getElementById("timerValue").classList.add("expired");
@@ -437,6 +437,7 @@
           timer = 60; // Reset the timer countdown
   
           // Re-enable OTP input and reset timer UI
+          document.getElementById("verifyButton").disabled = false;
           document.getElementById("otp").disabled = false;
           document.getElementById("timerValue").classList.remove("expired");
           document.getElementById("timerValue").textContent = `${timer}`;

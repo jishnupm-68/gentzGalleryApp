@@ -1,6 +1,309 @@
-<%- include('../partials/admin/header.ejs') %>
-			
-				
+<%- include("../../views/partials/admin/header") %>
+<style>
+  .pagination {
+    display: flex;
+    justify-content: center;
+  }
 
+  .btn {
+    /* Add your button styling here */
+    margin: 0 5px;
+    padding: 5px 10px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    text-decoration: none;
+    color: #333;
+  }
 
-<%- include('../partials/admin/footer.ejs') %>
+  .active {
+    /* Add styles for the active page */
+
+    color: #fff;
+  }
+
+  .btn:hover {
+    /* Add styles for button hover state */
+    background-color: #ddd;
+  }
+
+  .table-spacing th,
+  .table-spacing td {
+    padding-left: 80px; /* Adjust the value as needed for the desired spacing */
+  }
+</style>
+
+<div class="content-header row">
+  <div class="d-flex justify-content-between align-items-center">
+    <h2 class="content-title card-title">Sales Report</h2>
+  </div>
+</div>
+
+<div class="card mb-4">
+  <header class="card-header">
+    <div class="row gx-3">
+      <div class="col-lg-2 col-6 col-md-3">
+        <select
+          class="form-select"
+          onchange="location.href='/admin/salesReport?day=' + this.value"
+        >
+          <% if (locals.salesToday) { %>
+          <option value="salesToday" selected>salesToday</option>
+          <option value="salesWeekly">salesWeekly</option>
+          <option value="salesMonthly">salesMonthly</option>
+          <option value="salesYearly">salesYearly</option>
+          <% } else if (locals.salesWeekly) { %>
+          <option value="salesWeekly" selected>salesWeekly</option>
+          <option value="salesToday">salesToday</option>
+          <option value="salesMonthly">salesMonthly</option>
+          <option value="salesYearly">salesYearly</option>
+          <% } else if (locals.salesMonthly) { %>
+          <option value="salesMonthly" selected>salesMonthly</option>
+          <option value="salesToday">salesToday</option>
+          <option value="salesWeekly">salesWeekly</option>
+          <option value="salesYearly">salesYearly</option>
+          <% } else if (locals.salesYearly) { %>
+          <option value="salesYearly" selected>salesYearly</option>
+          <option value="salesToday">salesToday</option>
+          <option value="salesWeekly">salesWeekly</option>
+          <option value="salesMonthly">salesMonthly</option>
+          <% } %>
+        </select>
+      </div>
+      <div class="col-md-2 col-6">
+        <input
+          type="date"
+          id="selectedDate"
+          class="form-control"
+          value="<%= locals.date ? date : '' %>"
+          onchange="dateWiseFilter()"
+        />
+      </div>
+      <div class="col-lg-6 col-md-6 ms-auto text-md-end">
+        <a href="" id="createSalesReport" class="btn btn-primary mb-2"
+          >Generate PDF</a
+        >
+        <a href="" id="downloadExcelReport" class="btn btn-primary mb-2"
+          >Download Excel</a
+        >
+      </div>
+    </div>
+  </header>
+</div>
+
+<div class="right mt-5 container">
+  <!-- <input type="date" id="calendar" name="calendar" class="form-control mb-3" /> -->
+  <table id="salesTable" class="table table-hover">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>data ID</th>
+        <th scope="col">Name</th>
+        <th scope="col">Product</th>
+        <th scope="col">Date</th>
+        <th scope="col">Payment</th>
+        <th scope="col">Status</th>
+        <th scope="col" class="text-end">Total Price</th>
+      </tr>
+    </thead>
+    <% if(data) {%>
+    <tbody>
+     
+      <% let grandTotal = 0; %> <% for (let i = 0; i < data.length; i++) { %>
+      <tr>
+        <td><%= i + 1 %></td>
+        <td><%= data[i]._id %></td>
+        <td><b><%= data[i].address[0].name %></b></td>
+        <td><b><%= data[i].product[0]._id %></b></td>
+        <td><%= data[i].createdOn.toLocaleString('en-IN') %></td>
+        <td><%= data[i].payment %></td>
+        <td><%= data[i].status %></td>
+        <td class="text-end"><%= data[i].totalPrice %></td>
+      </tr>
+      <% grandTotal += data[i].totalPrice; %> <% } %>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="7" class="text-end"><b>Grand Total:</b></td>
+        <td class="text-end"><b><%= grandTotal %></b></td>
+      </tr>
+    </tfoot>
+    <%}else{%>
+      <tr>
+        <td colspan="8" class="text-center">No sales data found.</td>
+      </tr>
+    <%}%>
+
+  </table>
+
+  <% if (totalPages) { %>
+  <div class="pagination">
+    <% if (currentPage> 1) { %>
+    <button class="btn btn-sm">
+      <a href="?page=<%= currentPage - 1 %>">Previous</a>
+    </button>
+    <% } %> <% for (let i=1; i <=totalPages; i++) { %>
+    <button class="btn btn-sm <%= i === currentPage ? 'active' : '' %>">
+      <a href="?page=<%= i %>"> <%= i %> </a>
+    </button>
+    <% } %> <% if (currentPage < totalPages) { %>
+    <button class="btn btn-sm">
+      <a href="?page=<%= currentPage + 1 %>">Next</a>
+    </button>
+    <% } %>
+  </div>
+  <% } %>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+  <script>
+    document
+      .getElementById("createSalesReport")
+      .addEventListener("click", async (event) => {
+        event.preventDefault();
+        const salesTable = document.getElementById("salesTable");
+        const tableBody = salesTable.querySelector("tbody");
+
+        const salesData = [];
+        let grandTotal = 0; // Initialize grand total
+
+        for (const row of tableBody.rows) {
+          const dataId = row.cells[1].textContent.trim();
+          const name = row.cells[2].textContent;
+          const date = row.cells[4].textContent;
+          let totalAmount = row.cells[7].textContent.trim();
+          totalAmount = parseFloat(totalAmount.replace(/[^0-9]/g, ""), 10);
+          grandTotal += totalAmount; // Accumulate totalAmount for grand total
+
+          const dataData = {
+            dataId: dataId,
+            name: name,
+            date: date,
+            totalAmount: totalAmount,
+          };
+
+          salesData.push(dataData);
+        }
+
+        // Include grand total in sales data
+        const grandTotalData = {
+          dataId: "Grand Total",
+          name: "",
+          date: "",
+          totalAmount: grandTotal,
+        };
+        salesData.push(grandTotalData);
+
+        try {
+          const response = await fetch("/admin/generatePdf", {
+            method: "post",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(salesData),
+          });
+
+          if (response.ok) {
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "report.pdf";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          } else {
+            console.error("Failed to generate PDF");
+          }
+        } catch (error) {
+          console.log(error.message);
+        }
+      });
+
+    document
+      .getElementById("downloadExcelReport")
+      .addEventListener("click", async (event) => {
+        event.preventDefault();
+        const salesTable = document.getElementById("salesTable");
+        const tableBody = salesTable.querySelector("tbody");
+
+        const salesData = [];
+        let grandTotal = 0; // Initialize grand total
+
+        for (const row of tableBody.rows) {
+          const orderId = row.cells[1].textContent;
+          const name = row.cells[2].textContent;
+          const date = row.cells[4].textContent;
+          const payment = row.cells[5].textContent;
+          let totalAmount = row.cells[7].textContent.trim();
+          totalAmount = parseFloat(totalAmount.replace(/[^0-9]/g, ""), 10);
+          grandTotal += totalAmount; // Accumulate totalAmount for grand total
+
+          const dataData = {
+            orderId: orderId,
+            name: name,
+            date: date,
+            totalAmount: totalAmount,
+            payment: payment,
+          };
+
+          salesData.push(dataData);
+        }
+
+        // Include grand total in sales data
+        const grandTotalData = {
+          orderId: "Grand Total",
+          name: "",
+          date: "",
+          totalAmount: grandTotal,
+          payment: "",
+        };
+        salesData.push(grandTotalData);
+
+        try {
+          const response = await fetch("/admin/downloadExcel", {
+            method: "post",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(salesData),
+          });
+
+          if (response.ok) {
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "report.xlsx";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          } else {
+            console.error("Failed to download Excel file");
+          }
+        } catch (error) {
+          console.log(error.message);
+        }
+      });
+
+    function dateWiseFilter() {
+      const selectedDate = document.getElementById("selectedDate").value;
+
+      // alert(selectedDate);
+      window.location.href = `/admin/dateWiseFilter?date=${selectedDate}`;
+      $.ajax({
+        url: "/admin/dateWiseFilter",
+        method: "post",
+        data: {
+          date: selectedDate,
+        },
+        success: (response) => {
+          if (response.status === true) {
+            // alert("done");
+          }
+        },
+      });
+    }
+  </script>
+
+<%- include("../../views/partials/admin/footer") %>
+</div>

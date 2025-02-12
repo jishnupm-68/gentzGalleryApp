@@ -55,7 +55,19 @@ const updateOrderStatus = async (req,res)=>{
             {new:true});
             console.log("updated data",update)
         if(status=="Cancelled")
-            {   const items = update.orderedItems.map((item)=>
+            { 
+                if(update.payment !== "cod"){
+                    const quantity = update.orderedItems[0].quantity;
+                    const price =  update.orderedItems[0].price;
+                    let amount =  price * quantity;
+                    walletUpdate = await User.findOneAndUpdate({ _id: update.userId }, { $inc: { wallet: amount } });
+                    if (walletUpdate) {
+                        console.log("Wallet updated successfully");
+                    }else{
+                        console.log("Wallet update failed");
+                    }
+                }
+                  const items = update.orderedItems.map((item)=>
                 ({ 
                     productId:item.product,
                     quantity: item.quantity
@@ -153,4 +165,5 @@ module.exports = {
     getStockPage,
     addQuantity
 }
+
 

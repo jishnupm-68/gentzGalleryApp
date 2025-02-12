@@ -6,6 +6,8 @@ const Coupon = require('../../models/couponSchema');
 const Cart = require('../../models/cartSchema');
 const mongoose = require("mongoose");
 const env = require('dotenv').config();
+const Razorpay  = require('razorpay');
+
 
 const decrementSaleCounts = async (cartItemQuantities) => {
     try {
@@ -80,14 +82,26 @@ const cancelOrder = async(req,res)=>{
             );
             console.log("findCancelled order",findOrder,"cancelItemQuantities",cancelItemQuantities)
             if(findOrder){
+                let walletUpdate;
+                if(findOrder.payment !== "cod"){
+                    const quantity = findOrder.orderedItems[0].quantity;
+                    const price =  findOrder.orderedItems[0].price;
+                    let amount =  price * quantity;
+                    walletUpdate = await User.findOneAndUpdate({ _id: userId }, { $inc: { wallet: amount } });
+                    if (walletUpdate) {
+                        console.log("Wallet updated successfully");
+                    }else{
+                        console.log("Wallet update failed");
+                    }
+                }
                 decrementSaleCounts(cancelItemQuantities)
                   .then(result =>                     
                     {console.log('Decrement successful:', result)
-                    if (result.modifiedCount === 1) {
+                    if (result.modifiedCount === 1 && walletUpdate) {
                         return res.json({
                             success: true,
                             result, 
-                            message: "Order has been successfully cancelled"
+                            message: "Order has been successfully cancelled and amount credited to your wallet"
                         });
                     } else {
                         return res.json({
@@ -97,7 +111,8 @@ const cancelOrder = async(req,res)=>{
                         });
                     }}
                     )
-                  .catch(error => console.error('Decrement failed:', error));           
+                  .catch(error => console.error('Decrement failed:', error)); 
+                console.log("findorder.payment", findOrder.payment )              
             }       
     } catch (error) {
         console.error("Error while cancelling the order",error);
@@ -105,7 +120,72 @@ const cancelOrder = async(req,res)=>{
     }
 }
 
+const returnrequestOrder = async(req,res)=>{
+    try {
+        const userId = req.session.user;
+        const {productId, orderId} = req.body;
+        const findOrder = await Order.findOneAndUpdate(
+            {"orderedItems.product":productId, userId:userId, _id:orderId},
+            {"orderedItems.$.productStatus":"Returned"},
+            {new:true}
+        )
+        const returnOrder = await Order.findOne(
+            {"orderedItems.product":productId, userId:userId, _id:orderId},
+            {"orderedItems.$":1},
+        )       
+        const returnItemQuantities = returnOrder.orderedItems.map((item)=>
+            ({
+                productId:item.product,
+                quantity: -item.quantity
+            })
+            );
+            console.log("findCancelled order",findOrder,"returned order",returnOrder,"cancelItemQuantities",returnItemQuantities)
+           
+            if(findOrder){
+                let walletUpdate;
+                //updating wallet
+                {
+                    const quantity = findOrder.orderedItems[0].quantity;
+                    const price =  findOrder.orderedItems[0].price;
+                    let amount =  price * quantity;
+                    walletUpdate = await User.findOneAndUpdate({ _id: userId }, { $inc: { wallet: amount } });
+                    if (walletUpdate) {
+                        console.log("Wallet updated successfully");
+                    }else{
+                        console.log("Wallet update failed");
+                    }
+                }
+                decrementSaleCounts(returnItemQuantities)
+                  .then(result =>                     
+                    {console.log('Decrement successful:', result)
+                    if (result.modifiedCount === 1 && walletUpdate) {
+                        return res.json({
+                            success: true,
+                            result, 
+                            message: "Order has been successfully cancelled and amount credited to your wallet"
+                        });
+                    } else {
+                        return res.json({
+                            success: false,
+                            result,
+                            message: "Order cancellation failed. No changes made."
+                        });
+                    }}
+                    )
+                  .catch(error => console.error('Decrement failed:', error));    
+                       
+            }       
+    } catch (error) {
+        console.log("Error while creating the return request",error);
+        res.json({success:false, message:"An error occured while creating the return request"});
+        
+    }
+}
+
+
 module.exports = {
     getOrderDetailsPage,
-    cancelOrder
+    cancelOrder,
+    returnrequestOrder
+    
 }

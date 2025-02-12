@@ -139,9 +139,10 @@ const addProductOffer = async (req, res) => {
         message: "This product category already has a category offer",
       });
     }
-    findProduct.salePrice =
+    findProduct.offerPrice =
       findProduct.salePrice -
-      Math.floor(findProduct.regularPrice * (percentage / 100));
+      Math.floor(findProduct.salePrice * (percentage / 100));
+     // findProduct.salePrice = findProduct.offerPrice;
     findProduct.productOffer = parseInt(percentage);
     await findProduct.save();
     findCategory.categoryOffer = 0;
@@ -158,13 +159,13 @@ const removeProductOffer = async (req, res) => {
     const { productId } = req.body;
     const findProduct = await Product.findOne({ _id: productId });
     const percentage = findProduct.productOffer;
-    findProduct.salePrice =
-      findProduct.salePrice +
-      Math.floor(findProduct.regularPrice * (percentage / 100));
+    //findProduct.salePrice =findProduct.salePrice +Math.floor(findProduct.salePrice * (percentage / 100));
     findProduct.productOffer = 0;
+    findProduct.offerPrice =0;
     await findProduct.save();
     res.json({ status: true });
   } catch (error) {
+    console.error("error while removing the productOffer",error)
     res.redirect("/admin/pageError");
   }
 };
@@ -229,12 +230,13 @@ const editProduct = async (req, res) => {
       Category.find(),
       Brand.find(),
     ]);
-    
+    const currentCategory = await Category.findOne({ _id: product.category });
     if (existingProduct) {
       return res.render("editProduct", {
         product: product,
         cat: category,
         brand: brand,
+        currentCategory:currentCategory,
         message:
           "Product name already exists, please try again with another name",
       });
@@ -267,7 +269,7 @@ const editProduct = async (req, res) => {
       };
     }
     let result =  await Product.findByIdAndUpdate(id, { $set: updateFields }, { new: true });
-    console.log("Data saved for editing the product" ,result, );
+    console.log("Data saved for editing the product" ,result );
     res.redirect("/admin/products");
   } catch (error) {
     console.error("Error in editProduct", error);

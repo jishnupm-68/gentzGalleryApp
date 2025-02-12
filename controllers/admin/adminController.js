@@ -35,7 +35,8 @@ const login =  async(req,res)=>{
 const loadDashboard =  async (req,res)=>{
     if(req.session.admin){
         try {
-            res.render('dashboard')           
+            console.log("render the dashboard")
+            res.render('dashboard',{data:null})           
         } catch (error) {
             res.redirect('pageError')           
         }

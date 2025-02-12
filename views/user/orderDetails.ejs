@@ -35,7 +35,7 @@
                             <h6 class="mb-1">Order info</h6>
                             <p class="mb-1">
                                 Pay method: <%= orders.payment %> <br>
-                                Status: <%= orders.status %><br>
+                                Status: <%= orders.orderedItems[0].productStatus %><br>
                                  Total: ₹<%= totalGrand.toLocaleString() %> <br>
                                 
                                 Discount: ₹<%= discount.toLocaleString() %> <br>
@@ -115,8 +115,6 @@
                                                     <i class=" text-danger">Cancelled</i>
                                                 <% } else { %>
 
-
-
                                                     <p class="text-success"><%= item.productStatus %></p>
 
                                                     <% console.log(item.productStatus, "order status",orders.status,orders.status === "Confirmed") %>
@@ -135,7 +133,7 @@
                                                         <% if (item.productStatus.trim() === "Delivered" ) { %>
                                                         
                                                             <!-- Allow the user to return the order -->
-                                                            <button type="submit" id="returnButton<% item.product %>" class="btn " onclick="">Return</button>
+                                                            <button type="submit" id="returnButton<% item.product %>" class="btn " onclick="  returnRequestOrder('<%= item.product %>','<%= orders._id %>')">Return</button>
                                                             
                                                         <% }%>
                                                           
@@ -214,7 +212,11 @@ function cancelOrder(product) {
         data: JSON.stringify({ productId: product, orderId: orderId.value }),
         success: (response) => {
             if (response.result.modifiedCount === 1) {
-                Swal.fire("Cancelled", "Order has been cancelled", "success");
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: response.message
+                });
                 window.location.reload();
 
             }
@@ -226,21 +228,53 @@ function cancelOrder(product) {
     });
 }
 
-function returnRequestOrder(product) {
-    $.ajax({
+function returnRequestOrder(product,orderId) {
+    Swal.fire({
+        title: 'Confirm Return Order',
+        text: 'Are you sure you want to Return this order?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, Return it!',
+       
+    }).then((result) => {
+        if (result.isConfirmed) {
+            console.log('working');
+            $.ajax({
         url: '/returnrequestOrder',
         method: 'POST',
         contentType: 'application/json',
-        data: JSON.stringify({ productId: product }),
+        data: JSON.stringify({ productId: product, orderId:orderId }),
         success: (response) => {
             if (response.result.modifiedCount === 1) {
+                Swal.fire({
+                    icon:'success',
+                    title: 'Success',
+                    text: response.message,
+                    timer:4000,
+                    showConfirmButton: false
+                })
                 window.location.reload();
+            }else{
+                Swal.fire({
+                    icon:'error',
+                    title: 'Failed',
+                    text: response.message,
+                    timer:4000,
+                    showConfirmButton: false
+                })
             }
         },
         error: (error) => {
-            alert(error);
+            console.log(error)
         }
     });
+            
+        }
+    });
+
+    
 }
 </script>
 

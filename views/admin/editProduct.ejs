@@ -200,7 +200,7 @@
                                     <img src="" alt="" id="imgView1">
                                     <input class="form-control" type="file" name="images" id="input1"
                                         accept="image/png, image/jpeg, image/jpg"
-                                        onchange="viewImage1(event), viewImage(event, 1)">
+                                        onchange="viewImage1(event), viewImage(event, 1) ,validateImage(this)">
                                         <div id="images-error" class="error-message"></div>
                                 </div>
                                 <div class="image-cropper d-flex align-items-center"
@@ -213,7 +213,7 @@
                                                     <img src="" alt="" id="imgView2">
                                                     <input class="form-control" type="file" name="images" id="input2"
                                                         accept="image/png, image/jpeg, image/jpg"
-                                                        onchange="viewImage2(event),viewImage(event, 2)">
+                                                        onchange="viewImage2(event),viewImage(event, 2),validateImage(this)">
                                                 </div>
                                                 <div class="image-cropper d-flex align-items-center"
                                                     style="display:none; width: 300px; height: 200px; margin-bottom: 20px;">
@@ -241,7 +241,7 @@
                                                     <img src="" alt="" id="imgView4">
                                                     <input class="form-control" type="file" name="images" id="input4"
                                                         accept="image/png, image/jpeg, image/jpg"
-                                                        onchange="viewImage4(event),viewImage(event, 4)">
+                                                        onchange="viewImage4(event),viewImage(event, 4),validateImage(this)">
                                                 </div>
                                                 <div class="image-cropper d-flex align-items-center"
                                                     style="display:none; width: 300px; height: 200px; margin-bottom: 20px;">
@@ -279,6 +279,39 @@
         }
     }
 
+    function validateImage(input) {
+        const file = input.files[0];
+        if (!file) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Please select an image file!',
+        })
+            return;
+        }
+        //image types
+        const allowedTypes = ["image/jpeg", "image/png", "image/jpg", "image/webp"];
+        if (!allowedTypes.includes(file.type)) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error...',
+            text: 'Invalid image type! Only JPEG, PNG, JPG, and WebP are allowed.',
+        })
+            input.value = ""; 
+            return;
+        }
+        if (file.size > 2 * 1024 * 1024) { 
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'File size is too large! Please select an image under 2MB.',
+            })
+            input.value = ""; 
+            return;
+        }
+        console.log("Valid image selected:", file.name);
+    }
+
 
 
 
@@ -295,7 +328,6 @@
     function viewImage4(event){
         document.getElementById("imgView4").src = URL.createObjectURL(event.target.files[0])
     }
-
 
     function viewImage(event, index) {
         let input = event.target;
@@ -343,7 +375,6 @@
         }
         reader.readAsDataURL(input.files[0]);
     }
-
 
     const selectedImages = [] ;
     document.getElementById('input1').addEventListener("change",handleFileSelect);

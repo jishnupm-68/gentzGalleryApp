@@ -29,15 +29,20 @@
                                 </tr>
                             </thead>
                             <tbody>
+                              
+                            <% if(wishlist.length>0) {%>
+                                
+                                    <% wishlist.forEach((item) => { %>
 
                                 <tr>
+                                   
                                     <td class="image product-thumbnail">
-                                        <img src="" />
+                                        <img src="/uploads/product-imagesResized/<%= item.productImage[0] %>" /> 
                                     </td>
                                     <td class="product-des product-name">
                                         <h5 class="product-name">
-                                            <a href="">
-
+                                            <a href="/productDetails?id=<%= item._id %>">
+                                                <%= item.productName %>
                                             </a>
                                         </h5>
                                         <p class="font-xs">
@@ -46,22 +51,35 @@
                                         </p>
                                     </td>
                                     <td class="price" data-title="Price">₹<span>
-
+                                            <%= item.salePrice %>
                                         </span></td>
                                     <td class="text-center" data-title="Add to Cart">
-                                        <a href="#" onclick="" class="btn btn-sm">Add to Cart</a>
+                                        <!-- <a href="#" onclick="return addToCart('<%= item._id %>','<%= item.salePrice %>')" class="btn btn-sm">Add to Cart</a> -->
+                                         
+                                        <form action="/addToCart" method="post">
+                                            <input type="hidden" name="productId" value="<%= item._id %>">
+                                            <input type="hidden" name="quantity" value="1">
+                                            <input type="hidden" name="price" id="price" value="<%= item.salePrice %>">
+                                            <button type="submit" class="btn add-to-cart-btn" style="background-color: #088178;">Add to Cart</button>
+                                        </form>
                                     </td>
                                     <td class="action" data-title="Remove">
-                                        <a class="btn btn-sm" href="#" onclick="">
+                                        <a class="btn btn-sm" href="#" onclick="confirmRemove('<%= item._id %>')">
                                             <i class="fi-rs-trash"></i>
                                         </a>
                                     </td>
+                                    
+                                    
                                 </tr>
+                               
+                                <% }) %>
+                            <% }else{%>
                                 <tr>
                                     <td colspan="5" class="text-center">
                                         <p class="lead mb-4">No items found in Wishlist</p>
                                     </td>
                                 </tr>
+                            <%}%>
                             </tbody>
                         </table>
                     </div>
@@ -71,6 +89,52 @@
     </section>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmRemove(productId) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, remove it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: `/deleteWishlistItem?id=${productId}`,
+                        method:'get',
+                        success:(response)=>{
+                            if(response.success){
+                                Swal.fire({
+                                     icon:'success',
+                                     title: response.message,
+                                     showConfirmButton: false,
+                                     timer: 1500,
+                                     })
+                                     window.location.reload();
+                                }else{
+                                    Swal.fire({
+                                        icon:'error',
+                                        title: response.message,
+                                        showConfirmButton: false,
+                                        timer: 1500,
+                                    })
+                                    window.localation.reload();
+                                }
+                        },error:(error)=>{
+                            Swal.fire({
+                                icon:'error',
+                                title: 'Error occurred while removing item from wishlist',
+                                showConfirmButton: false,
+                                timer: 1500,
+                            })
+                        }
+                    })                   
+                }
+            })       
+        }
+</script>
 <%- include("../../views/partials/user/footer") %>
 
 

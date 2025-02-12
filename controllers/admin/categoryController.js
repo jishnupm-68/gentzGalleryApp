@@ -64,8 +64,19 @@ const addCategoryOffer = async (req,res)=>{
         }
         await Category.updateOne({_id:categoryId},{$set:{categoryOffer:percentage}});
         for(let product of products){
-            product.productOffer = 0;
-            product.salePrice = product.regularPrice;
+            // product.productOffer = 0;
+            // product.salePrice = product.regularPrice;
+            // await product.save();
+            if (product.productOffer <percentage && percentage > 0) {
+                console.log("category Offer adding", product)
+                let discountAmount = (product.salePrice * percentage) / 100;
+                product.offerPrice = product.salePrice - discountAmount; // Apply discount
+                //product.salePrice = product.offerPrice; // Update sale price to discounted price
+
+            } else {
+                product.salePrice = product.salePrice; // No discount, keep regular price
+            }
+        
             await product.save();
         }
         res.json({status:true})
@@ -87,9 +98,12 @@ const removeCategoryOffer = async (req,res)=>{
         const products = await Product.find({category:category._id});
         if(products.length>0){
             for(let product of products){
-                product.salePrice += Math.floor(product.regularPrice *(percentage/100));
+                
+                //product.salePrice += Math.floor(product.salePrice *(percentage/100));
                 product.productOffer = 0;
+                product.offerPrice =0;
                 await product.save();
+                console.log("removing category offer", product)
         }       
     }
     category.categoryOffer = 0;

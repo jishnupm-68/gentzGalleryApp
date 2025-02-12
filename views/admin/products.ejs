@@ -36,6 +36,7 @@
                     <th scope="col"><b>Category</b></th>
                     <th scope="col"><b>Sale Price</b></th>
                     <th scope="col"><b>Offer Price</b></th>
+                    <th scope="col"><b>Offer Percentage</b></th>
                     <th scope="col"><b>Offer</b></th>
                     <th scope="col"><b>Stock</b></th>
                     <th scope="col"><b>Action</b></th>
@@ -55,8 +56,15 @@
                     <td><%=data[i].category.name %></td>
                     <td><%=data[i].salePrice  %></td>
                     <td>
-                        <% if(locals.data[i].productoffer){ %>
-                            <%=data[i].productOffer %>
+                        <% if(locals.data[i].offerPrice){ %>
+                            <%=data[i].offerPrice %>
+                            <% }else{ %>
+                            0
+                        <% } %>
+                    </td>
+                    <td>
+                        <% if(locals.data[i].productOffer){ %>
+                            <%=data[i].productOffer %>%
                             <% }else{ %>
                             0%
                         <% } %>
@@ -147,7 +155,7 @@
                     location.reload();
                     Swal.fire('offer added',"Offer has been added",'success');
                 }else{
-                    Swal.fire("Failed")
+                    Swal.fire("Failed","Already there is a offer", 'error');
                 }
             }
 

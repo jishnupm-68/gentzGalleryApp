@@ -167,35 +167,54 @@
                             </div>
                         </div> -->
                     </div>
-                    <!-- <div>
+                    <div>
 
                             <div class="mb-25 ml-150 pt-10">
                                 <h5>Available Coupons</h5>
                             </div>
 
                             <ul>
-                                <% if (locals.Coupon) { %>
-                                    <% for (let i=0; i < Coupon.length; i++) { %>
+                                <% if (Coupon) { %>
+                                   
+                                  
+                                    <% Coupon.forEach((item)=>{ %>
                                         <li>
                                             <div class="coupon-card col-4" style="margin-left: 150px;">
                                                 <div class="coupon-details">
                                                     <span class="coupon-name">
-                                                        <%= Coupon[i].name %>
+                                                        <%= item.name %>
                                                     </span><br>
                                                 </div>
-                                                <button onclick="useCoupon('<%= Coupon[i].name %>')" id="useButton_<%= Coupon[i].name %>" class="use-button">Use</button>
-                                                <button onclick="cancelCoupon('<%= Coupon[i].name %>')" id="cancelButton_<%= Coupon[i].name %>" class="cancel-button btn-danger" style="display: none;">Cancel</button>
+                                               
+                                                
+                                                <% if((item.userId).length>0) {%>
+                                              <% item.userId.forEach(element => { %>
+                                                
+                                                <% if(element.toString()==(user._id).toString()){ %>
+                                                    <button onclick="removeCoupon('<%= item.name %>',' <%= item._id %>')" id="useButton_<%= item.name %>" class="use-button" style="background-color: #e93838;;" >Remove</button>
+                                                <% }else {%>
+                                                    <!-- <button onclick="useCoupon('<%= item.name %>',' <%= item._id %>')" id="useButton_<%= item.name %>" class="use-button">Apply</button> -->
+
+                                                    <% } %>
+                                                
+                                            <%  }); %>
+                                            <% }else {%>
+                                                <button onclick="useCoupon('<%= item.name %>',' <%= item._id %>','<%=grandTotal%>')" id="useButton_<%= item.name %>" class="use-button" style="background-color: #088178;">Apply</button>
+                                                
+                                                <% } %>
+                                                <button onclick="cancelCoupon('<%= item.name %>')" id="cancelButton_<%= item.name %>" class="cancel-button btn-danger" style="display: none;">Cancel</button>
+                                                <!-- <button onclick="cancelCoupon('<%= item.name %>')" id="cancelButton_<%= item.name %>" class="cancel-button btn-danger" >Cancel</button> -->
                                             </div>
                                         </li>
                                         
-                                        <% } %>
+                                        <% }) %>
                                             <% }else{ %>
 
-                                                <h3>No coupons available</h3>
+                                                <h5>No coupons available</h5>
 
                                                 <% } %>
                             </ul>
-                        </div> -->
+                        </div>
                     <div class="payment_method">
                         <div class="mb-25 ml-150">
                             <h5>Payment</h5>
@@ -242,21 +261,26 @@
                                                             <td colspan="2"><em>Free Shipping</em></td>
                                                         </tr>
                                                         <tr>
+                                                            <th>Total</th>
+                                                            <td colspan="2" id="discount">
+                                                                ₹<%= grandTotal %>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
                                                             <th>Discount</th>
                                                             <td colspan="2" id="discount">
-                                                                <% if (locals.offerPrice) { %>
-                                                                    <%= locals.offerPrice %>
+                                                                <% if (discount>0) { %>
+                                                                    <%= discount %>
                                                                         <% }else{ %>
                                                                             0
                                                                             <% } %>
                                                             </td>
-
                                                         </tr>
                                                         <tr>
-                                                            <th>Total for All Products</th>
+                                                            <th>Amount to pay </th>
                                                             <td colspan="2" class="product-subtotal">
                                                                 <span class="font-xl text-brand fw-900"
-                                                                    id="totalValue">₹<%= grandTotal %></span>
+                                                                    id="totalValue">₹<%= finalAmount %></span>
                                                             </td>
                                                         </tr>
                                                     </tbody>
@@ -265,7 +289,7 @@
                                                 <div class="ml-65">
 
                                                     <button type="button" class="btn"
-                                                        onclick="placeOrder('<%= user._id %>')">Place Order</button>
+                                                        onclick="placeOrder('<%= user._id %>','<%= discount %>')">Place Order</button>
 
                                                 </div>
 
@@ -275,7 +299,7 @@
         </div>
     </section>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-
+   
     <script>
 
 
@@ -295,7 +319,8 @@
                 }
             })
         }
-        async function placeOrder(userId, productId) {
+        
+        async function placeOrder(userId, discount) {
             let address = $("input[name='selectedAddress']:checked").val();
             let payment = $("input[name='payment_option']:checked").val();
 
@@ -392,29 +417,59 @@
 
                         }
                         else if (response.method === "razorpay") {
-                            let orderAmount = Math.round(numericValue * 100);
+                            console.log("response", response);
+                            let orderAmount = response.order.finalAmount;
+                           // console.log("final amount",response.order.finalAmount,orderAmount);
+                            let order = response.orderId;
                             var options = {
-                                "key": "rzp_test_vWkG4lrwiDnQ0g",
+                                "key": "rzp_test_2ntRCkhdtoc7jm",
                                 "amount": orderAmount,
                                 "currency": "INR",
-                                "name": "Trend Setter",
+                                "name": "GentzGallery",
                                 "description": "Test Transaction",
-                                "image": "https://firebasestorage.googleapis.com/v0/b/ecommerce-397a7.appspot.com/o/logo.jpg?alt=media&token=07b6be19-1ce8-4797-a3a0-f0eaeaafedad",
-                                "order_id": response.razorPayOrder.id,
-                                "handler": function (status) {
-                                    verifyPayment(response.razorPayOrder, status, response.order._id);
+                               //"image": "https://firebasestorage.googleapis.com/v0/b/ecommerce-397a7.appspot.com/o/logo.jpg?alt=media&token=07b6be19-1ce8-4797-a3a0-f0eaeaafedad",
+                                "order_id": response.orderId,
+                                // "handler": function (response, status) {
+                                //     alert("paymentid",response.razorpay_payment_id);
+                                //     alert("orderid",response.razorpay_order_id);
+                                //     alert("signature",response.razorpay_signature)
+                                //     alert("resposnse",response);  
+                                //     verifyPayment(response.razorPayOrder, status, response.order._id);
+                                // },
+                                "handler": function (response){
+                                    // alert(response.razorpay_payment_id);
+                                    // alert(response.razorpay_order_id);
+                                    // alert(response.razorpay_signature)
+                                    verifyPayment(response,order);
                                 },
                                 "prefill": {
-                                    "name": "Customer Name",
-                                    "email": "customer@example.com",
-                                    "contact": "9961618585"
+                                    "name": response.user.name,
+                                    "email": response.user.email,
+                                    "contact": response.user.phone
                                 },
 
                                 "theme": {
-                                    "color": "#3399cc"
+                                    "color": "#5CFF9A"
                                 }
                             }
                             var rzp1 = new Razorpay(options);
+                            rzp1.on('payment.failed', function (response){
+                                Swal.fire({
+                                     title: 'Payment Failed!'+ response.error.code,
+                                     text: response.error.description,
+                                     icon: 'error',
+                                     timer: 5000,
+                                     showConfirmButton: false
+                                     });
+                                })
+                                    // alert(response.error.code);
+                                    // alert(response.error.description);
+                                    // alert(response.error.source);
+                                    // alert(response.error.step);
+                                    // alert(response.error.reason);
+                                    // alert(response.error.metadata.order_id);
+                                    // alert(response.error.metadata.payment_id);
+                           
                             rzp1.open();
 
                         } else {
@@ -430,25 +485,28 @@
             }
         }
 
-        function verifyPayment(order, payment, orderId) {
+        function verifyPayment(response,order) {
+            let payment = response
             $.ajax({
                 url: '/verifyPayment',
                 method: 'post',
                 data: {
+                    response,
                     order,
-                    payment
+
                 }, success: (response) => {
-                    if (response.status) {
-                        $.ajax({
-                            url: '/paymentConfirm',
-                            method: 'post',
-                            data: {
-                                status: "Pending",
-                                orderId
-                            },
-                            success: (response) => {
-                            }
-                        })
+                    if (response.success) {
+                        // $.ajax({
+                        //     url: '/paymentConfirm',
+                        //     method: 'post',
+                        //     data: {
+                        //         status: "Confirmed",
+                        //         order,
+                        //         payment
+                        //     },
+                        //     success: (response) => {
+                        //     }
+                        // })
                         Swal.fire({
                             title: "Order success",
                             text: "order placed successfully",
@@ -459,11 +517,11 @@
                             reverseButtons: true
                         }).then(function (result) {
                             if (result.value) {
-                                console.log("I am success");
+                                console.log("paid ");
                                 var orderDetailsUrl = `/orderDetails?id=${orderId}`;
                                 location.href = orderDetailsUrl;
                             } else if (result.dismiss === "cancel") {
-                                console.log("Nopppp");
+                                console.log("failed");
                                 location.href = '/'
                             }
                         });
@@ -473,36 +531,36 @@
             })
         }
 
-        function showCouponDetails(couponName) {
-            Swal.fire({
-                title: 'Coupon Details',
-                text: `${couponName}`,
-                icon: 'info',
-                confirmButtonText: 'OK'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    copyToClipboard(couponName);
-                }
-            });
-        }
+        // function showCouponDetails(couponName) {
+        //     Swal.fire({
+        //         title: 'Coupon Details',
+        //         text: `${couponName}`,
+        //         icon: 'info',
+        //         confirmButtonText: 'OK'
+        //     }).then((result) => {
+        //         if (result.isConfirmed) {
+        //             copyToClipboard(couponName);
+        //         }
+        //     });
+        // }
 
-        function copyToClipboard(text) {
-            var tempInput = document.createElement('input');
-            document.body.appendChild(tempInput);
-            tempInput.value = text;
+        // function copyToClipboard(text) {
+        //     var tempInput = document.createElement('input');
+        //     document.body.appendChild(tempInput);
+        //     tempInput.value = text;
 
-            tempInput.select();
-            document.execCommand('copy');
+        //     tempInput.select();
+        //     document.execCommand('copy');
 
-            document.body.removeChild(tempInput);
+        //     document.body.removeChild(tempInput);
 
-            Swal.fire({
-                title: 'Copied!',
-                text: 'Coupon name has been copied to the clipboard.',
-                icon: 'success',
-                confirmButtonText: 'OK'
-            });
-        }
+        //     Swal.fire({
+        //         title: 'Copied!',
+        //         text: 'Coupon name has been copied to the clipboard.',
+        //         icon: 'success',
+        //         confirmButtonText: 'OK'
+        //     });
+        // }
 
         let discount = 0;
 
@@ -542,14 +600,74 @@
 
 
         var usedCoupon = null;
-        const useCoupon = async (couponName) => {
-            disableOtherCoupons(couponName);
-            copyToClipboard(couponName);
-            document.getElementById("inputCoupon").value = couponName;
-            document.getElementById('useButton_' + couponName).style.display = 'none';
-            document.getElementById('cancelButton_' + couponName).style.display = 'block';
-            usedCoupon = couponName;
+        function useCoupon(couponName, couponId,grandTotal){
+            console.log('Using coupon', couponName, couponId);
+            $.ajax({
+                url: '/useCoupon',
+                method: 'post',
+                data: {
+                    couponName: couponName,
+                    couponId: couponId,
+                    grandTotal:grandTotal,
+                }, success: function(response){
+                    console.log(response)
+                    if(response.success){
+                        Swal.fire({
+                            title: 'Coupon Used',
+                            text: 'Coupon has been used successfully',
+                            icon:'success',
+                            timer: 5000
+                        })
+                        window.location.reload()
+
+                }else{
+                    Swal.fire({
+                        title: 'Error',
+                        text: response.message,
+                        icon: 'error',
+                        timer: 5000
+                    })
+                }
+            }
+            })
         }
+        function removeCoupon(couponName, couponId){
+            console.log('Using coupon', couponName, couponId);
+            $.ajax({
+                url: '/removeCoupon',
+                method: 'post',
+                data: {
+                    couponName: couponName,
+                    couponId: couponId,
+                }, success: function(response){
+                    if(response.success){
+                        Swal.fire({
+                            title: 'Coupon removed',
+                            text: response.message,
+                            icon:'success',
+                            timer: 5000
+                        })
+                        window.location.reload()
+
+                }else{
+                    Swal.fire({
+                        title: 'Error',
+                        text: response.message,
+                        icon: 'error',
+                        timer: 5000
+                    })
+                }
+            }
+            })
+        }
+        // const useCoupon = async (couponName) => {
+        //     disableOtherCoupons(couponName);
+        //     copyToClipboard(couponName);
+        //     document.getElementById("inputCoupon").value = couponName;
+        //     document.getElementById('useButton_' + couponName).style.display = 'none';
+        //     document.getElementById('cancelButton_' + couponName).style.display = 'block';
+        //     usedCoupon = couponName;
+        // }
 
         const cancelCoupon = async (couponName) => {
             enableAllCoupons();
@@ -576,4 +694,5 @@
         }
     </script>
 
+   
     <%- include("../../views/partials/user/footer") %>

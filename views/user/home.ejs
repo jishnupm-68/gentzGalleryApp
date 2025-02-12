@@ -233,7 +233,7 @@
                                                 <img class="default-img" src="/uploads/product-imagesResized/<%=products[i].productImage[0]%>" alt="<%=products[i].productName%>">
                                             </a>
                                         </div>
-                                        <a href="/addToWishlist?id=<%= products[i]._id %>" class="wishlist-btn">
+                                        <a href="#" onclick="addToWishlist('<%= products[i]._id %>')" class="wishlist-btn">
                                             <i class="fas fa-heart "></i>
                                         </a>
                                     </div>
@@ -241,11 +241,21 @@
               
                                     <div class="product-content-wrap">
                                         <h6><%= products[i].productName %></h6>
-                                        <h5>₹<%= products[i].salePrice %></h5>
+                                        <!-- <% if(products[i].offerPrice>0) {%>
+                                            <h5>₹<%= products[i].offerPrice %></h5>
+                                            <% }else {%>
+                                                <h5>₹<%= products[i].salePrice %></h5>
+                                                <% } %> -->
+                                                <h5>₹<%= products[i].salePrice %></h5>
+                                       
                                         <form action="/addToCart" method="post">
                                              <input type="hidden" name="productId" value="<%= products[i]._id %>">
                                              <input type="hidden" name="quantity" value="1">
+                                             <% if(products[i].offerPrice>0) {%>
+                                             <input type="hidden" name="price" id="price" value="<%= products[i].offerPrice %>">
+                                             <% }else {%>
                                              <input type="hidden" name="price" id="price" value="<%= products[i].salePrice %>">
+                                             <% } %>
                                              <button type="submit" class="btn add-to-cart-btn" style="background-color: #088178;">Add to Cart</button>
                                         </form>
                                       
@@ -369,23 +379,50 @@
 </div>
 <!--? Services Area End -->
 
-
-
-
-
-
-
-
-
-
-
-
-
 </section>
 
-  
-
-
 </main>
+
+<script>
+    function addToWishlist(productId) {
+        console.log("Function addtowishlist called with productid", productId);
+        $.ajax({
+            url: '/addToWishlist?id=' + productId,
+            method: 'get',
+            data: { productId: productId },
+
+            success: function(response) {
+                console.log("Response from server:", response);
+                if (response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: response.message
+                    });
+                }else if(response.message=="Product already in wishlist"){
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'success',
+                        text: response.message
+                    })
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: response.message
+                    })
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX error:", xhr.responseText, status, error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Something went wrong',
+                    text: 'Please try again later.'
+                });
+            }
+        })
+    }
+</script>
 
 <%- include('../partials/user/footer.ejs') %>

@@ -25,14 +25,11 @@ async (accessTocken, refreshToke,profile,done)=>{
             })
             await user.save();
             return done (null,user)
-        }
-        
+        }  
     } catch (error) {
-        return done(error,null)
-        
+        return done(error,null)    
     }
 }
-
 ))
 
 passport.serializeUser((user,done)=>{

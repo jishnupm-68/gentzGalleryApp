@@ -28,7 +28,7 @@ const loadLogin = async(req,res)=>{
 const login = async(req,res)=>{
     try {
         const {email,password} = req.body
-        const findUser = await User.findOne({isAdmin:0, email:email});
+        const findUser = await User.findOne({isAdmin:false, email:email});
         //console.log(findUser)
         if(!findUser){
             return res.render("login",{message:"User not found"})
@@ -69,15 +69,16 @@ const googleLogin = async (req,res)=>{
         const userEmail= req.user.email;
         //console.log("data from req",req.user)
         const user = await User.findOne({isAdmin:false,email:userEmail});
-        if(!user){
-            return res.redirect("/signup")
-        }
-        console.log("user",user,user._id)
+        // if(!user){
+        //     return res.redirect("/signup")
+        // }
+       
         if(!user){
             return res.render("login",{message:"User not found"})
         }
         if(user.isBlocked){
-            return res.render("login",{message:"User is blocked by admin"})
+            //res.json({success:false, message:"User is blocked by admin"})
+            res.render("login",{message:"User is blocked by admin"})
         }     
         req.session.user = user._id;
         res.redirect('/')

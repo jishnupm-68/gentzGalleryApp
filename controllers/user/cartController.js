@@ -19,26 +19,37 @@ const getCartPage = async(req,res)=>{
         } 
         const cartItems = cart.items.map((item) => {
             const product = item.productid;
+            let price = product.offerPrice>0?product.offerPrice:product.salePrice;
             return {
                 name: product.productName,
-                price: product.salePrice,
+                salePrice:product.salePrice,
+                price: price,
                 brand:product.brand,
                 category: product.category,
                 stock: product.quantity,
                 quantity: item.quantity,
-                total: product.salePrice * item.quantity,
+                totalSalePrice: product.salePrice*item.quantity,
+                total: price * item.quantity,
                 image: product.productImage[0],
                 productId: product._id,
             };
         });
 
         const grandTotal = cartItems.reduce((total, item) => total + item.total, 0);
+        let subtotal = (cartItems.reduce((totalSalePrice,item) => totalSalePrice + item.totalSalePrice,0));
+        
+       subtotal>0?subtotal:0;
+        let discountDecimal = subtotal-grandTotal;
+        let discount = discountDecimal.toFixed(2);
+        req.session.discount = discount;
         req.session.grandTotal = grandTotal;
         console.log("cartItems",cartItems,"grandTotal",grandTotal,req.session.user);
         res.render("cart", {
-            user: req.session.user, 
+            user: user, 
             items: cartItems,
-            grandTotal,
+            grandTotal:grandTotal,
+            subtotal:subtotal,
+            discount:discount,
         });
 }
      catch (error) {

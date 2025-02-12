@@ -28,12 +28,22 @@ const orderSchema = new Schema({
         productStatus:{         //new
             type:String,
             required:true,
-            enum:['Pending', "Processing","Confirmed", "Shipped","Delivered","Cancelled","Return Request","Returned"]
+            enum:[
+                'Pending',
+                "Processing",
+                "Confirmed",
+                "Cancelled", 
+                "Shipped",
+                "Delivered",
+                "Return Request",
+                "Returned"
+            ],
+            default: "Pending"
         },
         productName:{
             type:String,
             required:true
-        }
+        },
     }],
     totalPrice:{
         type:Number,
@@ -58,7 +68,14 @@ const orderSchema = new Schema({
     status:{
         type:String,
         required:true,
-        enum:['Pending', "Processing", "Shipped","Delivered","Cancelled","Return Request","Returned"]
+        enum:['Pending',
+                "Processing",
+                "Confirmed",
+                "Cancelled", 
+                "Shipped",
+                "Delivered",
+                "Return Request",
+                "Returned"]
     },
     createdOn:{
         type:Date,
@@ -72,6 +89,15 @@ const orderSchema = new Schema({
    payment:{
         type:String,
         required:true
+    },
+    orderId:{   //new
+        type:String,
+    },
+    paymentId:{
+        type:String,    //new
+    },
+    signature:{     //new
+        type:String,
     }
 })
 

@@ -46,7 +46,7 @@
                               <input type="hidden" name="orderId" value="<%= order._id %>">
                               <input type="hidden" name="productId" value="<%= item.product %>">
                               <select name="status" onchange="this.form.submit()">
-                                <% const statuses = ['Pending', 'Processing',  'Cancelled','Shipped', 'Delivered', 'Return Request', 'Returned']; %>
+                                <% const statuses = ['Pending',"Processing","Confirmed","Cancelled", "Shipped","Delivered","Return Request","Returned"]; %>
                                 <% let currentIndex = statuses.indexOf(item.productStatus) %>
                                 <% statuses.forEach((statusOption, index) => { %>
                                   <% if(index<=currentIndex) {%>

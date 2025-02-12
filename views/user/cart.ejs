@@ -155,10 +155,40 @@
                                             </td>
                                         </tr>
                                         <tr>
+                                            
+                                            <td class="cart_total_label">Subtotal</td>
+                                            <td class="cart_total_amount"><span class="font-lg fw-900 text-brand">₹
+                                                    <text id="subtotal">
+                                                         <% if (items && items.length> 0) { %>
+                                                        <%= subtotal %>
+                                                         <% }else{ %>
+                                                        0
+                                                         <% } %>
+                                                    </text>
+                                                </span></td>
+                                        </tr>
+                                        <tr>
+                                            
+                                            <td class="cart_total_label">Discount</td>
+                                            <td class="cart_total_amount"><span class="font-lg fw-900 text-brand">₹
+                                                <text id="total">
+                                                    <% if (items && items.length> 0) { %>
+                                                        <%= discount %>
+                                                         <% }else{ %>
+                                                        0
+                                                         <% } %>
+                                                </text>
+                                            </span></td>
+                                        </tr>
+                                        <tr>
                                             <td class="cart_total_label">Total</td>
                                             <td class="cart_total_amount"><span class="font-lg fw-900 text-brand">₹
                                                     <text id="total">
-                                                        <%= grandTotal %>
+                                                        <% if (items && items.length> 0) { %>
+                                                            <%= grandTotal %>
+                                                             <% }else{ %>
+                                                            0
+                                                             <% } %>
                                                     </text>
                                                 </span></td>
                                         </tr>
@@ -173,11 +203,7 @@
                                         Proceed To CheckOut</button>
                                 <% } %>
 
-                                <input type="text" value="<%= user %>" data-user="<%= user %>" style="display: none;" id="user">
-                               
-                          
-
-
+                                <input type="text" value="<%= user._id %>" data-user="<%= user._id %>" style="display: none;" id="user">
                         </div>
                     </div>
 
@@ -202,7 +228,7 @@
     console.log("Product ID using dataset:", pId);
 
     
-    console.log("Checking out", pId,user);
+    console.log("Checking out", pId);
     if(pId==null||pId==undefined){
         window.location.href = `/checkout?userId=${user}`;    
     }else{

@@ -207,7 +207,7 @@
                                                     <button type="submit" class="button button-add-to-cart btn"  >Add to Cart</button>
                                                     <% } %>
                                               <!-- <button type="submit" class="button button-add-to-cart" onclick="addToCart('<%= product._id %>')" >Add to Cart</button> -->
-                                                <a aria-label="Add To Wishlist" class="action-btn hover-up" href="#"><i class="fi-rs-heart"></i></a>
+                                                <a aria-label="Add To Wishlist" class="action-btn hover-up" href="#" onclick="addToWishlist('<%= product._id %>')"><i class="fi-rs-heart"></i></a>
                                             </div>
                                         </div>
                                     </form>
@@ -297,7 +297,47 @@
       document.body.appendChild(form);
       form.submit();
     }
-  </script>
+    
+    function addToWishlist(productId) {
+        console.log("Function addtowishlist called with productid", productId);
+        $.ajax({
+            url: '/addToWishlist?id=' + productId,
+            method: 'get',
+            data: { productId: productId },
+
+            success: function(response) {
+                console.log("Response from server:", response);
+                if (response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: response.message
+                    });
+                }else if(response.message=="Product already in wishlist"){
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'success',
+                        text: response.message
+                    })
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: response.message
+                    })
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX error:", xhr.responseText, status, error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Something went wrong',
+                    text: 'Please try again later.'
+                });
+            }
+        })
+    }
+ </script>
 
 
  <script>
@@ -342,10 +382,7 @@
 
       }
       console.log(inputValue-value)
-      
-      
-      
-      
+  
       document.getElementById('quantity').value = value;
       document.getElementById('quantity').innerText = value;
       document.getElementById('quantityUpdated').innerText = value;
