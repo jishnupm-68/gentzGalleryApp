@@ -44,6 +44,16 @@ const orderSchema = new Schema({
             type:String,
             required:true
         },
+        paymentMethod: {
+            type: String,
+            enum: ["razorpay", "credit_card", "debit_card", "upi", "net_banking", "wallet",'cod'],
+            required: true
+        },
+        paymentStatus: {
+            type: String,
+            enum: ["pending", "success", "failed", "refunded"],
+            default: "pending"
+        },
     }],
     totalPrice:{
         type:Number,
@@ -63,7 +73,8 @@ const orderSchema = new Schema({
         required:true
     },
     invoiceDate:{
-        type:Date
+        type:Date,
+        default: Date.now()
     },
     status:{
         type:String,

@@ -35,11 +35,13 @@
                             <h6 class="mb-1">Order info</h6>
                             <p class="mb-1">
                                 Pay method: <%= orders.payment %> <br>
-                                Status: <%= orders.status %><br>
-                                Total: ₹<%= finalAmount.toLocaleString() %> <br>
+                                <% orders.orderedItems.forEach((item)=>{ %>
+                                Status: <%= item.productStatus %><br>
+                                <% }) %>
+                                Total: ₹<%= orders.totalPrice.toLocaleString() %> <br>
                                 
                                 Discount: ₹<%= discount.toLocaleString() %> <br>
-                                Final Amount: ₹<%= finalAmount.toLocaleString() %>
+                                Final Amount: ₹<%= orders.finalAmount.toLocaleString() %>
                             </p>
                         </div>
                     </article>

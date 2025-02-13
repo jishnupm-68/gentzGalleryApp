@@ -7,6 +7,7 @@ const categoryController = require('../controllers/admin/categoryController')
 const productController = require('../controllers/admin/productController')
 const orderController  = require('../controllers/admin/orderController')
 const couponController = require('../controllers/admin/couponController')
+const salesReportController = require('../controllers/admin/salesReportController')
 const multer  =require("multer");
 const storage = require('../helpers/multer');
 const uploads = multer({
@@ -20,10 +21,15 @@ const brandController = require('../controllers/admin/brandController')
 router.get("/pageError", adminController.pageError)
 router.get('/login',adminController.loadLogin)
 router.post('/login',adminController.login);
-router.get('/',adminAuth,adminController.loadDashboard)
-//router.get('/',adminController.loadDashboard)
-router.get('/dashboard',adminAuth,adminController.loadDashboard)
 router.get('/logout',adminAuth,adminController.logout);
+
+//salesreport management
+router.get('/',adminAuth,salesReportController.loadDashboard)
+router.get('/dashboard',adminAuth,salesReportController.loadDashboard)
+router.post("/generatePdf",adminAuth,salesReportController.generatePdf)
+router.post('/downloadExcel', adminAuth,salesReportController.generateExcelReport)
+router.get('/sales', adminAuth, salesReportController.displayFilteredData)
+router.get('/salesReport', adminAuth, salesReportController.salesReport)
 
 
 //customer management

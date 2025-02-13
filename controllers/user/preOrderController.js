@@ -209,9 +209,9 @@ const orderPlaced = async (req,res)=>{
         let orderDone,newOrder;
         newOrder = new Order({
             orderedItems:orderedProducts,
-            totalPrice:totalPrice,
+            totalPrice:Number(totalPrice)+Number(discount),
             discount:discount,
-            finalAmount:totalPrice,
+            finalAmount:req.session.finalAmount,
             address:desiredAddress,
             userId:userId,
             payment:payment,
@@ -225,7 +225,7 @@ const orderPlaced = async (req,res)=>{
               
         }else if(payment === "razorpay"){
             console.log("razorpay")
-            generateRazorpay(orderDone._id,orderDone.totalPrice,(err,order)=>{
+            generateRazorpay(orderDone._id,orderDone.finalAmount,(err,order)=>{
                 if(err){
                     console.log("error whil creating the razorpay payment",err)
                 }else{

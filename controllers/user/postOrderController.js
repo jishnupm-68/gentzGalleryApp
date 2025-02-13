@@ -41,7 +41,7 @@ const getOrderDetailsPage = async (req,res)=>{
         const address =  addressData.address.find(addr =>addr._id.toString()===aId.toString());
         let grandTotal = findOrder.finalAmount;
         let discount = findOrder.discount;
-        let totalPrice = grandTotal-discount;
+        let totalPrice = findOrder.totalPrice;
         console.log("FindOrdeR:",findOrder,address);
         res.render("orderDetails",{
             orders: findOrder,
