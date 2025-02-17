@@ -7,6 +7,10 @@ const Cart = require('../../models/cartSchema');
 const mongoose = require("mongoose");
 const env = require('dotenv').config();
 const Razorpay  = require('razorpay');
+const PDFDocument = require('pdfkit');
+const fs = require('fs');
+const path = require("path");
+
 
 
 const decrementSaleCounts = async (cartItemQuantities) => {
@@ -34,10 +38,11 @@ const getOrderDetailsPage = async (req,res)=>{
         const addressId  = await Order.findOne({_id:orderId},{address:1,_id:0});
         const aId= addressId.address
         console.log("addressId",addressId.address,aId)
-        const addressData = await Address.findOne({"address._id":aId});
-        console.log("addressData",addressData)
-        const findOrder = await Order.findOne({_id:orderId, userId:userId});
-        const findUser = await User.findOne({_id:userId});
+        const [addressData,findOrder,findUser]= await Promise.all ([
+            Address.findOne({"address._id":aId}),
+            Order.findOne({_id:orderId, userId:userId}),
+            User.findOne({_id:userId}),
+        ]);
         const address =  addressData.address.find(addr =>addr._id.toString()===aId.toString());
         let grandTotal = findOrder.finalAmount;
         let discount = findOrder.discount;
@@ -61,15 +66,30 @@ const getOrderDetailsPage = async (req,res)=>{
 
 const cancelOrder = async(req,res)=>{
     try {
+        let findOrder;
         console.log(req.body, req.body.productId, req.session.user);
-        const {productId, orderId}= req.body;
+        const {productId, orderId, payment}= req.body;
         const userId = req.session.user;
-        
-        const findOrder = await Order.findOneAndUpdate(
-            {"orderedItems.product":productId, userId:userId, _id:orderId},
-            {"orderedItems.$.productStatus":"Cancelled"},
-            {new:true}
+        if(payment!="cod"){
+             findOrder = await Order.findOneAndUpdate(
+                {"orderedItems.product":productId, userId:userId, _id:orderId},
+                {"orderedItems.$.productStatus":"Cancelled",
+                "orderedItems.$.refundDate":Date.now()
+                },
+                {new:true}
+            )
+            let amount = findOrder.finalAmount
+        await User.findByIdAndUpdate(
+            {_id:userId},
+            {$inc:{wallet:amount}}
         )
+        }else{
+             findOrder = await Order.findOneAndUpdate(
+                {"orderedItems.product":productId, userId:userId, _id:orderId},
+                {"orderedItems.$.productStatus":"Cancelled"},
+                {new:true}
+            )
+        }       
         const cancelOrder = await Order.findOne(
             {"orderedItems.product":productId, userId:userId, _id:orderId},
             {"orderedItems.$":1},
@@ -80,7 +100,7 @@ const cancelOrder = async(req,res)=>{
                 quantity: -item.quantity
             })
             );
-            console.log("findCancelled order",findOrder,"cancelItemQuantities",cancelItemQuantities)
+            console.log("findCancelled order","cancelItemQuantities",cancelItemQuantities)
             if(findOrder){
                 let walletUpdate;
                 if(findOrder.payment !== "cod"){
@@ -126,7 +146,9 @@ const returnrequestOrder = async(req,res)=>{
         const {productId, orderId} = req.body;
         const findOrder = await Order.findOneAndUpdate(
             {"orderedItems.product":productId, userId:userId, _id:orderId},
-            {"orderedItems.$.productStatus":"Returned"},
+            {"orderedItems.$.productStatus":"Returned",
+            "orderedItems.$.refundDate":Date.now()
+            },
             {new:true}
         )
         const returnOrder = await Order.findOne(
@@ -145,9 +167,10 @@ const returnrequestOrder = async(req,res)=>{
                 let walletUpdate;
                 //updating wallet
                 {
-                    const quantity = findOrder.orderedItems[0].quantity;
-                    const price =  findOrder.orderedItems[0].price;
-                    let amount =  price * quantity;
+                    //const quantity = findOrder.orderedItems[0].quantity;
+                    //const price =  findOrder.orderedItems[0].price;
+                    //let amount =  price * quantity;
+                    let amount =  findOrder.finalAmount
                     walletUpdate = await User.findOneAndUpdate({ _id: userId }, { $inc: { wallet: amount } });
                     if (walletUpdate) {
                         console.log("Wallet updated successfully");
@@ -172,20 +195,106 @@ const returnrequestOrder = async(req,res)=>{
                         });
                     }}
                     )
-                  .catch(error => console.error('Decrement failed:', error));    
-                       
+                  .catch(error => console.error('Decrement failed:', error));                         
             }       
     } catch (error) {
         console.log("Error while creating the return request",error);
-        res.json({success:false, message:"An error occured while creating the return request"});
-        
+        res.json({success:false, message:"An error occured while creating the return request"});      
     }
 }
 
+const downloadInvoice = async (req, res) => {
+try {
+    const userId = req.session.user;
+    const orderId = req.query.id;
+
+    // Fetching address ID from order
+    const order = await Order.findOne({ _id: orderId, userId: userId });
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    const aId = order.address;
+    const [addressData, findUser] = await Promise.all([
+      Address.findOne({ "address._id": aId }),
+      User.findOne({ _id: userId }),
+    ]);
+
+    if (!addressData || !findUser) {
+      return res.status(404).json({ success: false, message: "User or Address not found" });
+    }
+
+    const address = addressData.address.find((addr) => addr._id.toString() === aId.toString());
+    if (!address) {
+      return res.status(404).json({ success: false, message: "Address details not found" });
+    }
+
+    // Creating PDF document
+    const doc = new PDFDocument();
+    let chunks = [];
+    let result;
+
+    doc.on("data", (chunk) => chunks.push(chunk));
+    doc.on("end", () => {
+      result = Buffer.concat(chunks);
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", `attachment; filename=invoice_${orderId}.pdf`);
+      res.send(result);
+    });
+    //require('../../public/assets/fonts/NotoSans-Regular.ttf')
+    doc.registerFont("NotoSans", path.join(__dirname, "../../public/assets/fonts", "NotoSans-Regular.ttf"));
+    doc.font("NotoSans");
+
+    // Invoice Title
+    doc.fontSize(22).text("Invoice: GentzGallery", { align: "center", underline: true });
+
+    doc.moveDown(2);
+
+    // Order Information
+    doc.fontSize(16).text("Order Information", { align: "left", underline: true });
+    doc.fontSize(12).text(`Order Date: ${new Date(order.createdOn).toLocaleDateString()}`);
+    doc.fontSize(12).text(`Payment Method: ${order.payment}`);
+    doc.fontSize(12).text(`Payment Status: ${order.status}`);
+    doc.fontSize(12).text(`Total Price: ₹ ${order.totalPrice}`);
+    doc.fontSize(12).text(`Total Discount: ₹ ${order.discount}`);
+    doc.fontSize(12).text(`Final Amount: ₹ ${order.finalAmount}`);
+    
+    doc.moveDown();
+
+    // Product Details
+    doc.fontSize(16).text("Product Details", { underline: true });
+    order.orderedItems.forEach((item, index) => {
+      doc.moveDown(0.5);
+      doc.fontSize(12).text(`${index + 1}. Product Name: ${item.productName}`);
+      doc.fontSize(12).text(`   Quantity: ${item.quantity}`);
+      doc.fontSize(12).text(`   Price: ₹ ${item.price}`);
+    });
+
+    doc.moveDown(2);
+
+    // Delivery Information
+    doc.fontSize(16).text("Delivery Information", { underline: true });
+    doc.fontSize(12).text(`Name: ${address.name}`);
+    doc.fontSize(12).text(`Address Type: ${address.addressType}`);
+    doc.fontSize(12).text(`Landmark: ${address.landMark}`);
+    doc.fontSize(12).text(`City: ${address.city}`);
+    doc.fontSize(12).text(`State: ${address.state}`);
+    doc.fontSize(12).text(`Pincode: ${address.pinCode}`);
+    doc.fontSize(12).text(`Phone: ${address.phone}`);
+
+    doc.end();
+    console.log("Invoice PDF generated successfully");
+
+  } catch (error) {
+    console.error("Error while generating the invoice:", error);
+    res.status(500).json({ success: false, message: "An error occurred while generating the invoice" });
+  }
+};
 
 module.exports = {
     getOrderDetailsPage,
     cancelOrder,
-    returnrequestOrder
+    returnrequestOrder,
+    downloadInvoice
     
 }

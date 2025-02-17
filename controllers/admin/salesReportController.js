@@ -15,7 +15,7 @@ const loadDashboard = async (req, res) => {
       const page = req.query.page || 1;
       console.log("render the dashboard");
       const [orderData, count, salesCount] = await Promise.all([
-        await Order.find()
+        Order.find()
           .populate("userId")
           .populate("orderedItems")
           .populate("address")
@@ -46,12 +46,16 @@ const loadDashboard = async (req, res) => {
           data: orderData,
           currentPage: page,
           totalPages: Math.ceil(count / limit),
+          startDate:null,
+          endDate:null
         });
       } else {
         res.render("dashboard", {
           data: null,
           currentPage: page,
           totalPages: 1,
+          startDate:null,
+          endDate:null
         });
       }
     } catch (error) {
@@ -173,17 +177,17 @@ const generatePdf = async (req, res) => {
       );
       res.send(result);
     });
-    // Add a title
+    //  title
     doc.fontSize(20).text("Sales Report : GentzGallery", { align: "center" });
-    // Add some space
+    //  space
     doc.moveDown();
     // Add total sales data
-    doc.fontSize(12).text(`Total Orders: ${count}`);
-    doc.fontSize(12).text(`Total sales: ${totalsales[0].totalSales}`);
-    doc.fontSize(12).text(`Total Price: ${totalsales[0].totalPrice}`);
-    doc.fontSize(12).text(`Total Discount: ${totalsales[0].discount}`);
-    doc.fontSize(12).text(`Final Amount: ${totalsales[0].finalAmount}`);
-    // Add some space
+    // doc.fontSize(12).text(`Total Orders: ${count}`);
+    // doc.fontSize(12).text(`Total sales: ${totalsales[0].totalSales}`);
+    // doc.fontSize(12).text(`Total Price: ${totalsales[0].totalPrice}`);
+    // doc.fontSize(12).text(`Total Discount: ${totalsales[0].discount}`);
+    // doc.fontSize(12).text(`Final Amount: ${totalsales[0].finalAmount}`);
+    
     doc.moveDown();
     // Add each order's details
     orderData.forEach((order, index) => {
@@ -237,12 +241,12 @@ const generateExcelReport = async (req, res) => {
     worksheet.getCell("A1").font = { size: 20, bold: true };
     worksheet.getCell("A1").alignment = { horizontal: "center" };
     // Add total sales data
-    worksheet.addRow([]);
-    worksheet.addRow(["Total Orders:", count]);
-    worksheet.addRow(["Total Sales:", totalsales.totalSales]);
-    worksheet.addRow(["Total Price:", totalsales.totalPrice]);
-    worksheet.addRow(["Total Discount:", totalsales.discount]);
-    worksheet.addRow(["Final Amount:", totalsales.finalAmount]);
+    // worksheet.addRow([]);
+    // worksheet.addRow(["Total Orders:", count]);
+    // worksheet.addRow(["Total Sales:", totalsales.totalSales]);
+    // worksheet.addRow(["Total Price:", totalsales.totalPrice]);
+    // worksheet.addRow(["Total Discount:", totalsales.discount]);
+    // worksheet.addRow(["Final Amount:", totalsales.finalAmount]);
     // Add some space
     worksheet.addRow([]);
     // Add each order's details in a table
@@ -288,7 +292,20 @@ const generateExcelReport = async (req, res) => {
 
 const salesReport =async(req,res)=>{
     try {
+      const limit =5;
         const filter = req.query.day
+        const page = req.query.page || 1;
+        const {orders,count,start,end} = await filterSalesReportAdmin.filter(filter,page);
+        currentPage = orders
+        console.log("result",filter,orders, start,end,count)
+        res.render("dashboard", {
+          data: orders,
+          currentPage: page,
+          totalPages: Math.ceil(count / limit),
+          startDate: start.toISOString().split('T')[0],
+          endDate: end.toISOString().split('T')[0],
+          filter: filter,
+        });
         
     } catch (error) {
         console.error("Error while displaying sales report", error);
@@ -296,11 +313,75 @@ const salesReport =async(req,res)=>{
     }
 }
 
+const salesSummary = async (req, res) => {
+  try {
+    const [count, summary] = await Promise.all ([
+     
+        Order.countDocuments({}),
+        Order.aggregate([
+          { $unwind: "$orderedItems" },
+          {
+            $group: {
+              _id: null,
+              totalSales: { $sum: "$orderedItems.quantity" },
+              totalPrice: { $sum: "$totalPrice" },
+              discount: { $sum: "$discount" },
+              finalAmount: { $sum: "$finalAmount" },
+            },
+          },
+        ]),
+  ]);
+  console.log(summary);
+  const totalsales = count;
+    const doc = new PDFDocument();
+    let chunks = [];
+    let result;
+    doc.on("data", (chunk) => {
+      chunks.push(chunk);
+    });
+    doc.on("end", () => {
+      result = Buffer.concat(chunks);
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=sales_report.pdf"
+      );
+      res.send(result);
+    });
+    // Add a title
+    doc.fontSize(20).text("Sales Report : GentzGallery", { align: "center" });
+    // Add some space
+    doc.moveDown();
+    // Add total sales data
+    doc.fontSize(12).text(`Total Orders: ${count}`);
+    doc.fontSize(12).text(`Total sales: ${summary[0].totalSales}`);
+    doc.fontSize(12).text(`Total Price: ${summary[0].totalPrice}`);
+    doc.fontSize(12).text(`Total Discount: ${summary[0].discount}`);
+    doc.fontSize(12).text(`Final Amount: ${summary[0].finalAmount}`);
+    // Add some space
+    doc.moveDown();
+    // Add each order's details
+    
+    // Finalize the PDF
+    doc.end();
+    console.log("PDF generated successfully");
+  
+    
+
+    
+  } catch (error) {
+    console.error("error while making sales summary",error);
+    res.redirect("/admin/pageError");   
+  }
+}
+  
+
 module.exports = {
     loadDashboard,
     generatePdf,
     generateExcelReport,
     displayFilteredData,
     salesReport,
+    salesSummary
 }
 

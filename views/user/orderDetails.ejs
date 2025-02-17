@@ -5,7 +5,7 @@
             <div class="mt-1">
                 <h2 class="content-title card-title">Order detail</h2>
                 <p>Details for Order ID: <%= orders._id %></p>
-                <% console.log("Order ID: ", orders._id) %>
+                
                 <input type="text" name="orderId" id="orderId" value="<%= orders._id %>" hidden>
             </div>
         </div>
@@ -35,7 +35,8 @@
                             <h6 class="mb-1">Order info</h6>
                             <p class="mb-1">
                                 Pay method: <%= orders.payment %> <br>
-                                Status: <%= orders.orderedItems[0].productStatus %><br>
+                                Pay Status: <%= orders.status %> <br>
+                                Order Status: <%= orders.orderedItems[0].productStatus %><br>
                                  Total: ₹<%= totalGrand.toLocaleString() %> <br>
                                 
                                 Discount: ₹<%= discount.toLocaleString() %> <br>
@@ -57,8 +58,9 @@
                                 <%= address.state %>, <%= address.addressType %> <br>
                                 <%= address.pincode %>
                             </p>
-                            <%if(orders.status==="Delivered"){%>
-                                <a href="/downloadInvoice/<%=orders.orderId%>" class="btn btn-sm">Download Invoice</a>
+                            
+                            <%if(orders.orderedItems[0].productStatus.trim()=="Delivered"){%>
+                                <a href="" class="btn btn-sm" id="downloadInvoice">Download Invoice</a>
                             <%}%>
                         </div>
                     </article>
@@ -123,7 +125,7 @@
                                                         <% if (item.productStatus.trim() === "Confirmed" || item.productStatus.trim() === "Processing"|| item.productStatus.trim()==="Pending") { %>
                                                         
                                                             <!-- Allow the user to cancel the order -->
-                                                            <button type="submit" id="cancelButton<% item.product %>" class="btn " onclick=" handleDropdownChange('<%= item.product %>', 'Cancelled')">Cancel</button>
+                                                            <button type="submit" id="cancelButton<% item.product %>" class="btn " onclick=" handleDropdownChange('<%= item.product %>','<%= orders.payment%>', 'Cancelled')">Cancel</button>
                                                             
                                                         <% }%>
                                                         
@@ -168,7 +170,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
 <script>
-function handleDropdownChange(productId) {
+function handleDropdownChange(productId,payment) {
   
     console.log("productId = ", productId.toString());
     var product = productId.toString();
@@ -176,14 +178,14 @@ function handleDropdownChange(productId) {
     console.log(selectedValue);
     if (selectedValue === "cancel") {
         console.log("calling toplevel confirmCancelOrder")
-        confirmCancelOrder(product);
+        confirmCancelOrder(product,payment);
     } else if (selectedValue == "returnrequest") {
         returnRequestOrder(product);
     }
 }
 
 
-function confirmCancelOrder(product) {
+function confirmCancelOrder(product,payment) {
     console.log("first function calling confirmCancelOrder")
     Swal.fire({
         title: 'Confirm Cancel Order',
@@ -197,19 +199,19 @@ function confirmCancelOrder(product) {
     }).then((result) => {
         if (result.isConfirmed) {
             console.log('working');
-            cancelOrder(product);
+            cancelOrder(product,payment);
         }
     });
 }
 
-function cancelOrder(product) {
+function cancelOrder(product,payment) {
     const orderId = document.getElementById("orderId")
     console.log("second function calling cancelOrder")
     $.ajax({
         url: '/cancelOrder',
         method: 'POST',
         contentType: 'application/json',
-        data: JSON.stringify({ productId: product, orderId: orderId.value }),
+        data: JSON.stringify({ productId: product, orderId: orderId.value , payment:payment}),
         success: (response) => {
             if (response.result.modifiedCount === 1) {
                 Swal.fire({
@@ -276,6 +278,57 @@ function returnRequestOrder(product,orderId) {
 
     
 }
+
+document
+      .getElementById("downloadInvoice")
+      .addEventListener("click", async (event) => {
+        event.preventDefault();
+        
+
+        try {
+            const orderId = document.getElementById("orderId").value;
+            console.log("orderId",orderId)
+          const response = await fetch(`/downloadInvoice/?id=${orderId}`, {
+            method: "get",
+            // headers: {
+            //   "Content-Type": "application/json",
+            // },
+            // // body:data,
+            // body: JSON.stringify(salesData),
+          });
+
+          if (response.ok) {
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "report.pdf";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            Swal.fire({
+                title: 'Invoice downloaded!',
+                text: response.message,
+                icon:'success',
+                timer: 4000,
+                showConfirmButton: false,
+              });
+          } else {
+            Swal.fire({
+                title: 'Failed to download invoice!',
+                text: response.message,
+                icon:'error',
+                timer: 4000,
+                showConfirmButton: false,
+              });
+          
+            console.error("Failed to generate PDF");
+          }
+        } catch (error) {
+          console.log(error.message);
+        }
+      });
+
 </script>
 
 <%- include("../../views/partials/user/footer") %>

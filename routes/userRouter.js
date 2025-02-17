@@ -37,8 +37,8 @@ router.post('/resendOtp', signupController.resendOtp)
 router.get('/auth/google', passport.authenticate('google',{scope:['profile','email']}))
 // router.get('/auth/google/callback',passport.authenticate('google',{failureRedirect:'/signup'}),(req,res)=>{
 //     res.redirect('/')
-
 // })
+
 
 router.get('/pageNotFound', homePageController.pageNotFound);
 
@@ -111,6 +111,7 @@ router.post('/returnrequestOrder', userAuth, postOrderController.returnrequestOr
 router.post("/verifyPayment",userAuth,preOrderController.verifyPayment)
 router.post("/useCoupon",userAuth,preOrderController.useCoupon)
 router.post("/removeCoupon",userAuth,preOrderController.removeCoupon)
+router.get("/downloadInvoice",userAuth, postOrderController.downloadInvoice)
 // router.post('confirmPayment',userAuth,preOrderController.confirmPayment)
 
 //wishlist management

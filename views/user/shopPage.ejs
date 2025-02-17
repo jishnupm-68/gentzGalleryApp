@@ -204,6 +204,7 @@
       </div>
 
       <div class="product-list-container">
+
         <aside class="sidebar">
           <div class="filter-section">
             <div class="filter-title">Categories</div>
@@ -212,7 +213,9 @@
                 <% if (category && category.length> 0) { %>
                   <% for (let i=0; i < category.length; i++) { %>
                     <li class="filter-item">
-                      <a href="/filter?category=<%= category[i]._id %>">
+                      
+                        <a href="#" class="ajax-filter" data-filter="category" data-value="<%= category[i]._id %>">
+
                         <%= category[i].name %>
                       </a>
                     </li>
@@ -223,7 +226,6 @@
               </ul>
             </div>
           </div>
-
           <div class="filter-section">
             <div class="filter-title">Brands</div>
             <div class="category-brand-container">
@@ -275,28 +277,13 @@
                 </li>
                 <li class="filter-item">
                   <a href="/filter?filter=High to Low">Price: High to Low</a>
-                </li>
-                
+                </li>               
                 <li class="filter-item">
                   <a href="/filter?filter=aA-zZ">aA-zZ</a>
                 </li>
                 <li class="filter-item">
                   <a href="/filter?filter=zZ-aA">zZ-aA</a>
-                </li>
-
-                <!-- <li class="filter-item">
-                  <label for="showOutOfStock">
-                    <input 
-                      onclick="toggleOutOfStock()" 
-                      type="checkbox" 
-                      id="showOutOfStock" 
-                      class="p-3" 
-                      name="showOutOfStock" 
-                      style="height: 10px; width: 10px;"
-                    />
-                    Include Out of Stock
-                  </label>
-                </li> -->
+                </li>              
                 <li class="filter-item">
                   <label for="showOutOfStock">
                     <input 
@@ -310,7 +297,6 @@
                     <span id="stockLabel">Include Out of Stock</span>
                   </label>
                 </li>
-
               </ul>
               <div class="price-filter">
                 <div class="filter-title">Filter by Ratings</div>
@@ -329,10 +315,9 @@
                 </div>
             </div>
           </div>
-
-
-
         </aside>
+
+       
 
         <main class="product-grid">
           <% if (products && products.length> 0) { %>
@@ -341,15 +326,8 @@
                 <a href="#" class="wishlist-btn" onclick="addToWishlist('<%= products[i]._id %>')">
                   <i class="fas fa-heart"></i>
               </a>
-              <!-- <a aria-label="Add To Wishlist" class="action-btn hover-up" href="#" onclick="addToWishlist('<%= products[i]._id %>')"><i class="fi-rs-heart"></i></a> -->
-                <!-- <span class="wishlist-btn" onclick="">
-                <a aria-label="Add To Wishlist" class=" " href="#" style="background: inherit;"><i class="fi-rs-heart"></i></a></span> -->
-                <!-- <span class="wishlist-btn" onclick="">❤️</span> -->
-                
-
-
-
-                
+              
+ 
                 <a href="/productDetails?id=<%= products[i]._id %>">
 
                   <img src="/uploads/product-imagesResized/<%= products[i].productImage[0] %>"
@@ -403,9 +381,9 @@
           <ul class="pagination justify-content-center mb-20" style="margin-right: 200px;">
             <% for (let i=1; i <=totalPages; i++) { %>
               <li class="page-item <%= (i === currentPage) ? 'active' : '' %>">
-                <a class="page-link " href="?page=<%= i %>">
-                  <%= i %>
-                </a>
+                  <a class="page-link ajax-pagination" href="?page=<%= i %>" data-page="<%= i %>">
+                    <%= i %>
+                  </a>     
               </li>
               <% } %>
           </ul>
@@ -416,6 +394,53 @@
   </div>
 
   <script>
+
+$(document).ready(function() {
+    // Pagination Click Event
+    $(document).on("click", ".ajax-pagination", function(e) {
+        e.preventDefault();  // Prevent full-page reload
+
+        let page = $(this).data("page"); // Get page number
+        fetchProducts(page);
+    });
+
+    // Function to Fetch Products via AJAX
+    function fetchProducts(page) {
+        $.ajax({
+            url: "/filter?page=" + page, // Call backend with page number
+            method: "GET",
+            dataType: "html",  // Expect HTML response (product list)
+            success: function(response) {
+                $(".product-grid").html($(response).find(".product-grid").html()); // Update products
+                $(".pagination").html($(response).find(".pagination").html()); // Update pagination
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX Error:", xhr.responseText, status, error);
+            }
+        });
+    }
+});
+
+// $(document).on("click", ".ajax-filter", function(e) {
+//     e.preventDefault();
+
+//     let filterType = $(this).data("filter");
+//     let filterValue = $(this).data("value");
+
+//     $.ajax({
+//         url: `/filter?${filterType}=${filterValue}`,
+//         method: "GET",
+//         dataType: "html",
+//         success: function(response) {
+//             $(".product-grid").html($(response).find(".product-grid").html());
+//             $(".pagination").html($(response).find(".pagination").html());
+//         },
+//         error: function(xhr, status, error) {
+//             console.error("AJAX Error:", xhr.responseText, status, error);
+//         }
+//     });
+// });
+
 
 function toggleOutOfStock() {
     const checkbox = document.getElementById("showOutOfStock");
@@ -469,6 +494,101 @@ function toggleOutOfStock() {
         })
     }
     
+
+
+
+//     document.addEventListener("DOMContentLoaded", function () {
+//     const filterItems = document.querySelectorAll(".ajax-filter");
+//     const outOfStockCheckbox = document.querySelector("#showOutOfStock");
+
+//     function applyFilters() {
+//         let filters = {};
+
+//         // Collect selected filters
+//         document.querySelectorAll(".ajax-filter.active").forEach(item => {
+//             const filterType = item.dataset.filter;
+//             const filterValue = item.dataset.value || "";
+
+//             if (filterType === "price") {
+//                 filters["price_gt"] = item.dataset.gt;
+//                 filters["price_lt"] = item.dataset.lt;
+//             } else {
+//                 filters[filterType] = filterValue;
+//             }
+//         });
+
+//         // Add Out of Stock filter if checked
+//         if (outOfStockCheckbox && outOfStockCheckbox.checked) {
+//             filters["outOfStock"] = "true";
+//         }
+
+//         fetch(`/filter?${new URLSearchParams(filters)}`, {
+//             method: "GET",
+//             headers: { "X-Requested-With": "XMLHttpRequest" }
+//         })
+//         .then(response => response.json())
+//         .then(data => {
+//             updateProductList(data.products);
+//             updatePagination(data.totalPages, data.currentPage);
+//         })
+//         .catch(error => console.error("Error fetching filtered products:", error));
+//     }
+
+//     filterItems.forEach(item => {
+//         item.addEventListener("click", function (event) {
+//             event.preventDefault();
+
+//             // Toggle active class for styling
+//             this.classList.toggle("active");
+
+//             // Apply Filters
+//             applyFilters();
+//         });
+//     });
+
+//     if (outOfStockCheckbox) {
+//         outOfStockCheckbox.addEventListener("change", applyFilters);
+//     }
+// });
+
+// function updateProductList(products) {
+//     const productGrid = document.querySelector(".product-grid");
+//     productGrid.innerHTML = "";
+
+//     if (products.length === 0) {
+//         productGrid.innerHTML = "<p>No products available</p>";
+//         return;
+//     }
+
+//     products.forEach(product => {
+//         productGrid.innerHTML += `
+//             <div class="product-card">
+//                 <a href="/productDetails?id=${product._id}">
+//                     <img src="/uploads/product-imagesResized/${product.productImage[0]}" alt="${product.productName}" />
+//                     <h4>${product.productName}</h4>
+//                     <p>Brand: ${product.brand}</p>
+//                     <p> Price: ₹${product.salePrice.toLocaleString("en-IN")} 
+//                         <span class="text-muted"><strike>₹${product.regularPrice.toLocaleString("en-IN")}</strike></span>
+//                     </p>
+//                 </a>
+//             </div>
+//         `;
+//     });
+// }
+
+// function updatePagination(totalPages, currentPage) {
+//     const paginationContainer = document.querySelector(".pagination");
+//     paginationContainer.innerHTML = "";
+
+//     for (let i = 1; i <= totalPages; i++) {
+//         paginationContainer.innerHTML += `
+//             <li class="page-item ${i === currentPage ? "active" : ""}">
+//                 <a class="page-link ajax-page" href="#" data-page="${i}">${i}</a>
+//             </li>
+//         `;
+//     }
+// }
+
 </script>
 
 <div id="product-list"></div>

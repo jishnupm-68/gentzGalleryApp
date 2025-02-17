@@ -169,21 +169,21 @@ const orderPlaced = async (req,res)=>{
             return res.json(404).json({error:"User not found"})
         }
         // const productIds = findUser.cart.map((item)=>item.productid);
-        console.log("Cart", cart)
+        //console.log("Cart", cart)
         const productIds = cart.items.map((item)=>item.productid);
         const findAddress = await Address.findOne({"address._id":addressId});
         if(!findAddress){
             console.error("Address not found error")
             return res.json(404).json({error:"Address not found"})
         }
-        console.log("Productids",productIds) 
+        //console.log("Productids",productIds) 
         const desiredAddress = findAddress.address.find((item)=>item._id.toString()===addressId.toString());
         if(!desiredAddress){
             console.error("Desired Address not found error")
             return res.json(404).json({error:"Address not found"})
         } 
         const findProducts = await Product.find({_id:{$in:productIds}});
-        console.log("findPRoducts", findProducts, "productIds", productIds)
+        //console.log("findPRoducts", findProducts, "productIds", productIds)
         if(findProducts.length !== productIds.length){
             console.error("products not found")
             return res.json(404).json({error:"Products not found"})
@@ -313,8 +313,12 @@ const verifyPayment = async(req,res)=>{
             
          }) 
          await newTransaction.save();
+         await Order.findOneAndUpdate({_id:req.session.orderDbId},{status:"Verified"})
+
     
         res.json({ success: true, message: "Payment verified successfully" });
+            }else{
+                console.log("Order not verified")
             }
         
     } catch (error) {
@@ -383,7 +387,7 @@ const removeCoupon = async(req,res)=>{
         )
         if(updateCoupon){
             console.log("Coupon deleted");
-            req.session.discount = (Number(req.session.discount) || 0) - Number(updatedCoupon.offeredPrice);
+            req.session.discount = (Number(req.session.discount) || 0) - Number(updateCoupon.offeredPrice);
             res.json({success:true, message: "Coupon deleted successfully"})
         }else{
             console.log("Coupon not dleted");

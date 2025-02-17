@@ -35,7 +35,7 @@
                                                     </td>
                                                     <td class="product-des product-name">
                                                         <h5 class="product-name">
-                                                            <a href="cart">
+                                                            <a href="productDetails?id=<%= items[i].productId %>">
                                                                 <%= items[i].name %>
                                                             </a>
                                                         </h5>
@@ -147,18 +147,11 @@
                             </div>
                             <div class="table-responsive">
                                 <table class="table">
-                                    <tbody>
-
-                                        <tr>
-                                            <td class="cart_total_label">Shipping</td>
-                                            <td class="cart_total_amount"> <i class="ti-gift mr-5"></i> Free Shipping
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            
-                                            <td class="cart_total_label">Subtotal</td>
+                                    <tbody>  
+                                        <tr>                                           
+                                            <td class="cart_total_label">Price</td>
                                             <td class="cart_total_amount"><span class="font-lg fw-900 text-brand">₹
-                                                    <text id="subtotal">
+                                                    <text id="priceDetailsPrice">
                                                          <% if (items && items.length> 0) { %>
                                                         <%= subtotal %>
                                                          <% }else{ %>
@@ -171,7 +164,7 @@
                                             
                                             <td class="cart_total_label">Discount</td>
                                             <td class="cart_total_amount"><span class="font-lg fw-900 text-brand">₹
-                                                <text id="total">
+                                                <text id="discount">
                                                     <% if (items && items.length> 0) { %>
                                                         <%= discount %>
                                                          <% }else{ %>
@@ -181,9 +174,20 @@
                                             </span></td>
                                         </tr>
                                         <tr>
+                                            <td class="cart_total_label">Shipping</td>
+                                            <% if (items && items.length> 0 && subtotal<1000) { %>
+                                                
+                                                <td class="cart_total_amount font-lg fw-900 text-brand" id="deliveryCharge">₹ <%= deliveryCharge %>
+                                             </td>
+                                             <% }else{ %>
+                                            <td class="cart_total_amount font-lg fw-900 text-brand"> <i class="ti-gift mr-5"></i>  Free
+                                            </td>
+                                             <% } %>
+                                        </tr>
+                                        <tr>
                                             <td class="cart_total_label">Total</td>
                                             <td class="cart_total_amount"><span class="font-lg fw-900 text-brand">₹
-                                                    <text id="total">
+                                                    <text id="grandTotal">
                                                         <% if (items && items.length> 0) { %>
                                                             <%= grandTotal %>
                                                              <% }else{ %>
@@ -292,7 +296,17 @@
                 data: { productId, quantity: currentQuantity, count },
 
                 success: (response) => {
-                    document.getElementById('total').innerHTML = response.grandTotal;
+                    let deliveryCharges=response.deliveryCharge==0?"Free":response.deliveryCharge;
+
+                    document.getElementById('grandTotal').innerHTML = response.grandTotal;
+                    
+                    document.getElementById('priceDetailsPrice').innerHTML = response.subtotal;
+                    document.getElementById('discount').innerHTML = response.discount;
+
+                    document.getElementById('deliveryCharge').innerHTML = deliveryCharges
+
+                    console.log("Quantity updated successfully:", response);
+                    
                     if(productQuantity ==1){
                         location.reload();
                     }                    

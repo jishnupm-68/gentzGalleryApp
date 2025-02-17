@@ -40,7 +40,7 @@ const login = async(req,res)=>{
         if(!passwordMatch){
             return res.render("login",{message:"Incorrect Password"});
         }
-        console.log("manual login",findUser._id)
+        console.log("manual login")
         req.session.user = findUser._id;
         res.redirect('/')
     } catch (error) {
@@ -67,7 +67,7 @@ const logout = async (req,res)=>{
 const googleLogin = async (req,res)=>{
     try{
         const userEmail= req.user.email;
-        //console.log("data from req",req.user)
+        
         const user = await User.findOne({isAdmin:false,email:userEmail});
         // if(!user){
         //     return res.redirect("/signup")
@@ -79,7 +79,8 @@ const googleLogin = async (req,res)=>{
         if(user.isBlocked){
             //res.json({success:false, message:"User is blocked by admin"})
             res.render("login",{message:"User is blocked by admin"})
-        }     
+        }  
+        console.log("google login",req.session)   
         req.session.user = user._id;
         res.redirect('/')
     }

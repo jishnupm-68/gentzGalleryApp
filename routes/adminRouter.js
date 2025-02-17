@@ -30,6 +30,7 @@ router.post("/generatePdf",adminAuth,salesReportController.generatePdf)
 router.post('/downloadExcel', adminAuth,salesReportController.generateExcelReport)
 router.get('/sales', adminAuth, salesReportController.displayFilteredData)
 router.get('/salesReport', adminAuth, salesReportController.salesReport)
+router.get('/salesSummary',adminAuth, salesReportController.salesSummary)
 
 
 //customer management

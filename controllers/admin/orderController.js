@@ -60,7 +60,10 @@ const updateOrderStatus = async (req,res)=>{
                     const quantity = update.orderedItems[0].quantity;
                     const price =  update.orderedItems[0].price;
                     let amount =  price * quantity;
-                    walletUpdate = await User.findOneAndUpdate({ _id: update.userId }, { $inc: { wallet: amount } });
+                    walletUpdate = await User.findOneAndUpdate(
+                        { _id: update.userId },
+                        { $inc: { wallet: amount } }
+                    );
                     if (walletUpdate) {
                         console.log("Wallet updated successfully");
                     }else{

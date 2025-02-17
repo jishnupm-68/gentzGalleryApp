@@ -60,7 +60,7 @@
                                                             alt="#"></td>
 
                                                     <td>
-                                                        <h5><a href="shop-product-full.html">
+                                                        <h5><a href="productDetails?id=<%= product[i].productId %>">
                                                                 <%= product[i].name %>
                                                             </a></h5>
                                                     </td>
@@ -258,15 +258,19 @@
                                                     <tbody>
                                                         <tr>
                                                             <th>Shipping</th>
-                                                            <td colspan="2"><em>Free Shipping</em></td>
+                                                            <% if (grandTotal>1000) { %>
+                                                                <td colspan="2"><em>Free Shipping</em></td>
+                                                            <% } else { %>
+                                                            <td colspan="2"><em>Shipping charge included</em></td>
+                                                            <% } %>
                                                         </tr>
-                                                        <tr>
+                                                        <!-- <tr>
                                                             <th>Total</th>
                                                             <td colspan="2" id="discount">
                                                                 ₹<%= grandTotal %>
                                                             </td>
-                                                        </tr>
-                                                        <tr>
+                                                        </tr> -->
+                                                        <!-- <tr>
                                                             <th>Discount</th>
                                                             <td colspan="2" id="discount">
                                                                 <% if (discount>0) { %>
@@ -275,7 +279,7 @@
                                                                             0
                                                                             <% } %>
                                                             </td>
-                                                        </tr>
+                                                        </tr> -->
                                                         <tr>
                                                             <th>Amount to pay </th>
                                                             <td colspan="2" class="product-subtotal">
@@ -326,7 +330,7 @@
 
             const sum = document.getElementById("totalValue").textContent;
             const numericValue = parseInt(sum.replace(/[^\d.]/g, ''));
-            console.log(numericValue);
+            console.log("checkout details",numericValue, payment, typeof(payment), payment.length);
 
 
             if (!payment) {
@@ -344,14 +348,14 @@
                     timer: 3000,
                 });
             }
-            //     else if(payment === "cod" && numericValue > 1000){
-            //         Swal.fire({
-            //     title: 'COD Not Allowed!',
-            //     text: 'Orders above ₹1000 are not allowed for Cash on Delivery (COD).',
-            //     icon: 'error',
-            //     timer: 3000,
-            // });
-            //     }
+                else if(payment === "cod" && numericValue > 1000){
+                    Swal.fire({
+                title: 'COD Not Allowed!',
+                text: 'Orders above ₹1000 are not allowed for Cash on Delivery .',
+                icon: 'error',
+                timer: 3000,
+            });
+                }
             else {
                 $.ajax({
                     url: '/orderPlaced',
@@ -484,6 +488,9 @@
                 });
             }
         }
+
+
+        
 
         function verifyPayment(response,order) {
             let payment = response

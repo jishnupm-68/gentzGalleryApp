@@ -548,7 +548,7 @@
                     <div class="card-body">
                       <form>
                         <label for="walletAmount" class="h4">Amount</label> <br>
-                        <button type="button" class="btn btn-success">Add Money</button>
+                        <!-- <button type="button" class="btn btn-success">Add Money</button> -->
                       </form>
                     </div>
                   </div>
@@ -563,6 +563,8 @@
                     <div class="card-header"><h5 class="mb-0">Wallet History</h5></div>
                     <div class="card-body">
                       <div class="table-responsive">
+                       
+                        <% if(order.status) %>
                         <table class="table">
                           <thead>
                             <tr>
@@ -572,12 +574,28 @@
                             </tr>
                           </thead>
                           <tbody>
+                            
                             <% let walletTransactions = user.wallet %>
                             <% if(walletTransactions) { %>
                              
+                               %>
+                              <% walletSummary.forEach((item)=>{ %>
+                                <% item.orderedItems.forEach((element)=>{ %>
+                                  <% if(element.refundDate) {%>
+                              <tr>  
+                                  <td><%= element.refundDate.toLocaleString('en-IN') %></td>
+                                  <td>Credited</td>
+                                  <td><%= item.finalAmount %></td>
+                                </tr>
+                                <% } %>
+                                <% }) %>
+                                <% })  %>
+                             
+                           
                             <% } else { %>
                               <tr><td colspan="3" class="text-center">No Transactions Found</td></tr>
                             <% } %>
+                           
                           </tbody>
                         </table>
                       </div>

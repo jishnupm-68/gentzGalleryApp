@@ -49,13 +49,14 @@ const loadUserProfile = async(req,res)=>{
     try{
         console.log(req.body , req.session)
         const userId = req.session.user;
-        const [userData,addressData, order ] = await Promise.all ([
+        const [userData,addressData, order , wallet] = await Promise.all ([
             User.findOne({_id:userId}),
             Address.findOne({userId:userId}),
-            Order.find({userId:userId}).sort({createdOn:-1})
+            Order.find({userId:userId}).sort({createdOn:-1}),
+            Order.find({userId:userId}).sort({"orderedItems.refundDate":-1})
         ])
         console.log("rendering the user profile page")
-        res.render("profilePage", {user:userData, userAddress:addressData,order:order});
+        res.render("profilePage", {user:userData, userAddress:addressData,order:order, walletSummary:wallet});
     }
     catch(error){
         console.error("Error while rendering the user profile page", error)

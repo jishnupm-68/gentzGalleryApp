@@ -6,10 +6,9 @@ const mongoose = require("mongoose");
 //load the cart page with cart items
 const getCartPage = async(req,res)=>{
     try {
+      let deliveryCharge = 0;
         const userId = req.session.user; 
-        if (!userId) {
-            return res.redirect("/login");
-        }
+        
         const [user,cart] = await Promise.all([
           User.findOne({ _id: userId }), 
           Cart.findOne({ userId }).populate("items.productid")]);
@@ -35,12 +34,16 @@ const getCartPage = async(req,res)=>{
             };
         });
 
-        const grandTotal = cartItems.reduce((total, item) => total + item.total, 0);
+        let grandTotal = cartItems.reduce((total, item) => total + item.total, 0);
+
         let subtotal = (cartItems.reduce((totalSalePrice,item) => totalSalePrice + item.totalSalePrice,0));
         
        subtotal>0?subtotal:0;
+       subtotal>1000?deliveryCharge=0:deliveryCharge=50;
+       
         let discountDecimal = subtotal-grandTotal;
         let discount = discountDecimal.toFixed(2);
+        grandTotal+=deliveryCharge;
         req.session.discount = discount;
         req.session.grandTotal = grandTotal;
         console.log("cartItems",cartItems,"grandTotal",grandTotal,req.session.user);
@@ -50,6 +53,7 @@ const getCartPage = async(req,res)=>{
             grandTotal:grandTotal,
             subtotal:subtotal,
             discount:discount,
+            deliveryCharge:deliveryCharge,
         });
 }
      catch (error) {
@@ -145,31 +149,49 @@ const deleteItem = async(req,res)=>{
   
 const changeQuantity =async (req,res)=>{
     try {
+      let deliveryCharge = 0;
         let { productId, quantity, count } = req.body;
         console.log(productId,quantity, count)
         let newQuantity = parseInt(quantity) + parseInt(count);   
-         if(newQuantity <= 1){
-            newQuantity=1;
-        }
-        if(newQuantity>=5){
-            newQuantity=5;
-        }
+        newQuantity <= 1?newQuantity=1:newQuantity;
+        newQuantity>=5?newQuantity=5:newQuantity;
         const updatedCart = await Cart.findOneAndUpdate(
             { 'items.productid': productId },
             { $set: { 'items.$.quantity': newQuantity } }, 
             { new: true } 
-        );
+        ).populate("items.productid");
         if (!updatedCart) {
             console.log("error while changing quantity")
             return res.redirect('/pageNotFound')
         }
-        const grandTotal = updatedCart.items.reduce(
+
+        const cartItems = updatedCart.items.map((item) => {
+          const product = item.productid;
+          let price = product.offerPrice>0?product.offerPrice:product.salePrice;
+          return {
+              total: price * item.quantity,              
+          };
+      });
+       
+        
+        console.log("updatedCart", updatedCart, cartItems);
+      
+        let subtotal = updatedCart.items.reduce(
             (total, item) => total + item.quantity * item.price,
             0
         );
-        req.session.grandTotal = grandTotal;  
-        console.error("cart quantity changed successfully", grandTotal)
-        res.json({ success: true, grandTotal });
+        grandTotal  =  cartItems[0].total
+       
+        
+       subtotal>0?subtotal:0;
+       subtotal>1000?deliveryCharge=0:deliveryCharge=50;
+        let discountDecimal = subtotal-grandTotal;
+        let discount = Number(discountDecimal.toFixed(2));
+        grandTotal+=deliveryCharge;
+        req.session.discount = discount;
+        req.session.grandTotal = grandTotal;
+        console.error("cart quantity changed successfully", grandTotal, subtotal, discount, deliveryCharge)
+        res.json({ success: true, grandTotal, subtotal, discount, deliveryCharge });
         //res.redirect('/cart')    
     } catch (error) {
         console.error("error while changing quantity", error);

@@ -87,9 +87,9 @@
             /> -->
 
             <label for="startDate">Start Date:</label>
-        <input type="date" id="startDate">
+        <input type="date" id="startDate" value="<%=startDate %>">
         <label for="endDate">End Date:</label>
-        <input type="date" id="endDate">
+        <input type="date" id="endDate" value="<%=endDate %>">
         <button id="filterButton" class="btn btn-primary text-light mt-1">Filter</button>
 
           </div>
@@ -99,6 +99,9 @@
             >
             <a href="" id="downloadExcelReport" class="btn btn-primary text-light mb-2"
               >Download Excel</a
+            >
+            <a href="" id="downloadSummary" class="btn btn-primary text-light mb-2"
+              >Download Summary</a
             >
           </div>
         </div>
@@ -120,6 +123,7 @@
             <th scope="col" class="text-end">Total Price</th>
           </tr>
         </thead>
+        <% console.log("incoming data",data) %>
         <% if(data) {%>
         <tbody>
          
@@ -133,11 +137,13 @@
             <td><b><%= item.productName %></b></td>
             <td><%= data[i].createdOn.toLocaleString('en-IN') %></td>
             <td><%= data[i].payment %></td>
-            <% data[i].orderedItems.forEach((item)=>{ %>
-            <td><%= item.productStatus %></td>
-            <% }) %>
+            
+            <td><%= data[i].status %></td> 
+           
             <td class="text-end"><%= data[i].finalAmount %></td>
-          </tr> <%}) %>
+            
+          </tr> 
+          <%}) %>
           <% grandTotal += data[i].finalAmount; %> <% } %>
           
          
@@ -363,6 +369,42 @@ function displayResults(orders) {
         }
       });
 
+      document
+      .getElementById("downloadSummary")
+      .addEventListener("click", async (event) => {
+        event.preventDefault();
+        
+
+        try {
+          const response = await fetch("/admin/salesSummary", {
+            method: "get",
+            // headers: {
+            //   "Content-Type": "application/json",
+            // },
+            // // body:data,
+            // body: JSON.stringify(salesData),
+          });
+
+          if (response.ok) {
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "report.pdf";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          } else {
+            console.error("Failed to generate PDF");
+          }
+        } catch (error) {
+          console.log(error.message);
+        }
+      });
+
+
+
+    
     function dateWiseFilter() {
       const selectedDate = document.getElementById("selectedDate").value;
 
