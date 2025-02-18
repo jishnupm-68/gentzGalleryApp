@@ -112,6 +112,7 @@ router.post("/verifyPayment",userAuth,preOrderController.verifyPayment)
 router.post("/useCoupon",userAuth,preOrderController.useCoupon)
 router.post("/removeCoupon",userAuth,preOrderController.removeCoupon)
 router.get("/downloadInvoice",userAuth, postOrderController.downloadInvoice)
+router.post("/retryPayment", userAuth, postOrderController.retryPayment)
 // router.post('confirmPayment',userAuth,preOrderController.confirmPayment)
 
 //wishlist management

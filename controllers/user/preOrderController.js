@@ -26,10 +26,7 @@ function generateRazorpay(orderId,totalPrice,callback){
         if(err){
             console.error("error in generate razorpay function",err)
         }else{
-           // console.log("order",order)
-            //req.session.orderId = order.id
             callback(null,order)
-           // return order
         }
       });
 }
@@ -284,26 +281,28 @@ const orderPlaced = async (req,res)=>{
 
 const verifyPayment = async(req,res)=>{
     try {
-        console.log("incoming data", req.body,req.session)
-        const order_id = req.session.orderId;
+        console.log("payment verification, req.body", req.body);
+        const order_id = req.session.orderId 
         const payment_id = req.body.response.razorpay_payment_id;
         const razorpay_signature = req.body.response.razorpay_signature;
+        let orderDbId = req.session.orderDbId ==undefined?req.body.orderId:req.session.orderDbId
+        let findOrder =  await  Order.findById(orderDbId);
         const key_secret = process.env.RAZORPAY_KEY_SECRET;
         let hmac = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET);
         hmac.update(
            order_id + "|" + payment_id
         )
         hmac  = hmac.digest('hex');
-        console.log("hmac",hmac, req.body)
+        //console.log("hmac",hmac, req.body)
     if (hmac == razorpay_signature) {
         console.log("payment verified");
 
          const newTransaction  = new Transaction({
             userId: req.session.user,
             details:{
-                amount: req.session.grandTotal,
+                amount: findOrder.finalAmount,
                 currency: "INR",
-                orderId: req.session.orderDbId,
+                orderId: orderDbId,
                 orderRazorpayId: req.session.orderId,
                 paymentId: payment_id,
                 paymentStatus: "success",
@@ -313,10 +312,10 @@ const verifyPayment = async(req,res)=>{
             
          }) 
          await newTransaction.save();
-         await Order.findOneAndUpdate({_id:req.session.orderDbId},{status:"Verified"})
+         await Order.findOneAndUpdate({_id:orderDbId},{status:"Verified"})
 
     
-        res.json({ success: true, message: "Payment verified successfully" });
+        res.json({ success: true, message: "Payment verified successfully" ,orderId:orderDbId});
             }else{
                 console.log("Order not verified")
             }

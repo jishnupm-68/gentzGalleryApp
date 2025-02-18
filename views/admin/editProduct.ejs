@@ -89,17 +89,17 @@
                                <div id="productName-error" class="error-message"></div>
                            </div>
                            <div class="col-lg-4 mb-4">
+                            
                                <label class="form-label">Brand</label>
                                
                                <select class="form-select border" name="brand">
-                                   
-                                <% for (let i = 0; i < brand.length; i++) { %>
-                                
-                                       <option value="<%= brand[i].brandName %>">
-                                        <%= brand[i].brandName %>
-                                         
-                                       </option>
-                                     <% } %>  
+                               
+                                <% brand.forEach((item) => { %>
+                                    <option value="<%= item.brandName %>" <%= item.brandName === product.brand ? 'selected' : '' %>>
+                                      <%= item.brandName %>
+                                    </option>
+                                  <% }) %>
+                                  
                                      
                                </select>
                                <div id="brand-error" class="error-message"></div>
@@ -254,10 +254,6 @@
                         <div>
                             <button class="btn btn-md rounded font-sm hover-up" id="updatebtn"
                                 type="button"  onclick="validateAndSubmit()">Update</button>
-
-
-                                
-
                         </div>
                        
                     </form>

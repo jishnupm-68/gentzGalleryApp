@@ -46,6 +46,7 @@ const getCartPage = async(req,res)=>{
         grandTotal+=deliveryCharge;
         req.session.discount = discount;
         req.session.grandTotal = grandTotal;
+        req.session.subtotal = subtotal;
         console.log("cartItems",cartItems,"grandTotal",grandTotal,req.session.user);
         res.render("cart", {
             user: user, 
@@ -180,7 +181,7 @@ const changeQuantity =async (req,res)=>{
             (total, item) => total + item.quantity * item.price,
             0
         );
-        grandTotal  =  cartItems[0].total
+        grandTotal  =  cartItems.reduce((acc,obj)=>acc+obj.total,0);
        
         
        subtotal>0?subtotal:0;
@@ -190,7 +191,8 @@ const changeQuantity =async (req,res)=>{
         grandTotal+=deliveryCharge;
         req.session.discount = discount;
         req.session.grandTotal = grandTotal;
-        console.error("cart quantity changed successfully", grandTotal, subtotal, discount, deliveryCharge)
+        req.session.subtotal = subtotal;
+        console.error("cart quantity changed successfully","grandTotal", grandTotal, "subtotal",subtotal,"discount", discount, "deliveryCharge", deliveryCharge)
         res.json({ success: true, grandTotal, subtotal, discount, deliveryCharge });
         //res.redirect('/cart')    
     } catch (error) {

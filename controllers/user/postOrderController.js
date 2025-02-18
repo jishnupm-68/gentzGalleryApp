@@ -10,6 +10,7 @@ const Razorpay  = require('razorpay');
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const path = require("path");
+const payment = require('../../helpers/payment')
 
 
 
@@ -72,7 +73,7 @@ const cancelOrder = async(req,res)=>{
         const userId = req.session.user;
         if(payment!="cod"){
              findOrder = await Order.findOneAndUpdate(
-                {"orderedItems.product":productId, userId:userId, _id:orderId},
+                {"orderedItems.product":productId, userId:userId, _id:orderId, status:"Verified"},
                 {"orderedItems.$.productStatus":"Cancelled",
                 "orderedItems.$.refundDate":Date.now()
                 },
@@ -241,7 +242,6 @@ try {
       res.setHeader("Content-Disposition", `attachment; filename=invoice_${orderId}.pdf`);
       res.send(result);
     });
-    //require('../../public/assets/fonts/NotoSans-Regular.ttf')
     doc.registerFont("NotoSans", path.join(__dirname, "../../public/assets/fonts", "NotoSans-Regular.ttf"));
     doc.font("NotoSans");
 
@@ -255,9 +255,12 @@ try {
     doc.fontSize(12).text(`Order Date: ${new Date(order.createdOn).toLocaleDateString()}`);
     doc.fontSize(12).text(`Payment Method: ${order.payment}`);
     doc.fontSize(12).text(`Payment Status: ${order.status}`);
+    let shipping;
+    req.session.subtotal>1000?shipping="Free":shipping="₹50 included";
     doc.fontSize(12).text(`Total Price: ₹ ${order.totalPrice}`);
-    doc.fontSize(12).text(`Total Discount: ₹ ${order.discount}`);
-    doc.fontSize(12).text(`Final Amount: ₹ ${order.finalAmount}`);
+    doc.fontSize(12).text(`Shipping: ${shipping} `);
+    doc.fontSize(12).text(`Total Discount: ₹${order.discount}`);
+    doc.fontSize(12).text(`Final Amount: ₹${order.finalAmount}`);
     
     doc.moveDown();
 
@@ -291,10 +294,48 @@ try {
   }
 };
 
+const retryPayment = async(req,res)=>{
+    try {
+        const {orderId} = req.body;
+        const [findUser,orderDone] = await Promise.all([
+            User.findOne({_id:req.session.user}),
+            Order.findOne({_id:orderId})
+            
+        ])
+        
+        console.log("Orderid,body", orderId,req.body)
+        payment.generateRazorpay(orderDone._id,orderDone.finalAmount,(err,order)=>{
+            if(err){
+                console.log("error whil creating the razorpay payment",err)
+            }else{
+                console.log("order placed now for razorpay",order)
+                
+                req.session.orderId = order.id
+                res.json({
+                    payment: true,
+                    method: "razorpay",
+                    order: orderDone,
+                    orderId: order.id,
+                    user:findUser,
+                });
+            }
+        });   
+        
+    } catch (error) {
+        console.log("Erro while retrying the payment", error);
+        res.json({success:false, message:"An error occured while retrying the payment"});
+        
+    }
+}
+
 module.exports = {
     getOrderDetailsPage,
     cancelOrder,
     returnrequestOrder,
-    downloadInvoice
+    downloadInvoice,
+    retryPayment,
     
 }
+
+
+

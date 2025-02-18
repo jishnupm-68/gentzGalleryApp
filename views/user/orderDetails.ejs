@@ -35,10 +35,14 @@
                             <h6 class="mb-1">Order info</h6>
                             <p class="mb-1">
                                 Pay method: <%= orders.payment %> <br>
-                                Pay Status: <%= orders.status %> <br>
-                                Order Status: <%= orders.orderedItems[0].productStatus %><br>
-                                 Total: ₹<%= totalGrand.toLocaleString() %> <br>
+                                Pay Status: <%= orders.status %> 
+                                <% if(orders.payment!=='cod' && orders.status=='Pending') {%>
+                                    <button type="submit" onclick="retryPayment('<%=orders._id%>')" class="p-1 ml-2">Retry Payment?</button>
+                                    <% } %>
                                 
+                                <br>
+                                Order Status: <%= orders.orderedItems[0].productStatus %><br>
+                                 Total: ₹<%= totalGrand.toLocaleString() %> <br>                               
                                 Discount: ₹<%= discount.toLocaleString() %> <br>
                                 Total Amount to be pay: ₹<%= orders.finalAmount.toLocaleString() %>
                             </p>
@@ -169,7 +173,123 @@
 <script src="https://cdn.jsdelivr.net/npm/easyinvoice/dist/easyinvoice.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
+
+    function retryPayment(orderId){
+        Swal.fire({
+            title: 'Retry Payment',
+            text: 'Are you sure you want to Retry Payment?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Retry it!',
+           
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/retryPayment',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ orderId: orderId }),
+                    success: (response) => {
+                        console.log("response from order details", response,response.order)
+                        if (response) {
+                            {
+                            console.log("response", response);
+                            let orderAmount = response.order.finalAmount;
+                           // console.log("final amount",response.order.finalAmount,orderAmount);
+                            let order = response.orderId;
+                            console.log("orderamount",orderAmount)
+                            var options = {
+                                "key": "rzp_test_2ntRCkhdtoc7jm",
+                                "amount": orderAmount,
+                                "currency": "INR",
+                                "name": "GentzGallery",
+                                "description": "Test Transaction",
+                                "order_id": response.orderId,
+                                "handler": function (response){
+                                    console.log("Payment response",response, order)
+                                    verifyPayment(response,order);
+                                },
+                                "prefill": {
+                                    "name": response.user.name,
+                                    "email": response.user.email,
+                                    "contact": response.user.phone
+                                },
+
+                                "theme": {
+                                    "color": "#5CFF9A"
+                                }
+                            }
+                            var rzp1 = new Razorpay(options);
+                            rzp1.on('payment.failed', function (response){
+                                Swal.fire({
+                                     title: 'Payment Failed!'+ response.error.code,
+                                     text: response.error.description,
+                                     icon: 'error',
+                                     timer: 5000,
+                                     showConfirmButton: false
+                                     });
+                                })
+                            rzp1.open();
+
+                        }
+                         
+                        }else{
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: response.message
+                            });
+                        }
+                    }
+                })
+            }
+            
+        })
+        
+    }
+
+    function verifyPayment(response,order) {
+        let orderId  =  document.getElementById("orderId").value;
+        console.log("Payment response verifyPayment", orderId)
+            let payment = response
+            $.ajax({
+                url: '/verifyPayment',
+                method: 'post',
+                data: {
+                    response,
+                    order,
+                    orderId,
+
+                }, success: (response) => {
+                    if (response.success) {
+                        
+                        Swal.fire({
+                            title: "Order success",
+                            text: "order placed successfully",
+                            icon: "success",
+                            showCancelButton: true,
+                            confirmButtonText: "view orders",
+                            cancelButtonText: "continue shopping",
+                            reverseButtons: true
+                        }).then(function (result) {
+                            if (result.value) {
+                                console.log("paid ");
+                                var orderDetailsUrl = `/orderDetails?id=${orderId}`;
+                                location.href = orderDetailsUrl;
+                            } else if (result.dismiss === "cancel") {
+                                console.log("failed");
+                                location.href = '/'
+                            }
+                        });
+                    }
+
+                }
+            })
+        }
 function handleDropdownChange(productId,payment) {
   
     console.log("productId = ", productId.toString());
@@ -283,8 +403,6 @@ document
       .getElementById("downloadInvoice")
       .addEventListener("click", async (event) => {
         event.preventDefault();
-        
-
         try {
             const orderId = document.getElementById("orderId").value;
             console.log("orderId",orderId)
@@ -296,7 +414,6 @@ document
             // // body:data,
             // body: JSON.stringify(salesData),
           });
-
           if (response.ok) {
             const blob = await response.blob();
             const url = window.URL.createObjectURL(blob);
@@ -320,8 +437,7 @@ document
                 icon:'error',
                 timer: 4000,
                 showConfirmButton: false,
-              });
-          
+              });        
             console.error("Failed to generate PDF");
           }
         } catch (error) {

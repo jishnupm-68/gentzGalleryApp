@@ -207,8 +207,9 @@ const getEditProduct = async (req, res) => {
         brand: brand,
         currentCategory: currentCategory,
       });
+      console.log("Rendered edit product page")
     } else {
-      res.render("adminError");
+      res.render("/admin/pageError");
     }
   } catch (error) {
     console.log("Error in getEditProduct", error);
@@ -223,7 +224,7 @@ const editProduct = async (req, res) => {
     const data = req.body;
     const [product, existingProduct, category, brand] = await Promise.all([
       Product.findOne({ _id: id }),
-      Product.findOne({
+      Product.findOne({_id: {$ne: id},
         productName: data.productName.trim(),
         id: { $ne: id },
       }),

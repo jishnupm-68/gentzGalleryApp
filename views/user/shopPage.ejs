@@ -497,59 +497,59 @@ function toggleOutOfStock() {
 
 
 
-//     document.addEventListener("DOMContentLoaded", function () {
-//     const filterItems = document.querySelectorAll(".ajax-filter");
-//     const outOfStockCheckbox = document.querySelector("#showOutOfStock");
+    document.addEventListener("DOMContentLoaded", function () {
+    const filterItems = document.querySelectorAll(".ajax-filter");
+    const outOfStockCheckbox = document.querySelector("#showOutOfStock");
 
-//     function applyFilters() {
-//         let filters = {};
+    function applyFilters() {
+        let filters = {};
 
-//         // Collect selected filters
-//         document.querySelectorAll(".ajax-filter.active").forEach(item => {
-//             const filterType = item.dataset.filter;
-//             const filterValue = item.dataset.value || "";
+        // Collect selected filters
+        document.querySelectorAll(".ajax-filter.active").forEach(item => {
+            const filterType = item.dataset.filter;
+            const filterValue = item.dataset.value || "";
 
-//             if (filterType === "price") {
-//                 filters["price_gt"] = item.dataset.gt;
-//                 filters["price_lt"] = item.dataset.lt;
-//             } else {
-//                 filters[filterType] = filterValue;
-//             }
-//         });
+            if (filterType === "price") {
+                filters["price_gt"] = item.dataset.gt;
+                filters["price_lt"] = item.dataset.lt;
+            } else {
+                filters[filterType] = filterValue;
+            }
+        });
 
-//         // Add Out of Stock filter if checked
-//         if (outOfStockCheckbox && outOfStockCheckbox.checked) {
-//             filters["outOfStock"] = "true";
-//         }
+        // Add Out of Stock filter if checked
+        if (outOfStockCheckbox && outOfStockCheckbox.checked) {
+            filters["outOfStock"] = "true";
+        }
 
-//         fetch(`/filter?${new URLSearchParams(filters)}`, {
-//             method: "GET",
-//             headers: { "X-Requested-With": "XMLHttpRequest" }
-//         })
-//         .then(response => response.json())
-//         .then(data => {
-//             updateProductList(data.products);
-//             updatePagination(data.totalPages, data.currentPage);
-//         })
-//         .catch(error => console.error("Error fetching filtered products:", error));
-//     }
+        fetch(`/filter?${new URLSearchParams(filters)}`, {
+            method: "GET",
+            headers: { "X-Requested-With": "XMLHttpRequest" }
+        })
+        .then(response => response.json())
+        .then(data => {
+            updateProductList(data.products);
+            updatePagination(data.totalPages, data.currentPage);
+        })
+        .catch(error => console.error("Error fetching filtered products:", error));
+    }
 
-//     filterItems.forEach(item => {
-//         item.addEventListener("click", function (event) {
-//             event.preventDefault();
+    filterItems.forEach(item => {
+        item.addEventListener("click", function (event) {
+            event.preventDefault();
 
-//             // Toggle active class for styling
-//             this.classList.toggle("active");
+            // Toggle active class for styling
+            this.classList.toggle("active");
 
-//             // Apply Filters
-//             applyFilters();
-//         });
-//     });
+            // Apply Filters
+            applyFilters();
+        });
+    });
 
-//     if (outOfStockCheckbox) {
-//         outOfStockCheckbox.addEventListener("change", applyFilters);
-//     }
-// });
+    if (outOfStockCheckbox) {
+        outOfStockCheckbox.addEventListener("change", applyFilters);
+    }
+});
 
 // function updateProductList(products) {
 //     const productGrid = document.querySelector(".product-grid");
