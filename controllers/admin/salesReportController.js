@@ -8,23 +8,34 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 let currentPageData;
 
-const loadDashboard = async (req, res) => {
+
+const loadSalesReport = async (req, res) => {
   if (req.session.admin) {
     try {
       let limit = 5;
       const page = req.query.page || 1;
       console.log("render the dashboard");
+     
       const [orderData, count, salesCount] = await Promise.all([
-        Order.find()
+        Order.find({
+          status: "Verified",
+          "orderedItems.productStatus": "Delivered",
+        })
           .populate("userId")
-          .populate("orderedItems")
+          .populate("orderedItems.product") 
           .populate("address")
           .sort({ createdOn: -1 })
           .limit(limit)
           .skip((page - 1) * limit)
           .exec(),
-        Order.countDocuments({}),
+      
+        Order.countDocuments({
+          status: "Verified",
+          "orderedItems.productStatus": "Delivered",
+        }),
+      
         Order.aggregate([
+          { $match: { status: "Verified", "orderedItems.productStatus": "Delivered" } },
           { $unwind: "$orderedItems" },
           {
             $group: {
@@ -37,12 +48,13 @@ const loadDashboard = async (req, res) => {
           },
         ]),
       ]);
+      
       if (orderData.length > 0) {
         const [{ totalSales }] = salesCount;
         console.log("totalsales", salesCount, totalSales, "totalORder", count);
         console.log("orderData,", orderData);
         currentPageData = orderData;
-        res.render("dashboard", {
+        res.render("salesReport", {
           data: orderData,
           currentPage: page,
           totalPages: Math.ceil(count / limit),
@@ -50,7 +62,7 @@ const loadDashboard = async (req, res) => {
           endDate:null
         });
       } else {
-        res.render("dashboard", {
+        res.render("salesReport", {
           data: null,
           currentPage: page,
           totalPages: 1,
@@ -377,7 +389,8 @@ const salesSummary = async (req, res) => {
   
 
 module.exports = {
-    loadDashboard,
+    
+    loadSalesReport,
     generatePdf,
     generateExcelReport,
     displayFilteredData,

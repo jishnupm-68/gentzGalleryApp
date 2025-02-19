@@ -1,4 +1,5 @@
 <%- include("../../views/partials/admin/header") %>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
   .pagination {
     display: flex;
@@ -32,11 +33,12 @@
   }
 </style>
 
+
 <main>
   <section class="container " style="margin-left: 20%; padding-top: 5%;">
     <div class="content-header row">
       <div class="d-flex justify-content-between align-items-center">
-        <h2 class="content-title card-title">Sales Report</h2>
+        <h2 class="content-title card-title">Dashboard</h2>
       </div>
     </div>
     
@@ -44,15 +46,15 @@
       <header class="card-header">
         <div class="row gx-3">
           <div class="col-lg-2 col-6 col-md-3">
-            <select
-              class="form-select"
-              onchange="location.href='/admin/salesReport?day=' + this.value"
+            <select 
+              class="form-select btn-secondary"
+              onchange="location.href='/admin/?day=' + this.value"
             >
-            <option value="">Report</option>
-            <option value="salesToday" >salesToday</option>
-              <option value="salesWeekly">salesWeekly</option>
-              <option value="salesMonthly">salesMonthly</option>
-              <option value="salesYearly">salesYearly</option>
+            <option  value="">Report</option>
+            <option value="salesDaily" >Daily</option>
+              <option value="salesWeekly">Weekly</option>
+              <option value="salesMonthly">Monthly</option>
+              <option value="salesYearly">Yearly</option>
               <!-- <% if (!locals.salesToday) { %>
 
               <option value="salesToday" >salesToday</option>
@@ -86,10 +88,10 @@
               onchange="dateWiseFilter()"
             /> -->
 
-            <label for="startDate">Start Date:</label>
-        <input type="date" id="startDate" value="<%=startDate %>">
+            <!-- <label for="startDate">Start Date:</label>
+        <input type="date" id="startDate" value="=startDate">
         <label for="endDate">End Date:</label>
-        <input type="date" id="endDate" value="<%=endDate %>">
+        <input type="date" id="endDate" value="=endDate">
         <button id="filterButton" class="btn btn-primary text-light mt-1">Filter</button>
 
           </div>
@@ -103,327 +105,147 @@
             <a href="" id="downloadSummary" class="btn btn-primary text-light mb-2"
               >Download Summary</a
             >
-          </div>
+          </div> -->
         </div>
       </header>
     </div>
+
+
+    
+  <canvas id="salesChart" width="300" height="200"></canvas>
+
+    
+  <script>
+    // Sample sales data
+    const salesData = <%- JSON.stringify(data) %>;
+    // [
+    // {_id: '2025-02-14', totalSales: 222,totalDiscount: 0,  totalFinalAmount: 222}, format of coming data
+    // ];
+
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    let salesChart;
+
+    // const aggregateData = (data, interval) => {
+    //   const groupedData = data.reduce((acc, item) => {
+    //     const date = new Date(item.date);
+    //     let key;
+    //     switch (interval) {
+    //       case 'weekly':
+    //         key = `${date.getFullYear()}-W${Math.ceil((date.getDate() + date.getDay()) / 7)}`;
+    //         break;
+    //       case 'monthly':
+    //         key = `${date.getFullYear()}-${date.getMonth() + 1}`;
+    //         break;
+    //       case 'yearly':
+    //         key = `${date.getFullYear()}`;
+    //         break;
+    //       default:
+    //         key = item.date;
+    //     }
+    //     if (!acc[key]) {
+    //       acc[key] = { totalPrice: 0, discount: 0, finalAmount: 0 };
+    //     }
+    //     acc[key].totalPrice += item.totalPrice;
+    //     acc[key].discount += item.discount;
+    //     acc[key].finalAmount += item.finalAmount;
+    //     return acc;
+    //   }, {});
+
+    //   return Object.keys(groupedData).map(key => ({
+    //     date: key,
+    //     ...groupedData[key]
+    //   }));
+    // };
+
+    const updateChart = (salesData) => {
+      const labels = salesData.map(entry => entry._id);
+      const totalPrice = salesData.map(entry => entry.totalSales);
+      const discount = salesData.map(entry => entry.totalDiscount);
+      const finalAmount = salesData.map(entry => entry.totalFinalAmount);
+
+
+     // const aggregatedData = aggregateData(salesData, interval);
+      // const labels = salesData.map(entry => entry._id);
+      // const totalPrice = salesData.map(entry => entry.totalSales);
+      // const discount = salesData.map(entry => entry.totalDiscount);
+      // const finalAmount = salesData.map(entry => entry.totalFinalAmount);
+     
+      
+      if (salesChart) {
+        salesChart.destroy();
+      }
+
+      salesChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Total Price',
+              data: totalPrice,
+              backgroundColor: 'rgba(75, 192, 192, 0.2)',
+              borderColor: 'rgba(75, 192, 192, 1)',
+              borderWidth: 1
+            },
+            {
+              label: 'Discount',
+              data: discount,
+              backgroundColor: 'rgba(255, 159, 64, 0.2)',
+              borderColor: 'rgba(255, 159, 64, 1)',
+              borderWidth: 1
+            },
+            {
+              label: 'Final Amount',
+              data: finalAmount,
+              backgroundColor: 'rgba(153, 102, 255, 0.2)',
+              borderColor: 'rgba(153, 102, 255, 1)',
+              borderWidth: 1
+            }
+          ]
+        },
+        options: {
+          scales: {
+            x: {
+              beginAtZero: true,
+              type: 'category',
+              title: {
+                display: true,
+                text: 'Date'
+              }
+            },
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: 'Amount'
+              }
+            }
+          },
+          width: 300, 
+        height: 200,
+        }
+      });
+    };
+
+    updateChart(salesData); // Initialize with daily data
+  </script>
+
     
     <div class="right mt-5 container">
       <!-- <input type="date" id="calendar" name="calendar" class="form-control mb-3" /> -->
-      <table id="salesTable" class="table table-hover">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>data ID</th>
-            <th scope="col">Name</th>
-            <th scope="col">Product</th>
-            <th scope="col">Date</th>
-            <th scope="col">Payment</th>
-            <th scope="col">Status</th>
-            <th scope="col" class="text-end">Total Price</th>
-          </tr>
-        </thead>
-        <% console.log("incoming data",data) %>
-        <% if(data) {%>
-        <tbody>
-         
-          <% let grandTotal = 0; %> <% for (let i = 0; i < data.length; i++) { %>
-            <% data[i].orderedItems.forEach((item)=>{ %>
-          <tr>
-            <td><%= i + 1 %></td>
-            <td><%= data[i]._id %></td>
-            <td><b><%= data[i].userId.name %></b></td>
-            
-            <td><b><%= item.productName %></b></td>
-            <td><%= data[i].createdOn.toLocaleString('en-IN') %></td>
-            <td><%= data[i].payment %></td>
-            
-            <td><%= data[i].status %></td> 
-           
-            <td class="text-end"><%= data[i].finalAmount %></td>
-            
-          </tr> 
-          <%}) %>
-          <% grandTotal += data[i].finalAmount; %> <% } %>
-          
-         
-        </tbody>
-        <tfoot>
-          <tr>
-            <td colspan="7" class="text-end"><b>Grand Total:</b></td>
-            <td class="text-end"><b><%= grandTotal %></b></td>
-          </tr>
-        </tfoot>
-        <%}else{%>
-          <tr>
-            <td colspan="8" class="text-center">No sales data found.</td>
-          </tr>
-        <%}%>
+      
     
-      </table>
-    
-      <% if (totalPages) { %>
-      <div class="pagination">
-        <% if (currentPage> 1) { %>
-        <button class="btn btn-sm">
-          <a href="?page=<%= currentPage - 1 %>">Previous</a>
-        </button>
-        <% } %> <% for (let i=1; i <=totalPages; i++) { %>
-        <button class="btn btn-sm <%= i === currentPage ? 'active' : '' %>">
-          <a href="?page=<%= i %>"> <%= i %> </a>
-        </button>
-        <% } %> <% if (currentPage < totalPages) { %>
-        <button class="btn btn-sm">
-          <a href="?page=<%= currentPage + 1 %>">Next</a>
-        </button>
-        <% } %>
-      </div>
-      <% } %>
+     
   </section>
 </main>
 
-<input type="text" hidden value="<%= data %>" id = "data">
+
 
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
-  <script>
-    document.getElementById('filterButton').addEventListener('click', async () => {
-    const startDate = document.getElementById('startDate').value;
-    const endDate = document.getElementById('endDate').value;
-
-    if (!startDate || !endDate) {
-        Swal.fire({
-          title: 'Error',
-          text: 'Please select both start and end dates.',
-          icon: 'error',
-        })
-        return;
-    }
-
-    try {
-        //const response = await fetch(`/admin/sales?startDate=${startDate}&endDate=${endDate}`);
-        window.location.href = `/admin/sales?startDate=${startDate}&endDate=${endDate}`
-        // const orders = await response.json();
-
-        // displayResults(orders);
-    } catch (error) {
-        console.error('Error fetching orders:', error);
-        Swal.fire({
-          title: 'Error',
-          text: 'An error occurred while fetching orders.',
-          icon: 'error',
-        })
-    }
-});
-
-function displayResults(orders) {
-    const resultsContainer = document.getElementById('results');
-    resultsContainer.innerHTML = '';
-
-    if (orders.length === 0) {
-        resultsContainer.innerHTML = '<p>No orders found within the specified date range.</p>';
-        return;
-    }
-
-    const ul = document.createElement('ul');
-    orders.forEach(order => {
-        const li = document.createElement('li');
-        li.textContent = `Order ID: ${order._id}, Total Price: ${order.totalPrice}, Created On: ${new Date(order.createdOn).toLocaleDateString()}`;
-        ul.appendChild(li);
-    });
-    resultsContainer.appendChild(ul);
-}
-  </script>
-
-  <script>
-    document
-      .getElementById("createSalesReport")
-      .addEventListener("click", async (event) => {
-        event.preventDefault();
-        const dataElement = document.getElementById("data");
-        const data = dataElement.value;
-        const salesTable = document.getElementById("salesTable");
-        const tableBody = salesTable.querySelector("tbody");
-
-        const salesData = [];
-        let grandTotal = 0; // Initialize grand total
-
-        for (const row of tableBody.rows) {
-          const dataId = row.cells[1].textContent.trim();
-          const name = row.cells[2].textContent;
-          const date = row.cells[4].textContent;
-          let totalAmount = row.cells[7].textContent.trim();
-          totalAmount = parseFloat(totalAmount.replace(/[^0-9]/g, ""), 10);
-          grandTotal += totalAmount; // Accumulate totalAmount for grand total
-
-          const dataData = {
-            dataId: dataId,
-            name: name,
-            date: date,
-            totalAmount: totalAmount,
-          };
-
-          salesData.push(dataData);
-        }
-
-        // Include grand total in sales data
-        const grandTotalData = {
-          dataId: "Grand Total",
-          name: "",
-          date: "",
-          totalAmount: grandTotal,
-        };
-        salesData.push(grandTotalData);
-
-        try {
-          const response = await fetch("/admin/generatePdf", {
-            method: "post",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            // body:data,
-            body: JSON.stringify(salesData),
-          });
-
-          if (response.ok) {
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "report.pdf";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-          } else {
-            console.error("Failed to generate PDF");
-          }
-        } catch (error) {
-          console.log(error.message);
-        }
-      });
-
-    document
-      .getElementById("downloadExcelReport")
-      .addEventListener("click", async (event) => {
-        event.preventDefault();
-        const salesTable = document.getElementById("salesTable");
-        const tableBody = salesTable.querySelector("tbody");
-
-        const salesData = [];
-        let grandTotal = 0; // Initialize grand total
-
-        for (const row of tableBody.rows) {
-          const orderId = row.cells[1].textContent;
-          const name = row.cells[2].textContent;
-          const date = row.cells[4].textContent;
-          const payment = row.cells[5].textContent;
-          let totalAmount = row.cells[7].textContent.trim();
-          totalAmount = parseFloat(totalAmount.replace(/[^0-9]/g, ""), 10);
-          grandTotal += totalAmount; // Accumulate totalAmount for grand total
-
-          const dataData = {
-            orderId: orderId,
-            name: name,
-            date: date,
-            totalAmount: totalAmount,
-            payment: payment,
-          };
-
-          salesData.push(dataData);
-        }
-
-        // Include grand total in sales data
-        const grandTotalData = {
-          orderId: "Grand Total",
-          name: "",
-          date: "",
-          totalAmount: grandTotal,
-          payment: "",
-        };
-        salesData.push(grandTotalData);
-
-        try {
-          const response = await fetch("/admin/downloadExcel", {
-            method: "post",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(salesData),
-          });
-
-          if (response.ok) {
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "report.xlsx";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-          } else {
-            console.error("Failed to download Excel file");
-          }
-        } catch (error) {
-          console.log(error.message);
-        }
-      });
-
-      document
-      .getElementById("downloadSummary")
-      .addEventListener("click", async (event) => {
-        event.preventDefault();
-        
-
-        try {
-          const response = await fetch("/admin/salesSummary", {
-            method: "get",
-            // headers: {
-            //   "Content-Type": "application/json",
-            // },
-            // // body:data,
-            // body: JSON.stringify(salesData),
-          });
-
-          if (response.ok) {
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "report.pdf";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-          } else {
-            console.error("Failed to generate PDF");
-          }
-        } catch (error) {
-          console.log(error.message);
-        }
-      });
 
 
-
-    
-    function dateWiseFilter() {
-      const selectedDate = document.getElementById("selectedDate").value;
-
-      // alert(selectedDate);
-      window.location.href = `/admin/dateWiseFilter?date=${selectedDate}`;
-      $.ajax({
-        url: "/admin/dateWiseFilter",
-        method: "post",
-        data: {
-          date: selectedDate,
-        },
-        success: (response) => {
-          if (response.status === true) {
-            // alert("done");
-          }
-        },
-      });
-    }
-  </script>
 
 <%- include("../../views/partials/admin/footer") %>
 </div>

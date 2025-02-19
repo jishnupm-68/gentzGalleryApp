@@ -24,8 +24,9 @@ router.post('/login',adminController.login);
 router.get('/logout',adminAuth,adminController.logout);
 
 //salesreport management
-router.get('/',adminAuth,salesReportController.loadDashboard)
-router.get('/dashboard',adminAuth,salesReportController.loadDashboard)
+router.get('/',adminAuth,adminController.loadDashboard)
+router.get("/salesChart",adminAuth, adminController.salesChart);
+router.get('/salesReport',adminAuth,salesReportController.loadSalesReport)
 router.post("/generatePdf",adminAuth,salesReportController.generatePdf)
 router.post('/downloadExcel', adminAuth,salesReportController.generateExcelReport)
 router.get('/sales', adminAuth, salesReportController.displayFilteredData)

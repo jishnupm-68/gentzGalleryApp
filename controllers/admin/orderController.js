@@ -53,7 +53,12 @@ const updateOrderStatus = async (req,res)=>{
         let update = await Order.findOneAndUpdate({_id:orderId, "orderedItems.product":productId},
             {$set:{"orderedItems.$.productStatus":status}},
             {new:true});
-            console.log("updated data",update)
+            console.log("updated data",update)      
+        if(update.status =="Pending" && update.payment == "cod"){
+            await Order.findOneAndUpdate({_id:orderId, "orderedItems.product":productId},
+                {$set:{status:"Verified"}},
+                {new:true});
+        }
         if(status=="Cancelled")
             { 
                 if(update.payment !== "cod"){

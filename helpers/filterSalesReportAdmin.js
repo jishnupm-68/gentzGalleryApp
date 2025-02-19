@@ -62,7 +62,30 @@ const filter = async (filter,page) => {
 }
 
 
+
+
+function chartFilter(timeFrame) {
+    const groupBy = timeFrame === "salesDaily"
+        ? { $dateToString: { format: "%Y-%m-%d", date: "$createdOn" } } // Returns "2025-02-18"
+        : timeFrame === "salesWeekly"
+        ? { $concat: [
+            { $toString: { $isoWeekYear: "$createdOn" } }, "-W",
+            { $toString: { $isoWeek: "$createdOn" } }
+          ] } // Returns "2025-W07"
+        : timeFrame === "salesMonthly"
+        ? { $concat: [
+            { $toString: { $year: "$createdOn" } }, "-",
+            { $toString: { $month: "$createdOn" } }
+          ] } // Returns "2025-2"
+        : { $toString: { $year: "$createdOn" } }; // Default: Yearly (returns "2025")
+    
+    return groupBy;
+}
+
+
+
 module.exports = {
-    filter
+    filter,
+    chartFilter
  
 }
