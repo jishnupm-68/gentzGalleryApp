@@ -54,6 +54,12 @@ const orderSchema = new Schema({
             enum: ["pending", "success", "failed", "refunded"],
             default: "pending"
         },
+        returnReason:{
+            type:String,
+        },
+        returnStatus:{
+            type:String,
+        },
         refundDate:{
             type:Date,    
         },

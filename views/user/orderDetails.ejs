@@ -121,10 +121,14 @@
                                                     <i class=" text-danger">Cancelled</i>
                                                 <% } else { %>
 
+                                                   
+                                                    <% if(item.returnStatus=="Return request accepted") {%>
+                                                    <p class="text-success"><%= item.returnStatus %></p>
+                                                    <% }else if(item.returnStatus=="Return request rejected") {%>
+                                                        <p class="text-danger"><%= item.returnStatus %></p>
+                                                    <% }else{%>
                                                     <p class="text-success"><%= item.productStatus %></p>
-
-                                                    <% console.log(item.productStatus, "order status",orders.status,orders.status === "Confirmed") %>
-                                                    
+                                                    <% }%>
                                                     <form action="" onsubmit="return false" >
                                                         <% if (item.productStatus.trim() === "Confirmed" || item.productStatus.trim() === "Processing"|| item.productStatus.trim()==="Pending") { %>
                                                         
@@ -369,7 +373,7 @@ function returnRequestOrder(product,orderId) {
         contentType: 'application/json',
         data: JSON.stringify({ productId: product, orderId:orderId }),
         success: (response) => {
-            if (response.result.modifiedCount === 1) {
+            if (response.success) {
                 Swal.fire({
                     icon:'success',
                     title: 'Success',
@@ -386,10 +390,19 @@ function returnRequestOrder(product,orderId) {
                     timer:4000,
                     showConfirmButton: false
                 })
+                window.location.reload();
             }
         },
         error: (error) => {
             console.log(error)
+            Swal.fire({
+                icon:'error',
+                title: 'Failed',
+                text: error,
+                timer:4000,
+                showConfirmButton: false
+            })
+            window.location.reload();
         }
     });
             

@@ -6,7 +6,6 @@ const mongoose = require('mongoose');
 const getDateRange = (type) => {
     const now = new Date();
     let start, end;
-
     switch (type) {
         case 'salesToday':
             start = new Date(now.setHours(0, 0, 0, 0));
@@ -33,14 +32,12 @@ const getDateRange = (type) => {
         default:
             start = end = now;
     }
-
     return { start, end };
 };
 
 const filter = async (filter,page) => {
     try {
-        let limit = 5;
-        
+        let limit = 5;      
         const skip = (page - 1) * limit;
         const { start, end } = getDateRange(filter);
         const [orders,count] = await Promise.all ([
@@ -54,7 +51,6 @@ const filter = async (filter,page) => {
                 .exec(),
                 Order.countDocuments({ createdOn: { $gte: start, $lte: end } })
             ])
-           // console.log(`Orders for ${filter}:`, orders,count);
         return {orders,count,start,end};       
     } catch (error) {
         console.log("Error while filtering data based on filter",error); 
@@ -62,23 +58,20 @@ const filter = async (filter,page) => {
 }
 
 
-
-
 function chartFilter(timeFrame) {
     const groupBy = timeFrame === "salesDaily"
-        ? { $dateToString: { format: "%Y-%m-%d", date: "$createdOn" } } // Returns "2025-02-18"
+        ? { $dateToString: { format: "%Y-%m-%d", date: "$createdOn" } } 
         : timeFrame === "salesWeekly"
         ? { $concat: [
             { $toString: { $isoWeekYear: "$createdOn" } }, "-W",
             { $toString: { $isoWeek: "$createdOn" } }
-          ] } // Returns "2025-W07"
+          ] } 
         : timeFrame === "salesMonthly"
         ? { $concat: [
             { $toString: { $year: "$createdOn" } }, "-",
             { $toString: { $month: "$createdOn" } }
-          ] } // Returns "2025-2"
-        : { $toString: { $year: "$createdOn" } }; // Default: Yearly (returns "2025")
-    
+          ] } 
+        : { $toString: { $year: "$createdOn" } };    
     return groupBy;
 }
 
@@ -87,5 +80,4 @@ function chartFilter(timeFrame) {
 module.exports = {
     filter,
     chartFilter
- 
 }

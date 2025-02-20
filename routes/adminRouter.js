@@ -25,7 +25,6 @@ router.get('/logout',adminAuth,adminController.logout);
 
 //salesreport management
 router.get('/',adminAuth,adminController.loadDashboard)
-router.get("/salesChart",adminAuth, adminController.salesChart);
 router.get('/salesReport',adminAuth,salesReportController.loadSalesReport)
 router.post("/generatePdf",adminAuth,salesReportController.generatePdf)
 router.post('/downloadExcel', adminAuth,salesReportController.generateExcelReport)
@@ -94,6 +93,7 @@ router.get('/listcoupon',adminAuth,couponController.listCoupon);
 //order Management
 router.get("/order",adminAuth,orderController.loadOrders);
 router.post("/updateOrderStatus",adminAuth,orderController.updateOrderStatus);
+router.post("/updateReturnStatus",adminAuth,orderController.updateReturnStatus);
 router.get('/orderDetails',adminAuth,orderController.getOrderDetailsPageAdmin);
 //stockManagement
 router.get('/stock',adminAuth,orderController.getStockPage)

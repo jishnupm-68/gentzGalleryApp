@@ -46,15 +46,16 @@
       <header class="card-header">
         <div class="row gx-3">
           <div class="col-lg-2 col-6 col-md-3">
-            <select 
+        
+            <select default="<%= filter %>"
               class="form-select btn-secondary"
               onchange="location.href='/admin/?day=' + this.value"
             >
-            <option  value="">Report</option>
-            <option value="salesDaily" >Daily</option>
-              <option value="salesWeekly">Weekly</option>
-              <option value="salesMonthly">Monthly</option>
-              <option value="salesYearly">Yearly</option>
+        
+            <option value="salesDaily" <%= filter === 'salesDaily' ? 'selected' : '' %>>Daily</option>
+            <option value="salesWeekly" <%= filter === 'salesWeekly' ? 'selected' : '' %>>Weekly</option>
+            <option value="salesMonthly" <%= filter === 'salesMonthly' ? 'selected' : '' %>>Monthly</option>
+            <option value="salesYearly" <%= filter === 'salesYearly' ? 'selected' : '' %>>Yearly</option>
               <!-- <% if (!locals.salesToday) { %>
 
               <option value="salesToday" >salesToday</option>
@@ -110,67 +111,43 @@
       </header>
     </div>
 
-
+    <br><br>
+    <div class="card-body col-md-10">
+      <h3>Sales Report</h3>
+      <canvas id="salesChart" width="300" height="200"></canvas>
     
-  <canvas id="salesChart" width="300" height="200"></canvas>
+      <div class="row col-md-12">
+    
+        <div class="col-md-3">
+       
+          <canvas id="categoryChart" style="width: 300px; height: 300px;"></canvas>
+        </div>
+        <div class="col-md-3">
+     
+          <canvas id="brandChart" style="width: 300px; height: 300px;"></canvas>
+        </div>
+    
+        <div class="col-md-3">
+    
+          <canvas id="productChart" style="width: 300px; height: 300px;"></canvas>
+        </div>
+      </div>
+    </div>
+  
 
     
   <script>
-    // Sample sales data
     const salesData = <%- JSON.stringify(data) %>;
-    // [
-    // {_id: '2025-02-14', totalSales: 222,totalDiscount: 0,  totalFinalAmount: 222}, format of coming data
-    // ];
-
     const ctx = document.getElementById('salesChart').getContext('2d');
     let salesChart;
 
-    // const aggregateData = (data, interval) => {
-    //   const groupedData = data.reduce((acc, item) => {
-    //     const date = new Date(item.date);
-    //     let key;
-    //     switch (interval) {
-    //       case 'weekly':
-    //         key = `${date.getFullYear()}-W${Math.ceil((date.getDate() + date.getDay()) / 7)}`;
-    //         break;
-    //       case 'monthly':
-    //         key = `${date.getFullYear()}-${date.getMonth() + 1}`;
-    //         break;
-    //       case 'yearly':
-    //         key = `${date.getFullYear()}`;
-    //         break;
-    //       default:
-    //         key = item.date;
-    //     }
-    //     if (!acc[key]) {
-    //       acc[key] = { totalPrice: 0, discount: 0, finalAmount: 0 };
-    //     }
-    //     acc[key].totalPrice += item.totalPrice;
-    //     acc[key].discount += item.discount;
-    //     acc[key].finalAmount += item.finalAmount;
-    //     return acc;
-    //   }, {});
-
-    //   return Object.keys(groupedData).map(key => ({
-    //     date: key,
-    //     ...groupedData[key]
-    //   }));
-    // };
-
-    const updateChart = (salesData) => {
+        const updateChart = (salesData) => {
       const labels = salesData.map(entry => entry._id);
       const totalPrice = salesData.map(entry => entry.totalSales);
       const discount = salesData.map(entry => entry.totalDiscount);
       const finalAmount = salesData.map(entry => entry.totalFinalAmount);
 
-
-     // const aggregatedData = aggregateData(salesData, interval);
-      // const labels = salesData.map(entry => entry._id);
-      // const totalPrice = salesData.map(entry => entry.totalSales);
-      // const discount = salesData.map(entry => entry.totalDiscount);
-      // const finalAmount = salesData.map(entry => entry.totalFinalAmount);
-     
-      
+    
       if (salesChart) {
         salesChart.destroy();
       }
@@ -227,25 +204,92 @@
       });
     };
 
-    updateChart(salesData); // Initialize with daily data
+    updateChart(salesData);  
   </script>
-
-    
-    <div class="right mt-5 container">
-      <!-- <input type="date" id="calendar" name="calendar" class="form-control mb-3" /> -->
-      
-    
-     
   </section>
 </main>
 
+<script>
+  const bestSellingData = <%- JSON.stringify(bestSellingData) %>;
+ 
 
+//  Categories
+const categoryLabels = bestSellingData.flatMap(item => item.bestCategories.map(subItem => subItem._id));
+const categoryData = bestSellingData.flatMap(item => item.bestCategories.map(subItem => subItem.totalSold));
+//  Brands
+const brandLabels = bestSellingData.flatMap(item => item.bestBrands.map(subItem => subItem._id));
+const brandData = bestSellingData.flatMap(item => item.bestBrands.map(subItem => subItem.totalSold));
+//  Products
+const productLabels = bestSellingData.flatMap(item=> item.bestProducts.map(subItem => subItem._id));
+const productData = bestSellingData.flatMap(item => item.bestProducts.map(subItem => subItem.totalSold));
+
+// 🎨 Generate Random Colors
+const getRandomColors = (num) => Array.from({ length: num }, () => `hsl(${Math.random() * 360}, 70%, 60%)`);
+
+const categoryColors = getRandomColors(categoryLabels.length);
+const brandColors = getRandomColors(brandLabels.length);
+const productColors = getRandomColors(productLabels.length);
+
+
+const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+        new Chart(categoryCtx, {
+            type: 'pie', 
+            data: {
+                labels: categoryLabels,
+                datasets: [{
+                    data: categoryData,
+                    backgroundColor: categoryColors
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    title: { display: true, text: 'Best Selling Categories' }
+                }
+            }
+        });
+
+const brandCtx = document.getElementById('brandChart').getContext('2d');
+        new Chart(brandCtx, {
+            type: 'pie', 
+            data: {
+                labels: brandLabels,
+                datasets: [{
+                    data: brandData,
+                    backgroundColor: brandColors
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    title: { display: true, text: 'Best Selling Brands' }
+                }
+            }
+        });
+
+const productCtx = document.getElementById('productChart').getContext('2d');
+        new Chart(productCtx, {
+            type: 'pie', 
+            data: {
+                labels: productLabels,
+                datasets: [{
+                    data: productData,
+                    backgroundColor: productColors
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    title: { display: true, text: 'Best Selling Products' }
+                }
+            }
+        });
+</script>
 
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-
-
-
-
 <%- include("../../views/partials/admin/footer") %>
-</div>
+

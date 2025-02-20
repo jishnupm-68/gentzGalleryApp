@@ -86,11 +86,71 @@ const updateOrderStatus = async (req,res)=>{
                 .then(result => console.log('Decrement successful:', result))
                 .catch(error => console.error('Decrement failed:', error));             
         }
-        console.log("req body from updating order status", req.body)
-        res.redirect("/admin/order"); 
+        res.json({ status: true, message: "Order status updated successfully" });
     } catch (error) {
         console.error("Error while updating order status", error);
-        res.redirect("/admin/pageError");
+        res.json({ status: false, message: "Failed to update order status" });
+    }
+}
+
+const updateReturnStatus = async (req,res)=>{
+    try {
+        const {orderId, productId, status} = req.body;
+        let actualStatus = status==true?"Returned":"Return Request";
+        let message = status == true ? "Return request accepted" : "Return request rejected";
+        let date = status == true ? Date.now() : null;
+        let update = await Order.findOneAndUpdate({_id:orderId, "orderedItems.product":productId},
+            {$set:
+                {
+                    "orderedItems.$.productStatus":actualStatus,
+                    "orderedItems.$.returnStatus":message,
+                    "orderedItems.$.refundDate":date}},
+            {new:true});
+         const returnItemQuantities = update.orderedItems.map((item)=>
+            ({
+                productId:item.product,
+                quantity: -item.quantity
+            })
+            );
+            if(update && status == true){
+                let walletUpdate;
+                //updating wallet
+                {
+                    //const quantity = findOrder.orderedItems[0].quantity;
+                    //const price =  findOrder.orderedItems[0].price;
+                    //let amount =  price * quantity;
+                    let amount =  update.finalAmount
+                    walletUpdate = await User.findOneAndUpdate({ _id: update.userId }, { $inc: { wallet: amount } });
+                    if (walletUpdate) {
+                        console.log("Wallet updated successfully");
+                    }else{
+                        console.log("Wallet update failed");
+                    }
+                }
+                decrementSaleCounts(returnItemQuantities)
+                  .then(result =>                     
+                    {console.log('Decrement successful:', result)
+                    if (result.modifiedCount === 1 && walletUpdate) {
+                        return res.json({
+                            success: true,
+                            result, 
+                            message: "Order has been successfully cancelled and amount credited to your wallet"
+                        });
+                    } else {
+                        return res.json({
+                            success: false,
+                            result,
+                            message: "Order cancellation failed. No changes made."
+                        });
+                    }}
+                    )
+                  .catch(error => console.error('Decrement failed:', error));                         
+            }      
+        res.json({ status: true, message: "Return status updated successfully" });
+        
+    } catch (error) {
+        console.error("Error while updating return status", error);
+        res.json({ status: false, message: "Failed to update return status" });       
     }
 }
 
@@ -112,7 +172,7 @@ const getOrderDetailsPageAdmin = async (req,res)=>{
         console.log("FindOrdeR:",findOrder,"address",address);
         let grandTotal = findOrder.finalAmount;
         let discount = findOrder.discount;
-        let totalPrice = grandTotal-discount;
+        let totalPrice = findOrder.totalPrice;
         res.render("orderDetailsAdmin",{
             orders: findOrder,
             user: findUser,
@@ -171,7 +231,8 @@ module.exports = {
     updateOrderStatus,
     getOrderDetailsPageAdmin,
     getStockPage,
-    addQuantity
+    addQuantity,
+    updateReturnStatus
 }
 
 
