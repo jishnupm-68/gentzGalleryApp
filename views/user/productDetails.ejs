@@ -69,6 +69,7 @@
                                 <div class="product-image-slider">
                                   
 
+
                           <div id="carouselExampleControls" class="carousel slide col-12" data-ride="carousel">
                             <div class="carousel-inner">
                               <div class="carousel-item active product-image-container">
@@ -93,31 +94,13 @@
                           </div>
 
 
+
                         </div>
                     </div>
                 </div>
  
  
-                          <!-- online -->
-                          <!-- <div class="col-md-6 col-sm-12 col-xs-12">
-                             <div class="detail-gallery">
-                                 <span class="zoom-icon"><i class="fi-rs-search"></i></span>
-                                 <div class="product-image-slider">
-                                     <% product.productImage.forEach((image, index) => { %>
-                                         <figure class="border-radius-10">
-                                             <img src="/uploads/product-imagesResized/<%= image || 'default.jpg' %>" alt="Watch image <%= index + 1 %>">
-                                         </figure>
-                                     <% }) %>
-                                 </div>
-                                 <div class="slider-nav-thumbnails pl-15 pr-15">
-                                     <% product.productImage.forEach((image) => { %>
-                                         <div>
-                                             <img style="object-fit:contain;" src="/uploads/product-imagesResized/<%= image %>" alt="Thumbnail">
-                                         </div>
-                                     <% }) %>
-                                 </div>
-                             </div>
-                         </div> -->
+                        
  
                        
                          
@@ -281,6 +264,9 @@
  
  
  </main>
+ <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/elevatezoom/3.0.8/jquery.elevatezoom.min.js"></script>
+
  <script>
     function addToCart(productId) {
       const form = document.createElement('form');
@@ -410,6 +396,30 @@
       
     }
   </script>
+
+<script>
+    $(document).ready(function() {
+        // Apply zoom effect to all images in the carousel
+        $(".zoom-image").elevateZoom({
+            zoomType: "lens",
+            lensShape: "round",
+            lensSize: 150,
+            scrollZoom: true
+        });
+
+        // Reinitialize zoom on carousel slide change
+        $("#carouselExampleControls").on("slid.bs.carousel", function() {
+            $(".zoomContainer").remove(); // Remove previous zoom container
+            $(".zoom-image").removeData("elevateZoom").elevateZoom({
+                zoomType: "lens",
+                lensShape: "round",
+                lensSize: 150,
+                scrollZoom: true
+            });
+        });
+    });
+</script>
+
  
  <%- include("../../views/partials/user/footer") %>
  

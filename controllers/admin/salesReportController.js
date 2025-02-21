@@ -9,73 +9,32 @@ const bcrypt = require('bcrypt');
 let currentPageData;
 
 
-const loadSalesReport = async (req, res) => {
-  if (req.session.admin) {
-    try {
-      let limit = 5;
-      const page = req.query.page || 1;
-      console.log("render the dashboard");
+const salesReport =async(req,res)=>{
+  try {
+    const limit =5;
+      const filter = req.query.day==undefined? "salesToday":req.query.day;
      
-      const [orderData, count, salesCount] = await Promise.all([
-        Order.find({
-          status: "Verified",
-          "orderedItems.productStatus": "Delivered",
-        })
-          .populate("userId")
-          .populate("orderedItems.product") 
-          .populate("address")
-          .sort({ createdOn: -1 })
-          .limit(limit)
-          .skip((page - 1) * limit)
-          .exec(),
+      const page = req.query.page || 1;
+      console.log(filter,page,"query",req.query,"body",req.body,"params",req.params);
+      const {orders,count,start,end} = await filterSalesReportAdmin.filter(filter,page);
+      currentPage = orders
+      currentPageData = orders
+      console.log("result",filter,orders, start,end,count)
+      res.render("salesReport", {
+        data: orders,
+        currentPage: page,
+        totalPages: Math.ceil(count / limit),
+        startDate: start.toISOString().split('T')[0],
+        endDate: end.toISOString().split('T')[0],
+        filter: filter,
+      });
       
-        Order.countDocuments({
-          status: "Verified",
-          "orderedItems.productStatus": "Delivered",
-        }),
-      
-        Order.aggregate([
-          { $match: { status: "Verified", "orderedItems.productStatus": "Delivered" } },
-          { $unwind: "$orderedItems" },
-          {
-            $group: {
-              _id: null,
-              totalSales: { $sum: "$orderedItems.quantity" },
-              totalPrice: { $sum: "$totalPrice" },
-              discount: { $sum: "$discount" },
-              finalAmount: { $sum: "$finalAmount" },
-            },
-          },
-        ]),
-      ]);
-      
-      if (orderData.length > 0) {
-        const [{ totalSales }] = salesCount;
-        console.log("totalsales", salesCount, totalSales, "totalORder", count);
-        console.log("orderData,", orderData);
-        currentPageData = orderData;
-        res.render("salesReport", {
-          data: orderData,
-          currentPage: page,
-          totalPages: Math.ceil(count / limit),
-          startDate:null,
-          endDate:null
-        });
-      } else {
-        res.render("salesReport", {
-          data: null,
-          currentPage: page,
-          totalPages: 1,
-          startDate:null,
-          endDate:null
-        });
-      }
-    } catch (error) {
-      console.log("error while rendering salesreport", error);
-      res.redirect("/admin/pageError");
-    }
+  } catch (error) {
+      console.error("Error while displaying sales report", error);
+      res.redirect("/admin/pageError");      
   }
-};   
+}
+
 
 const displayFilteredData = async (req, res) => {
     if (req.session.admin) {
@@ -85,6 +44,8 @@ const displayFilteredData = async (req, res) => {
             const end = endDate ? new Date(endDate) : new Date();
             const [orderData, count, salesCount] = await Promise.all([
                 Order.find({
+                    status: "Verified",
+                    "orderedItems.productStatus": "Delivered",
                     createdOn: {
                         $gte: start,
                         $lte: end
@@ -98,12 +59,15 @@ const displayFilteredData = async (req, res) => {
                 .skip((page - 1) * limit)
                 .exec(),
                 Order.countDocuments({
+                   status: "Verified",
+                   "orderedItems.productStatus": "Delivered",
                     createdOn: {
                         $gte: start,
                         $lte: end
                     }
                 }),
                  Order.aggregate([
+                    { $match: { status: "Verified", "orderedItems.productStatus": "Delivered" } },
                     { $match: { createdOn: { $gte: start, $lte: end } } },
                     { $unwind: "$orderedItems" },
                     {
@@ -121,7 +85,7 @@ const displayFilteredData = async (req, res) => {
                 console.log(orderData)
                 currentPageData = orderData;
                 const [{ totalSales, totalPrice, discount, finalAmount }] = salesCount;
-                res.render("dashboard",{
+                res.render("salesReport",{
                     totalOrders: count,
                     totalSales,
                     totalPrice,
@@ -134,7 +98,7 @@ const displayFilteredData = async (req, res) => {
                     endDate
                 });
             } else {
-                res.render("dashboard",{
+                res.render("salesReport",{
                     totalOrders: 0,
                     totalSales: 0,
                     totalPrice: 0,
@@ -159,7 +123,10 @@ const generatePdf = async (req, res) => {
     console.log("data to be converted", currentPageData)
     const orderData = currentPageData;
     const [count, salesCount] = await Promise.all([
-      Order.countDocuments({}),
+      Order.countDocuments({
+        status: "Verified",
+        "orderedItems.productStatus": "Delivered",
+      }),
       Order.aggregate([
         { $unwind: "$orderedItems" },
         {
@@ -230,8 +197,12 @@ const generateExcelReport = async (req, res) => {
   try {
     const orderData = currentPageData; 
     const [count, salesCount] = await Promise.all([
-      Order.countDocuments({}),
+      Order.countDocuments({
+        status: "Verified",
+        "orderedItems.productStatus": "Delivered",
+      }),
       Order.aggregate([
+        { $match: { status: "Verified", "orderedItems.productStatus": "Delivered" } },
         { $unwind: "$orderedItems" },
         {
           $group: {
@@ -302,35 +273,18 @@ const generateExcelReport = async (req, res) => {
   }
 };
 
-const salesReport =async(req,res)=>{
-    try {
-      const limit =5;
-        const filter = req.query.day
-        const page = req.query.page || 1;
-        const {orders,count,start,end} = await filterSalesReportAdmin.filter(filter,page);
-        currentPage = orders
-        console.log("result",filter,orders, start,end,count)
-        res.render("dashboard", {
-          data: orders,
-          currentPage: page,
-          totalPages: Math.ceil(count / limit),
-          startDate: start.toISOString().split('T')[0],
-          endDate: end.toISOString().split('T')[0],
-          filter: filter,
-        });
-        
-    } catch (error) {
-        console.error("Error while displaying sales report", error);
-        res.redirect("/admin/pageError");      
-    }
-}
-
 const salesSummary = async (req, res) => {
   try {
-    const [count, summary] = await Promise.all ([
-     
-        Order.countDocuments({}),
+    const [count, summary] = await Promise.all ([ 
+      Order.countDocuments({
+        status: "Verified",
+        "orderedItems.productStatus": "Delivered"
+      }),
         Order.aggregate([
+          { $match:{
+            "status":"Verified", 
+            "orderedItems.productStatus":"Delivered"
+          }},
           { $unwind: "$orderedItems" },
           {
             $group: {
@@ -377,9 +331,6 @@ const salesSummary = async (req, res) => {
     // Finalize the PDF
     doc.end();
     console.log("PDF generated successfully");
-  
-    
-
     
   } catch (error) {
     console.error("error while making sales summary",error);
@@ -390,7 +341,6 @@ const salesSummary = async (req, res) => {
 
 module.exports = {
     
-    loadSalesReport,
     generatePdf,
     generateExcelReport,
     displayFilteredData,

@@ -10,9 +10,8 @@ const Banner = require('../../models/bannerSchema');
 const filterProduct = async (req, res) => {
     try {
         const user = req.session.user;
-
         const { filter: advancedFilter, filterOutOfStock: outOfStock, category, brand, page } = req.query;
-        console.log("Advanced Filter:", advancedFilter, "Out of Stock:", outOfStock);
+        console.log("Advanced Filter:", advancedFilter, "Out of Stock:", outOfStock, "bodd",req.body,req.query,req.params);
         const [userData ,findCategory, findBrand, brands] = await Promise.all([
             User.findOne({ _id: user }),
             category ? Category.findById(category).select('_id') : null,
@@ -62,6 +61,7 @@ const filterProduct = async (req, res) => {
         const itemsPerPage = 9;
         const currentPage = parseInt(page) || 1;
         const skipCount = (currentPage - 1) * itemsPerPage;
+       
         const [findProducts, totalProducts, categories] = await Promise.all([
             Product.find(query)
                 .sort(sortOrder)

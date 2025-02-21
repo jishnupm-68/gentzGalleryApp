@@ -81,7 +81,6 @@ const updateOrderStatus = async (req,res)=>{
                     quantity: item.quantity
                 })
                 );   
-                console.log("items",items)
                 decrementSaleCounts(items)
                 .then(result => console.log('Decrement successful:', result))
                 .catch(error => console.error('Decrement failed:', error));             
@@ -109,7 +108,7 @@ const updateReturnStatus = async (req,res)=>{
          const returnItemQuantities = update.orderedItems.map((item)=>
             ({
                 productId:item.product,
-                quantity: -item.quantity
+                quantity: item.quantity
             })
             );
             if(update && status == true){

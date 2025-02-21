@@ -24,15 +24,18 @@ const login =  async(req,res)=>{
         console.log(req.body)
         const admin = await User.findOne({email, isAdmin:true})
         if(admin){
-            const passwordMatch = bcrypt.compare(password,admin.password)
+            const passwordMatch = await bcrypt.compare(password,admin.password)
+            console.log("passwordMatch",passwordMatch)
             if(passwordMatch){
                 req.session.admin =  true;
                 return res.redirect('/admin')
             }else{
-                return res.redirect('/admin/login')
+                console.log("Incorrect Password")
+                return res.render('adminLogin', {message:"Incorrect Password"})
             }
         }else{
-            return res.redirect('/admin/login')
+            console.log("User not found")
+            return res.render('adminLogin', {message:"User not found"})
         }
     } catch (error) {
         console.error("Error while login", error)

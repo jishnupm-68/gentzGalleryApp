@@ -466,6 +466,7 @@
                                      timer: 5000,
                                      showConfirmButton: false
                                      });
+                                     window.location.reload();  
                                 })
                                     // alert(response.error.code);
                                     // alert(response.error.description);
@@ -531,7 +532,8 @@
                                 location.href = orderDetailsUrl;
                             } else if (result.dismiss === "cancel") {
                                 console.log("failed");
-                                location.href = '/'
+
+                               window.location.reload();
                             }
                         });
                     }

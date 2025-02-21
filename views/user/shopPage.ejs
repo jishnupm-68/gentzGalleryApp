@@ -381,6 +381,9 @@
           <ul class="pagination justify-content-center mb-20" style="margin-right: 200px;">
             <% for (let i=1; i <=totalPages; i++) { %>
               <li class="page-item <%= (i === currentPage) ? 'active' : '' %>">
+                  <!-- <a class="page-link ajax-pagination" href="?page=<%= i %>" data-page="<%= i %>">
+                    <%= i %>
+                  </a>    -->
                   <a class="page-link ajax-pagination" href="?page=<%= i %>" data-page="<%= i %>">
                     <%= i %>
                   </a>     
@@ -389,15 +392,19 @@
           </ul>
         </nav>
       </div>
-
     </section>
   </div>
 
-  <script>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <script>
+let filterType ;
+let filterValue ;
 $(document).ready(function() {
     // Pagination Click Event
     $(document).on("click", ".ajax-pagination", function(e) {
+      console.log("ajax first call")
         e.preventDefault();  // Prevent full-page reload
 
         let page = $(this).data("page"); // Get page number
@@ -406,11 +413,26 @@ $(document).ready(function() {
 
     // Function to Fetch Products via AJAX
     function fetchProducts(page) {
+      console.log("full href", window.location.href);
+       let currentQuery  =window.location.search;
+      let final;
+      if(currentQuery.length>0){
+        final = currentQuery+=("&page=" + page);
+      }else{
+        final = "?page=" + page;
+      }
+      console.log("ajax second call");
+       
+      
         $.ajax({
-            url: "/filter?page=" + page, // Call backend with page number
+          
+            //url: "/filter?page=" + page, // Call backend with page number
+
+            url: `/filter${final}`,
             method: "GET",
             dataType: "html",  // Expect HTML response (product list)
             success: function(response) {
+                console.log("ajax third call",response);
                 $(".product-grid").html($(response).find(".product-grid").html()); // Update products
                 $(".pagination").html($(response).find(".pagination").html()); // Update pagination
             },
@@ -421,25 +443,25 @@ $(document).ready(function() {
     }
 });
 
-// $(document).on("click", ".ajax-filter", function(e) {
-//     e.preventDefault();
+$(document).on("click", ".ajax-filter", function(e) {
+    e.preventDefault();
 
-//     let filterType = $(this).data("filter");
-//     let filterValue = $(this).data("value");
+     filterType = $(this).data("filter");
+     filterValue = $(this).data("value");
 
-//     $.ajax({
-//         url: `/filter?${filterType}=${filterValue}`,
-//         method: "GET",
-//         dataType: "html",
-//         success: function(response) {
-//             $(".product-grid").html($(response).find(".product-grid").html());
-//             $(".pagination").html($(response).find(".pagination").html());
-//         },
-//         error: function(xhr, status, error) {
-//             console.error("AJAX Error:", xhr.responseText, status, error);
-//         }
-//     });
-// });
+    $.ajax({
+        url: `/filter?${filterType}=${filterValue}`,
+        method: "GET",
+        dataType: "html",
+        success: function(response) {
+            $(".product-grid").html($(response).find(".product-grid").html());
+            $(".pagination").html($(response).find(".pagination").html());
+        },
+        error: function(xhr, status, error) {
+            console.error("AJAX Error:", xhr.responseText, status, error);
+        }
+    });
+});
 
 
 function toggleOutOfStock() {
@@ -526,8 +548,10 @@ function toggleOutOfStock() {
             method: "GET",
             headers: { "X-Requested-With": "XMLHttpRequest" }
         })
-        .then(response => response.json())
+        .then(response => {console.log("response" , response); 
+          return response.json()})
         .then(data => {
+          console.log("fronfrontend ",data);
             updateProductList(data.products);
             updatePagination(data.totalPages, data.currentPage);
         })
@@ -551,45 +575,48 @@ function toggleOutOfStock() {
     }
 });
 
-// function updateProductList(products) {
-//     const productGrid = document.querySelector(".product-grid");
-//     productGrid.innerHTML = "";
+function updateProductList(products) {
+    const productGrid = document.querySelector(".product-grid");
+    productGrid.innerHTML = "";
 
-//     if (products.length === 0) {
-//         productGrid.innerHTML = "<p>No products available</p>";
-//         return;
-//     }
+    if (products.length === 0) {
+        productGrid.innerHTML = "<p>No products available</p>";
+        return;
+    }
 
-//     products.forEach(product => {
-//         productGrid.innerHTML += `
-//             <div class="product-card">
-//                 <a href="/productDetails?id=${product._id}">
-//                     <img src="/uploads/product-imagesResized/${product.productImage[0]}" alt="${product.productName}" />
-//                     <h4>${product.productName}</h4>
-//                     <p>Brand: ${product.brand}</p>
-//                     <p> Price: ₹${product.salePrice.toLocaleString("en-IN")} 
-//                         <span class="text-muted"><strike>₹${product.regularPrice.toLocaleString("en-IN")}</strike></span>
-//                     </p>
-//                 </a>
-//             </div>
-//         `;
-//     });
-// }
+    products.forEach(product => {
+        productGrid.innerHTML += `
+            <div class="product-card">
+                <a href="/productDetails?id=${product._id}">
+                    <img src="/uploads/product-imagesResized/${product.productImage[0]}" alt="${product.productName}" />
+                    <h4>${product.productName}</h4>
+                    <p>Brand: ${product.brand}</p>
+                    <p> Price: ₹${product.salePrice.toLocaleString("en-IN")} 
+                        <span class="text-muted"><strike>₹${product.regularPrice.toLocaleString("en-IN")}</strike></span>
+                    </p>
+                </a>
+            </div>
+        `;
+    });
+}
 
-// function updatePagination(totalPages, currentPage) {
-//     const paginationContainer = document.querySelector(".pagination");
-//     paginationContainer.innerHTML = "";
+function updatePagination(totalPages, currentPage) {
+    const paginationContainer = document.querySelector(".pagination");
+    paginationContainer.innerHTML = "";
 
-//     for (let i = 1; i <= totalPages; i++) {
-//         paginationContainer.innerHTML += `
-//             <li class="page-item ${i === currentPage ? "active" : ""}">
-//                 <a class="page-link ajax-page" href="#" data-page="${i}">${i}</a>
-//             </li>
-//         `;
-//     }
-// }
+    for (let i = 1; i <= totalPages; i++) {
+        paginationContainer.innerHTML += `
+            <li class="page-item ${i === currentPage ? "active" : ""}">
+                <a class="page-link ajax-page" href="#" data-page="${i}">${i}</a>
+            </li>
+        `;
+    }
+}
 
 </script>
+
+
+
 
 <div id="product-list"></div>
 

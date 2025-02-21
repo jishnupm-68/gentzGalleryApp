@@ -25,7 +25,11 @@ router.get('/logout',adminAuth,adminController.logout);
 
 //salesreport management
 router.get('/',adminAuth,adminController.loadDashboard)
-router.get('/salesReport',adminAuth,salesReportController.loadSalesReport)
+
+
+//router.get('/salesReport',adminAuth,salesReportController.loadSalesReport)
+
+
 router.post("/generatePdf",adminAuth,salesReportController.generatePdf)
 router.post('/downloadExcel', adminAuth,salesReportController.generateExcelReport)
 router.get('/sales', adminAuth, salesReportController.displayFilteredData)

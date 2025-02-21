@@ -218,7 +218,7 @@ function changeStatus(orderId,productId,status){
         confirmButtonText: 'Yes, change it!'
       }).then((result) => {
         if (result.isConfirmed) {
-            updatOrderStatus(orderId,productId,status);
+            updateOrderStatus(orderId,productId,status);
         }
       })
     }

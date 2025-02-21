@@ -314,11 +314,11 @@ const verifyPayment = async(req,res)=>{
          await newTransaction.save();
          await Order.findOneAndUpdate({_id:orderDbId},{status:"Verified"})
 
-    
         res.json({ success: true, message: "Payment verified successfully" ,orderId:orderDbId});
-            }else{
-                console.log("Order not verified")
-            }
+        console.log("payment verification completed")
+    }else{
+        console.log("Order not verified")
+    }
         
     } catch (error) {
         console.log("error while verifying the payment", error);

@@ -42,14 +42,15 @@ const filter = async (filter,page) => {
         const { start, end } = getDateRange(filter);
         const [orders,count] = await Promise.all ([
             Order.find(
-                { createdOn: { $gte: start, $lte: end } })
+                { status: "Verified", "orderedItems.productStatus": "Delivered",
+                    createdOn: { $gte: start, $lte: end } })
                 .populate("userId")
                 .populate("orderedItems")
                 .populate("address")
                 .skip(skip)
                 .limit(limit)
                 .exec(),
-                Order.countDocuments({ createdOn: { $gte: start, $lte: end } })
+                Order.countDocuments({status: "Verified", "orderedItems.productStatus": "Delivered", createdOn: { $gte: start, $lte: end } })
             ])
         return {orders,count,start,end};       
     } catch (error) {

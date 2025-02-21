@@ -226,10 +226,9 @@ const editProduct = async (req, res) => {
       Product.findOne({ _id: id }),
       Product.findOne({_id: {$ne: id},
         productName: data.productName.trim(),
-        id: { $ne: id },
       }),
-      Category.find(),
-      Brand.find(),
+      Category.find({isListed: true}),
+      Brand.find({isBlocked: false}),
     ]);
     const currentCategory = await Category.findOne({ _id: product.category });
     if (existingProduct) {

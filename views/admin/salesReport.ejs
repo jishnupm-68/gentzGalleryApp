@@ -44,15 +44,14 @@
       <header class="card-header">
         <div class="row gx-3">
           <div class="col-lg-2 col-6 col-md-3">
-            <select
-              class="form-select"
-              onchange="location.href='/admin/salesReport?day=' + this.value"
-            >
-            <option value="">Report</option>
-            <option value="salesToday" >salesToday</option>
-              <option value="salesWeekly">salesWeekly</option>
-              <option value="salesMonthly">salesMonthly</option>
-              <option value="salesYearly">salesYearly</option>
+            <% console.log("frontendfilter",filter) %>
+            <select class="form-select" onchange="location.href='/admin/salesReport?day=' + this.value">
+              <option value="salesToday" <%= filter === 'salesToday' ? 'selected' : '' %>>salesToday</option>
+              <option value="salesWeekly" <%= filter === 'salesWeekly' ? 'selected' : '' %>>salesWeekly</option>
+              <option value="salesMonthly" <%= filter === 'salesMonthly' ? 'selected' : '' %>>salesMonthly</option>
+              <option value="salesYearly" <%= filter === 'salesYearly' ? 'selected' : '' %>>salesYearly</option>
+            </select>
+            
               <!-- <% if (!locals.salesToday) { %>
 
               <option value="salesToday" >salesToday</option>
@@ -74,8 +73,8 @@
               <option value="salesToday">salesToday</option>
               <option value="salesWeekly">salesWeekly</option>
               <option value="salesMonthly">salesMonthly</option>
-              <% } %> -->
-            </select>
+              <% } %> 
+             </select> -->
           </div>
           <div class="col-md-2 col-6">
             <!-- <input
@@ -123,7 +122,7 @@
             <th scope="col" class="text-end">Total Price</th>
           </tr>
         </thead>
-        <% console.log("incoming data",data) %>
+       
         <% if(data) {%>
         <tbody>
          
@@ -162,23 +161,32 @@
     
       </table>
     
+     
+
       <% if (totalPages) { %>
-      <div class="pagination">
-        <% if (currentPage> 1) { %>
-        <button class="btn btn-sm">
-          <a href="?page=<%= currentPage - 1 %>">Previous</a>
-        </button>
-        <% } %> <% for (let i=1; i <=totalPages; i++) { %>
-        <button class="btn btn-sm <%= i === currentPage ? 'active' : '' %>">
-          <a href="?page=<%= i %>"> <%= i %> </a>
-        </button>
-        <% } %> <% if (currentPage < totalPages) { %>
-        <button class="btn btn-sm">
-          <a href="?page=<%= currentPage + 1 %>">Next</a>
-        </button>
-        <% } %>
-      </div>
+        <div class="pagination">
+          <% if (currentPage > 1) { %>
+            <button class="btn btn-sm">
+              <a class="ajax-pagination" href="?page=<%= currentPage - 1 %>" data-page="<%= currentPage - 1 %>">Previous</a>
+            </button>
+          <% } %>
+      
+          <% for (let i = 1; i <= totalPages; i++) { %>
+            <button class="btn btn-sm <%= i === currentPage ? 'active' : '' %>">
+              <a class="ajax-pagination" href="?page=<%= i %>" data-page="<%= i %>"><%= i %></a>
+            </button>
+          <% } %>
+      
+          <% if (currentPage < totalPages) { %>
+            <button class="btn btn-sm">
+              <a class="ajax-pagination" href="?page=<%= currentPage + 1 %>" data-page="<%= currentPage + 1 %>">Next</a>
+            </button>
+          <% } %>
+        </div>
       <% } %>
+      
+
+      </div>
   </section>
 </main>
 
@@ -186,6 +194,62 @@
 
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+
+  <script>
+  
+
+    $(document).ready(function() {
+    // Pagination Click Event
+    $(document).on("click", ".ajax-pagination", function(e) {
+        e.preventDefault();
+        let page = $(this).data("page");
+        updateQueryParam("page", page); // Update URL & Fetch Data
+    });
+
+    // Filter Click Event
+    $(document).on("click", ".ajax-filter", function(e) {
+        e.preventDefault();
+        let filterType = $(this).data("filter");
+        let filterValue = $(this).data("value");
+
+        updateQueryParam(filterType, filterValue, true); // Reset to Page 1 & Fetch Data
+    });
+
+    // Function to Update URL and Fetch Data
+    function updateQueryParam(key, value, resetPage = false) {
+        let params = new URLSearchParams(window.location.search);
+        params.set(key, value);
+
+        if (resetPage) params.delete("page"); // Reset to Page 1 when a new filter is applied
+
+        let finalUrl = `/admin/salesReport?${params.toString()}`;
+        window.history.pushState({}, "", finalUrl); // Update browser URL
+        fetchSalesData(finalUrl);
+    }
+
+    // Function to Fetch Sales Data via AJAX
+    function fetchSalesData(url) {
+        $.ajax({
+            url: url,
+            method: "GET",
+            dataType: "html",
+            success: function(response) {
+                let newTableContent = $(response).find("#salesTable tbody").html();
+                let newPagination = $(response).find(".pagination").html();
+
+                $("#salesTable tbody").html(newTableContent); // Update Sales Data Table
+                $(".pagination").html(newPagination); // Update Pagination
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX Error:", xhr.responseText, status, error);
+            }
+        });
+    }
+});
+
+    </script>
+    
 
   <script>
     document.getElementById('filterButton').addEventListener('click', async () => {
@@ -401,8 +465,6 @@ function displayResults(orders) {
           console.log(error.message);
         }
       });
-
-
 
     
     function dateWiseFilter() {

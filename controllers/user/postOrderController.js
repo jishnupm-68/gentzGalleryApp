@@ -168,49 +168,7 @@ const returnrequestOrder = async(req,res)=>{
                 message: "Return request failed. Please try again later"
             });
         }  
-        // const returnItemQuantities = returnOrder.orderedItems.map((item)=>
-        //     ({
-        //         productId:item.product,
-        //         quantity: -item.quantity
-        //     })
-        //     );
-        //     console.log("findCancelled order",findOrder,"returned order",returnOrder,"cancelItemQuantities",returnItemQuantities)
            
-            
-            // if(findOrder){
-            //     let walletUpdate;
-            //     //updating wallet
-            //     {
-            //         //const quantity = findOrder.orderedItems[0].quantity;
-            //         //const price =  findOrder.orderedItems[0].price;
-            //         //let amount =  price * quantity;
-            //         let amount =  findOrder.finalAmount
-            //         walletUpdate = await User.findOneAndUpdate({ _id: userId }, { $inc: { wallet: amount } });
-            //         if (walletUpdate) {
-            //             console.log("Wallet updated successfully");
-            //         }else{
-            //             console.log("Wallet update failed");
-            //         }
-            //     }
-            //     decrementSaleCounts(returnItemQuantities)
-            //       .then(result =>                     
-            //         {console.log('Decrement successful:', result)
-            //         if (result.modifiedCount === 1 && walletUpdate) {
-            //             return res.json({
-            //                 success: true,
-            //                 result, 
-            //                 message: "Order has been successfully cancelled and amount credited to your wallet"
-            //             });
-            //         } else {
-            //             return res.json({
-            //                 success: false,
-            //                 result,
-            //                 message: "Order cancellation failed. No changes made."
-            //             });
-            //         }}
-            //         )
-            //       .catch(error => console.error('Decrement failed:', error));                         
-            // }      
 
     } catch (error) {
         console.log("Error while creating the return request",error);

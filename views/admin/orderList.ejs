@@ -35,8 +35,8 @@
                           <% order.orderedItems.forEach(item => { %>
                           <% if(item.productStatus=="Cancelled") {%>
                             <i class="text-danger">Cancelled</i> <br>
-                          
-                            
+                          <% }else if(item.productStatus=="Returned") {%>
+                            <i class="text-success">Returned</i>
                             
                           <% } else{ %>
                             
@@ -45,21 +45,32 @@
                              <form action="/admin/updateOrderStatus" method="POST">
                               <input type="hidden" name="orderId" value="<%= order._id %>">
                               <input type="hidden" name="productId" value="<%= item.product %>">
+
+                              
+
                               <select name="status" onchange="changeStatus('<%= order._id %>','<%= item.product %>',this.value)">
-                                <% const statuses = ['Pending',"Processing","Confirmed","Cancelled", "Shipped","Delivered","Return Request"]; %>
-                                <% let currentIndex = statuses.indexOf(item.productStatus) %>
+                                <% const statuses = ['Pending', 'Processing', 'Confirmed', 'Cancelled', 'Shipped', 'Delivered', 'Return Request', 'Returned']; %>
+                                <% let currentIndex = statuses.indexOf(item.productStatus); %>
+                            
                                 <% statuses.forEach((statusOption, index) => { %>
-                                  <% if(index<=currentIndex) {%>
-                                      <option value="<%= statusOption %>" <%= item.productStatus === statusOption ? 'selected' : '' %>  disabled>
-                                        <%= statusOption %>
-                                      </option>
-                                      <% }else {%>
-                                  <option value="<%= statusOption %>" <%= item.productStatus === statusOption ? 'selected' : '' %> >
-                                    <%= statusOption %> 
-                                  </option>
-                                  <% } %>
+                                    <% if (statusOption !== 'Returned') { %>
+                                        <% if (index <= currentIndex) { %>
+                                            <option value="<%= statusOption %>" <%= item.productStatus === statusOption ? 'selected' : '' %> disabled>
+                                                <%= statusOption %>
+                                            </option>
+                                        <% } else { %>
+                                            <option value="<%= statusOption %>" <%= item.productStatus === statusOption ? 'selected' : '' %>>
+                                                <%= statusOption %>
+                                            </option>
+                                        <% } %>
+                                    <% }else {%>
+                                      <p class="text-success">Returned</p>
+                                    <% } %>
                                 <% }); %>
-                              </select>
+                            </select>
+                            
+
+
                              </form>
 
                           <% } %>
@@ -112,7 +123,7 @@
 
 <script>
   function changeStatus(orderId,productId,status){
-    //console.log("statusChanged",orderId,productId,status);
+    console.log("statusChanged",status);
     if(status){
       Swal.fire({
         title: 'Order Status Change',
@@ -130,6 +141,7 @@
     }
   }
   function updateOrderStatus(orderId, productId, status) {
+    console.log("orderId called for changing status in the backend", orderId);
     $.ajax({
         url: '/admin/updateOrderStatus',
         method: 'POST',
