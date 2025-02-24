@@ -148,6 +148,7 @@
                          <th>Name</th>
                          <th>Created On</th>
                          <th>Expire On</th>
+                        <th>Percentage  offer</th>   <!--  newly added   -->
                          <th>Offer Price</th>
                          <th>Minimum Price</th>
                          <th>Status</th>
@@ -167,6 +168,7 @@
                         const eformatedTime= `${String(edate.getFullYear() ).padStart(2, '0')}-${String(edate.getMonth() + 1).padStart(2, '0')}-${String(edate.getDate()).padStart(2, '0')}`; %>
                          <% console.log(eformatedTime) %>
                          <td class="text-start"><%= eformatedTime %></td>
+                         <td class="text-start"><%= coupon.percentageOffer %></td>
                          <td class="text-start"><%= coupon.offeredPrice %></td>
                          <td class="text-start"><%= coupon.minimumPrice %></td>
                          <% if(coupon.isListed) { %>

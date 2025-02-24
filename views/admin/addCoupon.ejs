@@ -99,6 +99,18 @@
                <div id="error-end-date" class="error-message"></div>
              </div>
 
+             <div>
+              <label for="percentage-offer" class="form-label">Percentage Offer</label>
+              <input
+                type="text"
+                name="percentageOffer"
+                placeholder="%"
+                class="form-control"
+              />
+              <div id="error-percentage-offer" class="error-message"></div>
+            </div>
+
+
 
              <div>
                <label for="offer-price" class="form-label">Offer Price</label>
@@ -158,6 +170,7 @@
    document.querySelectorAll(".error-message").forEach((element) => (element.innerHTML = ""));
    const sDate = document.getElementsByName("startDate")[0].value;
    const eDate = document.getElementsByName("endDate")[0].value;
+   const percentageOffer = document.getElementsByName("percentageOffer")[0].value;
    const sDateObj = new Date(sDate);
    const eDateObj = new Date(eDate);
    const todayDateObj = new Date();
@@ -178,6 +191,17 @@
      return false;
    }
 
+
+   if(!percentageOffer){
+
+   }else{
+    if(percentageOffer<=0 || percentageOffer>100){
+     document.getElementById("error-percentage-offer").innerHTML ="Percentage Offer should be between 1 and 100";
+     return false; 
+   }
+
+   }
+   
 
    let name = document.getElementsByName("couponName")[0].value;
    const nameRegex = /^[A-Za-z0-9]{1,50}$/;

@@ -5,7 +5,6 @@ const passport = require("passport");
 //controllers
 const signupController = require("../controllers/user/signupController")
 const loginController = require("../controllers/user/loginController")
-const filterController = require("../controllers/user/filterController")
 const addressController = require("../controllers/user/addressController")
 const homePageController =require("../controllers/user/homePageController")
 const emailController = require("../controllers/user/emailController")
@@ -24,9 +23,8 @@ const {userAuth, profileAuth} = require("../middlewares/auth");
 //load home , shopPage and filters
 router.get('/', homePageController.loadHomePage)
 router.get('/shop',userAuth,homePageController.loadShopPage)
-router.get('/filter',userAuth,filterController.filterProduct)
-router.get("/filterPrice",userAuth,filterController.filterByPrice)
-router.post('/search',userAuth,filterController.searchProducts)
+router.get('/filter',userAuth,homePageController.filterProduct)
+router.post('/search',userAuth,homePageController.searchProducts)
 
 // user profile creation routes
 router.get('/signup',signupController.loadSignup)

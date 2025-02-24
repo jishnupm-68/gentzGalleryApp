@@ -1,5 +1,14 @@
 <%- include("../../views/partials/user/header") %>
-
+<style>
+    .product-image-container {
+        text-align: center;
+    }
+    .product-image {
+        max-width: 100%;
+        height: auto;
+        object-fit: contain;
+    }
+</style>
 
 
 
@@ -28,46 +37,14 @@
                      <div class="row mb-50">
 
 
-                         <!-- <div class="col-md-6 col-sm-12 col-xs-12">
-                             <div class="detail-gallery">
-                                 <span class="zoom-icon"><i class="fi-rs-search"></i></span>
-                                 <div class="product-image-slider">
-                                   
-                                     <figure class="border-radius-10">
-                                         <img src="/uploads/product-imagesResized/<%= product.productImage[0] %>" alt="Product Image">
-                                     </figure>
-                                     <figure class="border-radius-10">
-                                       <img src="/uploads/product-imagesResized/<%= product.productImage[1] %>" alt="Product Image">
-                                   </figure>
-                                   <figure class="border-radius-10">
-                                       <img src="/uploads/product-imagesResized/<%= product.productImage[2] %>" alt="Product Image">
-                                   </figure>
-                                   <figure class="border-radius-10">
-                                       <img src="" alt="">
-                                   </figure>
-                                   <figure class="border-radius-10">
-                                       <img src="" alt="">
-                                   </figure>
-                                 </div>
-                                 <div  class="slider-nav-thumbnails pl-15 pr-15">
-                                    <% for (let i=0;i<product.productImage.length;i++) {%>
-                                    
-                                        <div>
-                                            <img style="object-fit:contain ;" src="/uploads/product-imagesResized/<%= product.productImage[i] %>" alt="Product Image">
-                                        </div>              
-                                   <% } %>
-                                  </div>
-                              </div>
-                          </div>  -->
-
-
 
 
                           <div class="col-md-6 col-sm-12 col-xs-12">
                             <div class="detail-gallery">
                                 <span class="zoom-icon"><i class="fi-rs-search"></i></span>
                                 <div class="product-image-slider">
-                                  
+                               
+                                    
 
 
                           <div id="carouselExampleControls" class="carousel slide col-12" data-ride="carousel">
@@ -76,10 +53,10 @@
 
                                 <img class="d-block w-100 product-image" id="zoom-image" src="/uploads/product-imagesResized/<%= product.productImage[0] %>" alt="First slide" style="object-fit:contain ;">
                               </div>
-                              <div class="carousel-item product-image-container">
+                              <div class="carousel-item   product-image-container">
                                 <img class="d-block w-100 product-image" id="zoom-image" src="/uploads/product-imagesResized/<%= product.productImage[1] %>" alt="Second slide" style="object-fit:contain ;">
                               </div>
-                              <div class="carousel-item product-image-container">
+                              <div class="carousel-item   product-image-container">
                                 <img class="d-block w-100 product-image" id="zoom-image" src="/uploads/product-imagesResized/<%= product.productImage[2] %>" alt="Third slide" style="object-fit:contain ;">
                               </div>
                             </div>
@@ -100,10 +77,7 @@
                 </div>
  
  
-                        
- 
-                       
-                         
+                                
  
                           <div class="col-md-6 col-sm-12 col-xs-12">
                               <div class="detail-info">
@@ -240,7 +214,7 @@
                                          <img class="default-img" src="/uploads/product-imagesResized/<%=products[i].productImage[0]%>" alt="<%=products[i].productName%>">
                                      </a>
                                  </div>
-                                 <a href="/addToWishlist?id=<%= products[i]._id %>" class="wishlist-btn">
+                                 <a href="#"  onclick="addToWishlist('<%= product._id %>')" class="wishlist-btn">
                                      <i class="fas fa-heart"></i>
                                  </a>
                              </div>
@@ -264,8 +238,7 @@
  
  
  </main>
- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/elevatezoom/3.0.8/jquery.elevatezoom.min.js"></script>
+
 
  <script>
     function addToCart(productId) {
@@ -325,8 +298,7 @@
     }
  </script>
 
-
- <script>
+<script>
     const image = document.getElementById('zoom-image');
     image.addEventListener('mouseenter', function() {
       this.style.transform = 'scale(1.5)';
@@ -334,8 +306,7 @@
     image.addEventListener('mouseleave', function() {
       this.style.transform = 'scale(1)';
     });
-  </script>
-
+  </script> 
 
 <!-- quantity changing -->
   <script>
@@ -396,30 +367,7 @@
       
     }
   </script>
-
-<script>
-    $(document).ready(function() {
-        // Apply zoom effect to all images in the carousel
-        $(".zoom-image").elevateZoom({
-            zoomType: "lens",
-            lensShape: "round",
-            lensSize: 150,
-            scrollZoom: true
-        });
-
-        // Reinitialize zoom on carousel slide change
-        $("#carouselExampleControls").on("slid.bs.carousel", function() {
-            $(".zoomContainer").remove(); // Remove previous zoom container
-            $(".zoom-image").removeData("elevateZoom").elevateZoom({
-                zoomType: "lens",
-                lensShape: "round",
-                lensSize: 150,
-                scrollZoom: true
-            });
-        });
-    });
-</script>
-
+  
  
  <%- include("../../views/partials/user/footer") %>
  

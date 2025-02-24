@@ -77,9 +77,8 @@ const loadDashboard = async (req, res) => {
       console.log("dashboard rendered")
       const filter  = req.query.day==undefined? "salesDaily": req.query.day;
       const groupBy = filterSalesReportAdmin.chartFilter(filter);
-        console.log("groupBy rendered",filter, groupBy);
+      console.log("groupBy rendered",filter, groupBy);
       let page=1;
-
       const [salesData, result] = await Promise.all([ 
         Order.aggregate([
         { 
@@ -109,7 +108,7 @@ const loadDashboard = async (req, res) => {
               },
             },
             { $unwind: "$orderedItems" },     
-            // Lookup to fetch product details
+            // lookup for fetch product details
             {
               $lookup: {
                 from: "products",
@@ -119,7 +118,7 @@ const loadDashboard = async (req, res) => {
               },
             },
             { $unwind: "$productDetails" },    
-            // Lookup to fetch category details
+            // lookup for fetch category details
             {
               $lookup: {
                 from: "categories",

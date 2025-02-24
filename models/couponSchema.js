@@ -16,6 +16,13 @@ const couponSchema = new Schema({
         type:Date,
         required: true
     },
+    percentageOffer:{
+        type:Number,
+        required:false,
+        min: 0,
+        max: 100,
+        default: 0,
+    },
     offeredPrice:{
         type:Number,
         required:true

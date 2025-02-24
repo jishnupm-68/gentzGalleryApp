@@ -248,13 +248,15 @@
           <div class="price-filter">
             <div class="filter-title">Filter by Price</div>
             <form id="price-filter-form" method="GET" action="/filter">
-              <a href="/filterprice?gt=0&lt=500"> <button type="button" name="price" value="under-500"
-                  class="price-button">Under ₹500</button></a>
-              <a href="/filterprice?gt=500&lt=2000"> <button type="button" name="price" value="500-1000"
+
+                  <a href="/filter?price&gt=0&lt=500"> <button type="button" name="price" value="under-500"
+                    class="price-button">Under ₹500</button></a>
+
+              <a href="/filter?price&gt=500&lt=2000"> <button type="button" name="price" value="500-1000"
                   class="price-button">₹500 - ₹2000</button></a>
-              <a href="/filterprice?gt=2000&lt=5000"> <button type="button" name="price" value="1000-1500"
+              <a href="/filter?price&gt=2000&lt=5000"> <button type="button" name="price" value="1000-1500"
                   class="price-button">₹2000 - ₹5000</button></a>
-              <a href="/filterprice?gt=5000&lt=50000"> <button type="button" name="price" value="above-1500"
+              <a href="/filter?price&gt=5000&lt=50000"> <button type="button" name="price" value="above-1500"
                   class="price-button">Above ₹5000</button></a>
             </form>
           </div>
@@ -615,12 +617,7 @@ function updatePagination(totalPages, currentPage) {
 
 </script>
 
-
-
-
 <div id="product-list"></div>
-
-
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
   <%- include("../../views/partials/user/footer") %>
