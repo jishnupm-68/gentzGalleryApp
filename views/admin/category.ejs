@@ -74,14 +74,6 @@
         <h2 class="content-title card-title pl-1">Category</h2>
       </div>
     </div>
-    <header class="card-header text-center mb-20">
-      <form action="/admin/category/" method="get" class="d-inline">
-        <div class="input-group input-group-sm border border-1 border-grey rounded-pill" style="width: 500px; margin-left: 230px">
-          <input type="text" class="form-control border-0 rounded-pill mt-3" placeholder="Search categories" name="search"/>
-          <button class="btn" type="submit">Search</button>
-        </div>
-      </form>
-    </header>
     <div class="card col-10">
       <div class="card-body">
         <a href="/admin/addCategory" style="text-decoration: none;"><div class="d-grid text-end mt-30 col-md-5 mb-3">
@@ -92,9 +84,7 @@
       <!-- table -->
       <div class="row">
 
-        <!--  Add new Category was here-->
-        
-        
+        <!--  Category information here-->       
         <div class="col-md-11 ml-10">
           <div class="table-responsive">
             <table class="table table-hover">
@@ -122,7 +112,6 @@
                       <% }else{ %>
                         0%
                       <% } %>
-
                   </td>
                   <td class="text-start">
                     <% if(category.categoryOffer===0){ %>
@@ -145,11 +134,11 @@
                   <td class="text-start">
                     <% if(category.isListed) {%>
                     <button class="btn btn-danger" style="width: 70px">
-                      <a href="/admin/listCategory?id=<%=category._id%>" class="text-white">Unlist</a>
+                      <a href="#" onclick="categoryStatus('<%=category._id%>',1)" class="text-white">Unlist</a>
                     </button>
                     <% }else{ %>
                     <button class="btn btn-success" style="width: 70px">
-                      <a href="/admin/unListCategory?id=<%=category._id%>" class="text-white">List</a>
+                      <a href="#" onclick="categoryStatus('<%=category._id%>',-1)" class="text-white">List</a>
                     </button>
                     <% } %>
                   </td>
@@ -163,104 +152,62 @@
           </div>
         </div>
       </div>
-
-
     </div>
-    
 
-
-  
-
-<!-- Pagination -->
-<div class="container mt-3">
-  <nav aria-label="Page navigation">
-      <ul class="pagination justify-content-center mb-3" style="margin-right: 200px;">
-          <% for (let i = 1; i <= totalPages; i++) { %>
-              <li class="page-item <%= (i === currentPage) ? 'active' : '' %>">
-                  <a class="page-link" href="?page=<%= i %>">
-                      <%= i %>
-                  </a>
-              </li>
-          <% } %>
-      </ul>
-  </nav>
-</div>
-
-
-
-
-
-
-
-
-
-</section>
-
-
+    <!-- Pagination -->
+    <div class="container mt-3">
+      <nav aria-label="Page navigation">
+          <ul class="pagination justify-content-center mb-3" style="margin-right: 200px;">
+              <% for (let i = 1; i <= totalPages; i++) { %>
+                  <li class="page-item <%= (i === currentPage) ? 'active' : '' %>">
+                      <a class="page-link" href="?page=<%= i %>">
+                          <%= i %>
+                      </a>
+                  </li>
+              <% } %>
+          </ul>
+      </nav>
+    </div>
+  </section>
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
  
-
+  <!-- script for handling category operations -->
   <script>
-    function handleFormSubmit(event) {
-      event.preventDefault();
-
-      if(!validateForm()){
-        return 
-      }
-      const name = document.getElementsByName('name')[0].value;
-      const description = document.getElementById("descriptionId").value;
-      console.log(name,description)
-      fetch('/admin/addCategory',{
-        method:'post',
-        headers:{
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({name, description })
-      })
-      .then(response =>{
-        if(!response.ok){
-          return response.json().then(err=>{
-            throw new Error(err.error);
-          })
+    //function for category status change
+    function categoryStatus(categoryId, status) {
+            let URL = status == 1 ? `/admin/listCategory?id=${categoryId}` : `/admin/unListCategory?id=${categoryId}`;
+            $.ajax({
+                url: URL,
+                method: "get",              
+                success: (response) => {
+                    Swal.fire({
+                        title: "Status Updated",
+                        text: response.message || `Product has been ${status === 1 ? "unlisted" : "listed"}.`,
+                        icon: status === 1 ? "error" : "success"
+                    }).then(() => {
+                        location.reload();
+                    });
+                },
+                error: (xhr) => {
+                    Swal.fire({
+                        title: "Failed",
+                        text: xhr.responseJSON?.message || "An error occurred while updating the product status.",
+                        icon: "error"
+                    }).then(() => {
+                        location.reload();
+                    });
+                }
+            });
         }
-        return response.json()
-      })
-      .then(data=>{
-        location.reload()
-      })
-      .catch(error=>{
-        if(error.message ==="Category already exist"){
-          Swal.fire({
-            icon:'error',
-            title: "OOPS",
-            text:"Category already exists"
-          })
-        }else{
-          Swal.fire({
-            icon:"error",
-            title:"OOPS",
-            text:"An error occured while adding the category"
-          })
 
-        }
-      })
-
-     
-    }
-
-
-
-
+    //function for validating category form
     function validateForm(){
         clearErrorMessages();
         const name = document.getElementsByName('name')[0].value.trim();
         const description = document.getElementById('descriptionId').value.trim();
-
-        console.log(name, description)
         let isValid = true;
-
         if(name===''){
             displayErrorMessage("name-error","Please enter name");
             isValid = false;
@@ -275,114 +222,108 @@
         return isValid;
     }   
 
-
-
-
+    //function for displaying error message
     function displayErrorMessage(elementId, message){
         let errorElement = document.getElementById(elementId);
         errorElement.innerText = message;
         errorElement.style.display = 'block'
     }
 
+    //function for clearing error messages
     function clearErrorMessages(){
-        const errorElements = document.getElementsByClassName('error-message');
-        Array.from(errorElements).forEach((element)=>{
-            element.innerText = '';
-            element.style.display = 'none';
-        });
-        }
-
-
-
-
-      async function addOffer(categoryId){
-        const {value:amount} = await Swal.fire({
-          title:"Offer in Percentage",
-          input:"number",
-          inputLabel:"Percentage",
-          inputPlaceholder:"%"
-        });
-        if(amount){
-          try{
-            const response = await fetch('/admin/addCategoryOffer',{
-              method:'post',
-              headers:{
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                percentage :amount,
-                categoryId:categoryId})
-            })
-            const data = await response.json();
-            console.log("data,", response.ok,data.success)
-            if(response.OK && data.success===true) {
-              Swal.fire(
-                "Offer added",
-                "The offer has been added successfully",
-                "success"
-              ).then(() => {
-                location.reload()
-              });
-            }else{
-              Swal.fire("Success",data.message || "Adding offer successfull", "success")
-              .then(()=>{
-                location.reload();
-
-              })
-            }
-          }catch(error){
-            Swal.fire(
-              "Error",
-              "An Error occured while adding",
-              "error"
-            );
-            console.log("Error while adding offer",error)
-
-          }
-      }
+      const errorElements = document.getElementsByClassName('error-message');
+      Array.from(errorElements).forEach((element)=>{
+          element.innerText = '';
+          element.style.display = 'none';
+      });
     }
 
-
-      async function removeOffer(categoryId){
-        try{
-          const response = await fetch("/admin/removeCategoryOffer",{
-            method:"post",
+    //function for adding offer validating offer and ajax request
+    async function addOffer(categoryId){
+      const {value:amount} = await Swal.fire({
+        title:"Offer in Percentage",
+        input:"number",
+        inputLabel:"Percentage",
+        inputPlaceholder:"%"
+      });
+      if(amount<0 || amount>100){ 
+          Swal.fire(
+            "Error",
+            "Percentage should be between 0 and 100",
+            "error"
+          );
+          return; 
+    }else{
+      try{
+          const response = await fetch('/admin/addCategoryOffer',{
+            method:'post',
             headers:{
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({categoryId:categoryId})
+            body: JSON.stringify({
+              percentage :amount,
+              categoryId:categoryId})
           })
-          console.log("Fetch called")
-
-          const data  = await response.json();
-          console.log("data,", response.ok,data.success)
-          if(response.ok ){
+          const data = await response.json();
+          if(response.OK && data.success===true) {
             Swal.fire(
-              "offer removed",
-              "The Offer has been removed successfully",
+              "Offer added",
+              "The offer has been added successfully",
               "success"
-            ).then(()=>{
+            ).then(() => {
+              location.reload()
+            });
+          }else{
+            Swal.fire("Success",data.message || "Adding offer successfull", "success")
+            .then(()=>{
               location.reload();
             })
-          }else{
-            Swal.fire("Failed",data.message || "Removing offer failed", "error")
-            .then(()=>location.reload())
           }
-
-        }
-        catch(error){
+        }catch(error){
           Swal.fire(
             "Error",
-            "An Error occured while removing the offer",
+            "An Error occured while adding",
             "error"
           );
-          console.log("Error while removing offer",error)
+          console.log("Error while adding offer",error)
+        }
+    }
+  }
 
+    //function for removing offer
+    async function removeOffer(categoryId){
+      try{
+        const response = await fetch("/admin/removeCategoryOffer",{
+          method:"post",
+          headers:{
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({categoryId:categoryId})
+        })
+        const data  = await response.json();
+        if(response.ok ){
+          Swal.fire(
+            "offer removed",
+            "The Offer has been removed successfully",
+            "success"
+          ).then(()=>{
+            location.reload();
+          })
+        }else{
+          Swal.fire("Failed",data.message || "Removing offer failed", "error")
+          .then(()=>location.reload())
         }
       }
-
-
-  
+      catch(error){
+        Swal.fire(
+          "Error",
+          "An Error occured while removing the offer",
+          "error"
+        );
+        console.log("Error while removing offer",error)
+      }
+    }
+    
   </script>
  
   <%- include('../partials/admin/footer.ejs') %>

@@ -1,4 +1,5 @@
 <%- include("../../views/partials/admin/header") %>
+
 <style>
   .pagination {
     display: flex;
@@ -16,19 +17,18 @@
   }
 
   .active {
-    /* Add styles for the active page */
 
-    color: #fff;
+    color: #969090;
   }
 
   .btn:hover {
     /* Add styles for button hover state */
-    background-color: #ddd;
+    background-color: #c0bcbc;
   }
 
   .table-spacing th,
   .table-spacing td {
-    padding-left: 80px; /* Adjust the value as needed for the desired spacing */
+    padding-left: 80px; 
   }
 </style>
 
@@ -44,53 +44,19 @@
       <header class="card-header">
         <div class="row gx-3">
           <div class="col-lg-2 col-6 col-md-3">
-            <% console.log("frontendfilter",filter) %>
             <select class="form-select" onchange="location.href='/admin/salesReport?day=' + this.value">
               <option value="salesToday" <%= filter === 'salesToday' ? 'selected' : '' %>>salesToday</option>
               <option value="salesWeekly" <%= filter === 'salesWeekly' ? 'selected' : '' %>>salesWeekly</option>
               <option value="salesMonthly" <%= filter === 'salesMonthly' ? 'selected' : '' %>>salesMonthly</option>
               <option value="salesYearly" <%= filter === 'salesYearly' ? 'selected' : '' %>>salesYearly</option>
-            </select>
-            
-              <!-- <% if (!locals.salesToday) { %>
-
-              <option value="salesToday" >salesToday</option>
-              <option value="salesWeekly">salesWeekly</option>
-              <option value="salesMonthly">salesMonthly</option>
-              <option value="salesYearly">salesYearly</option> -->
-              <!-- <% } else if (locals.salesWeekly) { %>
-              <option value="salesWeekly" selected>salesWeekly</option>
-              <option value="salesToday">salesToday</option>
-              <option value="salesMonthly">salesMonthly</option>
-              <option value="salesYearly">salesYearly</option>
-              <% } else if (locals.salesMonthly) { %>
-              <option value="salesMonthly" selected>salesMonthly</option>
-              <option value="salesToday">salesToday</option>
-              <option value="salesWeekly">salesWeekly</option>
-              <option value="salesYearly">salesYearly</option>
-              <% } else if (locals.salesYearly) { %>
-              <option value="salesYearly" selected>salesYearly</option>
-              <option value="salesToday">salesToday</option>
-              <option value="salesWeekly">salesWeekly</option>
-              <option value="salesMonthly">salesMonthly</option>
-              <% } %> 
-             </select> -->
+            </select>             
           </div>
           <div class="col-md-2 col-6">
-            <!-- <input
-              type="date"
-              id="selectedDate"
-              class="form-control"
-              value="<%= locals.date ? date : '' %>"
-              onchange="dateWiseFilter()"
-            /> -->
-
             <label for="startDate">Start Date:</label>
         <input type="date" id="startDate" value="<%=startDate %>">
         <label for="endDate">End Date:</label>
         <input type="date" id="endDate" value="<%=endDate %>">
         <button id="filterButton" class="btn btn-primary text-light mt-1">Filter</button>
-
           </div>
           <div class="col-lg-6 col-md-6 ms-auto text-md-end">
             <a href="" id="createSalesReport" class="btn btn-primary  text-light mb-2"
@@ -108,7 +74,6 @@
     </div>
     
     <div class="right mt-5 container">
-      <!-- <input type="date" id="calendar" name="calendar" class="form-control mb-3" /> -->
       <table id="salesTable" class="table table-hover">
         <thead>
           <tr>
@@ -122,47 +87,32 @@
             <th scope="col" class="text-end">Total Price</th>
           </tr>
         </thead>
-       
-        <% if(data) {%>
+        
+        <% if(data && data.length>0) {%>
         <tbody>
-         
-          <% let grandTotal = 0; %> <% for (let i = 0; i < data.length; i++) { %>
+          <% for (let i = 0; i < data.length; i++) { %>
             <% data[i].orderedItems.forEach((item)=>{ %>
           <tr>
             <td><%= i + 1 %></td>
             <td><%= data[i]._id %></td>
-            <td><b><%= data[i].userId.name %></b></td>
-            
+            <td><b><%= data[i].userId.name %></b></td>           
             <td><b><%= item.productName %></b></td>
             <td><%= data[i].createdOn.toLocaleString('en-IN') %></td>
-            <td><%= data[i].payment %></td>
-            
-            <td><%= data[i].status %></td> 
-           
-            <td class="text-end"><%= data[i].finalAmount %></td>
-            
+            <td><%= data[i].payment %></td>           
+            <td><%= data[i].status %></td>           
+            <td class="text-end"><%= data[i].finalAmount %></td>         
           </tr> 
           <%}) %>
-          <% grandTotal += data[i].finalAmount; %> <% } %>
-          
-         
+         <% } %>       
         </tbody>
-        <tfoot>
-          <tr>
-            <td colspan="7" class="text-end"><b>Grand Total:</b></td>
-            <td class="text-end"><b><%= grandTotal %></b></td>
-          </tr>
-        </tfoot>
         <%}else{%>
           <tr>
             <td colspan="8" class="text-center">No sales data found.</td>
           </tr>
-        <%}%>
-    
+        <%}%>  
       </table>
-    
-     
 
+      <!-- pagination -->
       <% if (totalPages) { %>
         <div class="pagination">
           <% if (currentPage > 1) { %>
@@ -184,27 +134,21 @@
           <% } %>
         </div>
       <% } %>
-      
-
       </div>
   </section>
 </main>
 
 <input type="text" hidden value="<%= data %>" id = "data">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-
-
+<!-- script for pagination filter and dynamically updating the table -->
   <script>
-  
-
-    $(document).ready(function() {
     // Pagination Click Event
+    $(document).ready(function() {
     $(document).on("click", ".ajax-pagination", function(e) {
         e.preventDefault();
         let page = $(this).data("page");
-        updateQueryParam("page", page); // Update URL & Fetch Data
+        updateQueryParam("page", page); 
     });
 
     // Filter Click Event
@@ -212,23 +156,20 @@
         e.preventDefault();
         let filterType = $(this).data("filter");
         let filterValue = $(this).data("value");
-
-        updateQueryParam(filterType, filterValue, true); // Reset to Page 1 & Fetch Data
+        updateQueryParam(filterType, filterValue, true); 
     });
 
     // Function to Update URL and Fetch Data
     function updateQueryParam(key, value, resetPage = false) {
         let params = new URLSearchParams(window.location.search);
         params.set(key, value);
-
-        if (resetPage) params.delete("page"); // Reset to Page 1 when a new filter is applied
-
+        if (resetPage) params.delete("page");
         let finalUrl = `/admin/salesReport?${params.toString()}`;
-        window.history.pushState({}, "", finalUrl); // Update browser URL
+        window.history.pushState({}, "", finalUrl); // updating browser url without reload
         fetchSalesData(finalUrl);
     }
 
-    // Function to Fetch Sales Data via AJAX
+    // Function to Fetch Sales Data using AJAX
     function fetchSalesData(url) {
         $.ajax({
             url: url,
@@ -237,7 +178,6 @@
             success: function(response) {
                 let newTableContent = $(response).find("#salesTable tbody").html();
                 let newPagination = $(response).find(".pagination").html();
-
                 $("#salesTable tbody").html(newTableContent); // Update Sales Data Table
                 $(".pagination").html(newPagination); // Update Pagination
             },
@@ -247,10 +187,10 @@
         });
     }
 });
-
-    </script>
+</script>
     
 
+  <!-- script for filter using custom date and validation -->
   <script>
     document.getElementById('filterButton').addEventListener('click', async () => {
     const startDate = document.getElementById('startDate').value;
@@ -264,13 +204,8 @@
         })
         return;
     }
-
     try {
-        //const response = await fetch(`/admin/sales?startDate=${startDate}&endDate=${endDate}`);
         window.location.href = `/admin/sales?startDate=${startDate}&endDate=${endDate}`
-        // const orders = await response.json();
-
-        // displayResults(orders);
     } catch (error) {
         console.error('Error fetching orders:', error);
         Swal.fire({
@@ -300,7 +235,9 @@ function displayResults(orders) {
 }
   </script>
 
+  <!-- script for downloading sales report in PDF -->
   <script>
+    // code  for creating sales report
     document
       .getElementById("createSalesReport")
       .addEventListener("click", async (event) => {
@@ -367,6 +304,7 @@ function displayResults(orders) {
         }
       });
 
+      // code for download excel report
     document
       .getElementById("downloadExcelReport")
       .addEventListener("click", async (event) => {
@@ -433,6 +371,7 @@ function displayResults(orders) {
         }
       });
 
+      // code for download summary report
       document
       .getElementById("downloadSummary")
       .addEventListener("click", async (event) => {
@@ -442,11 +381,6 @@ function displayResults(orders) {
         try {
           const response = await fetch("/admin/salesSummary", {
             method: "get",
-            // headers: {
-            //   "Content-Type": "application/json",
-            // },
-            // // body:data,
-            // body: JSON.stringify(salesData),
           });
 
           if (response.ok) {
@@ -465,27 +399,7 @@ function displayResults(orders) {
           console.log(error.message);
         }
       });
-
-    
-    function dateWiseFilter() {
-      const selectedDate = document.getElementById("selectedDate").value;
-
-      // alert(selectedDate);
-      window.location.href = `/admin/dateWiseFilter?date=${selectedDate}`;
-      $.ajax({
-        url: "/admin/dateWiseFilter",
-        method: "post",
-        data: {
-          date: selectedDate,
-        },
-        success: (response) => {
-          if (response.status === true) {
-            // alert("done");
-          }
-        },
-      });
-    }
   </script>
 
 <%- include("../../views/partials/admin/footer") %>
-</div>
+

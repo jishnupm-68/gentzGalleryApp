@@ -1,41 +1,45 @@
 const express = require('express');
 const router = express.Router();
+
+//middlewares
+const { adminAuth} = require("../middlewares/auth");
+
+//controllers
 const adminController = require('../controllers/admin/adminController');
-const {userAuth, adminAuth} = require("../middlewares/auth");
 const customerController =  require('../controllers/admin/customerController')
 const categoryController = require('../controllers/admin/categoryController')
 const productController = require('../controllers/admin/productController')
 const orderController  = require('../controllers/admin/orderController')
 const couponController = require('../controllers/admin/couponController')
 const salesReportController = require('../controllers/admin/salesReportController')
+const brandController = require('../controllers/admin/brandController')
+const stockController = require('../controllers/admin/stockController')
+
+
 const multer  =require("multer");
 const storage = require('../helpers/multer');
 const uploads = multer({
     storage,
     limits: { fileSize: 2 * 1024 * 1024 }, // Limit file size to 2 MB
 });
-const brandController = require('../controllers/admin/brandController')
 
 
 
+//admin login logout and dashboard
 router.get("/pageError", adminController.pageError)
 router.get('/login',adminController.loadLogin)
 router.post('/login',adminController.login);
 router.get('/logout',adminAuth,adminController.logout);
 
-//salesreport management
+//dashboard management
 router.get('/',adminAuth,adminController.loadDashboard)
 
-
-//router.get('/salesReport',adminAuth,salesReportController.loadSalesReport)
-
-
+//sales report management
+router.get('/salesReport', adminAuth, salesReportController.salesReport)
 router.post("/generatePdf",adminAuth,salesReportController.generatePdf)
 router.post('/downloadExcel', adminAuth,salesReportController.generateExcelReport)
 router.get('/sales', adminAuth, salesReportController.displayFilteredData)
-router.get('/salesReport', adminAuth, salesReportController.salesReport)
 router.get('/salesSummary',adminAuth, salesReportController.salesSummary)
-
 
 //customer management
 router.get('/users', adminAuth, customerController.customerInfo)
@@ -45,9 +49,7 @@ router.get('/unblockCustomer',adminAuth,customerController.customerUnblocked)
 
 //category Management
 router.get('/category',adminAuth,categoryController.categoryInfo)
-router.get('/addCategory',(req,res)=>{
-    res.render("addNewCategory")
-})
+router.get('/addCategory',adminAuth, categoryController.getAddCategory)
 router.post('/addCategory',adminAuth,categoryController.addCategory)
 router.post('/addCategoryOffer',adminAuth,categoryController.addCategoryOffer)
 router.post('/removeCategoryOffer',adminAuth,categoryController.removeCategoryOffer)
@@ -99,7 +101,8 @@ router.get("/order",adminAuth,orderController.loadOrders);
 router.post("/updateOrderStatus",adminAuth,orderController.updateOrderStatus);
 router.post("/updateReturnStatus",adminAuth,orderController.updateReturnStatus);
 router.get('/orderDetails',adminAuth,orderController.getOrderDetailsPageAdmin);
+
 //stockManagement
-router.get('/stock',adminAuth,orderController.getStockPage)
-router.post("/addQuantity", adminAuth,orderController.addQuantity);
+router.get('/stock',adminAuth,stockController.getStockPage)
+router.post("/addQuantity", adminAuth,stockController.addQuantity);
 module.exports = router

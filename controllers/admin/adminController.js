@@ -4,13 +4,14 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const filterSalesReportAdmin = require('../../helpers/filterSalesReportAdmin');
 
-//render the loginPage
+//render the admin loginPage
 const loadLogin = (req,res)=>{
   try{
     if(req.session.admin){
         return res.redirect('/admin/dashboard');
     }
     res.render('adminLogin', {message:null});
+    console.log("Rendering login page")
     }catch(error){
         console.error("Error while rendering login page", error)
         return res.redirect('/pageNotFound')
@@ -21,11 +22,9 @@ const loadLogin = (req,res)=>{
 const login =  async(req,res)=>{
     try { 
         const {email, password} = req.body;
-        console.log(req.body)
         const admin = await User.findOne({email, isAdmin:true})
         if(admin){
             const passwordMatch = await bcrypt.compare(password,admin.password)
-            console.log("passwordMatch",passwordMatch)
             if(passwordMatch){
                 req.session.admin =  true;
                 return res.redirect('/admin')
@@ -37,7 +36,7 @@ const login =  async(req,res)=>{
             console.log("User not found")
             return res.render('adminLogin', {message:"User not found"})
         }
-    } catch (error) {
+    }catch(error) {
         console.error("Error while login", error)
         return res.redirect('/pageError')        
     }
@@ -62,7 +61,7 @@ const logout = async(req,res)=>{
                 console.log("Error while destroying session",err.message)
                 return res.redirect("/pageNotFound")
             }
-            console.log("Admin logout", res.session)
+            console.log("Admin logout")
             return res.redirect('/admin/login')
         })
     }catch(error){
@@ -74,10 +73,8 @@ const logout = async(req,res)=>{
 //dashboard including charts 
 const loadDashboard = async (req, res) => {
     try {
-      console.log("dashboard rendered")
       const filter  = req.query.day==undefined? "salesDaily": req.query.day;
       const groupBy = filterSalesReportAdmin.chartFilter(filter);
-      console.log("groupBy rendered",filter, groupBy);
       let page=1;
       const [salesData, result] = await Promise.all([ 
         Order.aggregate([
@@ -166,19 +163,20 @@ const loadDashboard = async (req, res) => {
               },
             },
           ]),   
-        ]);  
-         //console.log("Best Selling Data:", JSON.stringify(result, null, 2));         
+        ]);         
       res.render("dashboard",{
         data: salesData,
         bestSellingData:result,
         filter: filter  
-      })     
+      })  
+      console.log("dashboard rendered")   
     } catch (error) {
       console.error("Error while loading the dashboard", error);
       res.redirect("/admin/pageError");   
     }
   }
 
+//exporting functions
 module.exports = {
     loadLogin,
     login,

@@ -10,12 +10,10 @@
                 <h2 class="content-title card-title " >Products</h2>
             </div>
         </div>
-        <form action="" method="get" class="d-inline">
-            
+        <form id="searchForm" action="/admin/products" method="get" class="d-inline">
             <div class="input-group input-group-sm border border-1 border-grey rounded-pill" style="width: 500px; margin-left: 230px;">
-                
-                <input type="text" class="form-control border-0 rounded-pill" placeholder="Search products or brands" name="search">
-                <button class="btn  border-0" type="submit">Search</button>
+                <input type="text" id="searchInput" class="form-control border-0 rounded-pill" placeholder="Search products or brands" name="search">
+                <button class="btn border-0" type="submit">Search</button>
             </div>
         </form>
     </header>
@@ -40,6 +38,7 @@
                 </tr>
             </thead>
             <tbody>
+                <% if(data.length>0){ %>
                 <% for(let i=data.length-1;i>=0;i--) {%>
                 
                 <tr>
@@ -80,16 +79,13 @@
                     </td>
                     <td><%=data[i].quantity %></td>
                     <td>
-                    
-
-
                         <% if(data[i].isBlocked===false) {%>
                         <button class="btn btn-danger" style="width: 80px;">
-                            <a href="/admin/blockProduct?id=<%=data[i]._id%>" class="text-white" style="text-decoration: none;">Block</a>
+                            <a href="#" onclick="blockProduct('<%=data[i]._id%>',1)" class="text-white" style="text-decoration: none;">Block</a>
                         </button>
                         <% }else {%>
                         <button class="btn btn-success" style="width: 80px;">
-                            <a href="/admin/unBlockProduct?id=<%=data[i]._id%>" class="text-white" style="text-decoration: none;">Unblock</a>
+                            <a href="#" class="text-white" onclick="blockProduct('<%=data[i]._id%>',-1)"style="text-decoration: none;">Unblock</a>
                         </button>
                         <% } %>
                     </td>
@@ -100,12 +96,15 @@
                     </td>
                 </tr>
                 <% } %>
+                <% }else{ %>
+                    <tr>
+                        <td colspan="11" class="text-center">No products found.</td>
+                    </tr>
+                <% } %>
             </tbody>
-    
         </table>
     </div>
     
-
 
     <!-- pagination -->
     <div class="container mt-3">
@@ -121,17 +120,59 @@
             </ul>
         </nav>
     </div>
-
-
-
-   
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
 
+<!-- script for search the product -->
 <script>
+    document.getElementById("searchForm").addEventListener("submit", function(event) {
+        const searchValue = document.getElementById("searchInput").value.trim();
+        if (searchValue) {
+            this.action = `/admin/products?search=${encodeURIComponent(searchValue)}`;
+        } else {
+            this.action = "/admin/products";  
+        }
+    });
+</script>
+
+<script>
+
+    //function for block and unblock the product
+    function blockProduct(productId, status) {
+        let URL = status == 1 ? `/admin/blockProduct?id=${productId}` : `/admin/unBlockProduct?id=${productId}`;
+        $.ajax({
+            url: URL,
+            method: "get",
+            data: {
+                productId: productId,
+            },
+            success: (response) => {     
+                Swal.fire({
+                    title: "Status Updated",
+                    text: response.message || `Product has been ${status === 1 ? "blocked" : "unblocked"}.`,
+                    icon: status === -1 ? "error" : "success"
+                }).then(() => {
+                    location.reload();
+                });
+            },
+            error: (xhr) => {
+                console.error("Error Response:", xhr);
+
+                Swal.fire({
+                    title: "Failed",
+                    text: xhr.responseJSON?.message || "An error occurred while updating the product status.",
+                    icon: "error"
+                }).then(() => {
+                    location.reload();
+                });
+            }
+        });
+    }
+
+    //function for adding offer to the product
     async function  addOffer(productId){
         const {value:amount}=await Swal.fire({
             title: "Offer in Percentage",
@@ -139,6 +180,10 @@
             inputLabel: "Percentage",
             inputPlaceholder: "%"
         })
+        if(amount<0 || amount>100){
+            Swal.fire("Invalid Offer","Offer should be between 0 and 100", 'error');
+            return;
+        }
         $.ajax({
             url:"/admin/addProductOffer",
             method:"post",
@@ -154,12 +199,10 @@
                     Swal.fire("Failed","Already there is a offer", 'error');
                 }
             }
-
         })
     }
 
-
-
+    //function for removing the offer
     function removeOffer(productId){
         try{
             Swal.fire({
@@ -188,17 +231,21 @@
                                 Swal.fire("Failed")
                             }
                             else{
-                                alert("Failed")
+                               Swal.fire("Failed")
                             }
                         }
+                    })
+                }
             })
-        }
-        })
-
         }catch(error){
             console.error(error)
-
+            Swal.fire({
+                title: "Error",
+                text: error,
+                icon: "error"
+            })
         }
     }
+
 </script>
 <%- include("../../views/partials/admin/footer") %>

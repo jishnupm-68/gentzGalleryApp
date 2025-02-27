@@ -518,6 +518,7 @@
                         //     success: (response) => {
                         //     }
                         // })
+                        console.log("Response", response)
                         Swal.fire({
                             title: "Order success",
                             text: "order placed successfully",
@@ -529,7 +530,7 @@
                         }).then(function (result) {
                             if (result.value) {
                                 console.log("paid ");
-                                var orderDetailsUrl = `/orderDetails?id=${orderId}`;
+                                var orderDetailsUrl = `/orderDetails?id=${response.orderId}`;
                                 location.href = orderDetailsUrl;
                             } else if (result.dismiss === "cancel") {
                                 console.log("failed");
@@ -552,7 +553,7 @@
                                 var orderDetailsUrl = `/orderDetails?id=${response.orderId}`;
                                 location.href = orderDetailsUrl;
                             } else if (result.dismiss === "cancel") {
-                                console.log("failed");
+                                console.log("failed",response);
 
                                window.location.reload();
                             }

@@ -117,7 +117,7 @@
              <div id="error-end-date" class="error-message"></div>
            </div>
 
-           <div>
+           <!-- <div>
             <label for="percentage-offer" class="form-label">Percentage Offer</label>
             <input
               type="text"
@@ -129,8 +129,6 @@
             />
             <div id="error-percentage-offer" class="error-message"></div>
           </div>
-
-
 
            <div>
              <label for="offer-price" class="form-label">Offer Price</label>
@@ -144,8 +142,6 @@
              />
              <div id="error-offer-price" class="error-message"></div>
            </div>
-
-
            <div>
              <label for="minimum-price" class="form-label">Minimum Price</label>
              <input
@@ -157,9 +153,51 @@
                value="<%=findCoupon.minimumPrice%>"
              />
              <div id="error-minimum-price" class="error-message"></div>
-           </div>
+           </div> -->
+
+           <div>
+            <label for="offerType" class="form-label">Select Offer Type</label>
+            <select id="offerType" name="offerType" class="form-control">
+                <option value="" disabled>-- Select Offer Type --</option>
+                <option value="percentage"  disabled <%= findCoupon.percentageOffer >0 ? 'selected' : '' %>>Percentage Offer</option>
+                <option value="flat"  disabled <%= findCoupon.percentageOffer ==0 ? 'selected' : '' %>>Flat Discount</option>
+            </select>
+        </div>
+        
+        <!-- Percentage Offer Fields -->
+        <div id="percentageFields" style="display: none;">
+            <label for="percentageOffer" class="form-label">Percentage Offer</label>
+            <input type="number" id="percentageOffer" name="percentageOffer" class="form-control" min="1" max="100" placeholder="%" value="<%= findCoupon.percentageOffer || '' %>" />
+            <div id="error-percentage-offer" class="error-message text-danger"></div>
+        
+            <label for="minAmount" class="form-label mt-2">Minimum Purchase Amount</label>
+            <input type="number" id="minAmount" name="minAmount" class="form-control" min="1" value="<%= findCoupon.offeredPrice || '' %>" />
+            <div id="error-min-amount" class="error-message text-danger"></div>
+        
+            <label for="maxAmount" class="form-label mt-2">Maximum Discount</label>
+            <input type="number" id="maxAmount" name="maxAmount" class="form-control" min="1" value="<%= findCoupon.minimumPrice  || '' %>" />
+            <div id="error-max-amount" class="error-message text-danger"></div>
+        </div>
+        
+        <!-- Flat Discount Fields -->
+        <div id="flatFields" style="display: none;">
+            <label for="flatAmount" class="form-label">Flat Discount</label>
+            <input type="number" id="flatAmount" name="flatAmount" class="form-control" min="1" placeholder="₹" value="<%= findCoupon.offeredPrice|| '' %>" />
+            <div id="error-flat-amount" class="error-message text-danger"></div>
+        
+            <label for="minPurchase" class="form-label mt-2">Minimum Purchase Amount</label>
+            <input type="number" id="minPurchase" name="minPurchase" class="form-control" min="1" value="<%= findCoupon.minimumPrice  || '' %>" />
+            <div id="error-min-purchase" class="error-message text-danger"></div>
+        </div>
+        
+        <!-- Offer Price and Minimum Price -->
+        
+
+
+
            <div class="d-grid">
              <button id="update-coupon" type="submit" class="btn btn-primary mt-20"  onclick=" validateForm(this)">Update Coupon</button>
+             <button onclick="window.location.href = '/admin/coupon'" class="btn-warning p-2 ml-4">Cancel</button>
            </div>
            <div id="err-msg" class="error-message"></div>
          </form>
@@ -169,6 +207,34 @@
  </div>
 </section>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+      const offerType = document.getElementById("offerType");
+      const percentageFields = document.getElementById("percentageFields");
+      const flatFields = document.getElementById("flatFields");
+
+      function toggleFields() {
+          if (offerType.value === "percentage") {
+              percentageFields.style.display = "block";
+              flatFields.style.display = "none";
+          } else if (offerType.value === "flat") {
+              percentageFields.style.display = "none";
+              flatFields.style.display = "block";
+          } else {
+              percentageFields.style.display = "none";
+              flatFields.style.display = "none";
+          }
+      }
+
+      offerType.addEventListener("change", toggleFields);
+      toggleFields(); // Initialize fields based on existing data
+  });
+</script>
+
+
+
 <script>
  function setDefaultStartDate() {
    const today = new Date();
@@ -486,6 +552,10 @@ function updateCoupon() {
 
 // Attach validateForm to form submission
 document.getElementById("coupon-form").addEventListener("submit", validateForm);
+
+
+
+
 
 </script>
 <%- include("../../views/partials/admin/footer") %>

@@ -22,9 +22,14 @@ const {userAuth, profileAuth} = require("../middlewares/auth");
 
 //load home , shopPage and filters
 router.get('/', homePageController.loadHomePage)
-router.get('/shop',userAuth,homePageController.loadShopPage)
-router.get('/filter',userAuth,homePageController.filterProduct)
-router.post('/search',userAuth,homePageController.searchProducts)
+//router.get('/shop',userAuth,homePageController.loadShopPage)
+router.get('/shop',homePageController.loadShopPage) // allowing user without login
+// router.get('/filter',userAuth,homePageController.filterProduct)
+// router.post('/search',userAuth,homePageController.searchProducts)
+
+router.get('/filter',homePageController.filterProduct)
+router.post('/search',homePageController.searchProducts)
+
 
 // user profile creation routes
 router.get('/signup',signupController.loadSignup)
@@ -115,7 +120,8 @@ router.post("/retryPayment", userAuth, postOrderController.retryPayment)
 
 //wishlist management
 router.get('/Wishlist',userAuth,wishlistController.loadWishlist)
-router.get('/addToWishlist',userAuth,wishlistController.addToWishlist)
+// router.get('/addToWishlist',userAuth,wishlistController.addToWishlist)
+router.get('/addToWishlist',wishlistController.addToWishlist)
 router.get("/deleteWishlistItem",userAuth, wishlistController.deleteWishlistItem)
 
 

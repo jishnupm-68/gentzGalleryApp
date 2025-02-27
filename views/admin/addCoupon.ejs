@@ -97,45 +97,43 @@
                 
                />
                <div id="error-end-date" class="error-message"></div>
-             </div>
+             </div> 
 
+             
              <div>
-              <label for="percentage-offer" class="form-label">Percentage Offer</label>
-              <input
-                type="text"
-                name="percentageOffer"
-                placeholder="%"
-                class="form-control"
-              />
-              <div id="error-percentage-offer" class="error-message"></div>
-            </div>
-
-
-
-             <div>
-               <label for="offer-price" class="form-label">Offer Price</label>
-               <input
-                 type="text"
-                 name="offerPrice"
-                 placeholder="Type here"
-                 class="form-control"
-               />
-               <div id="error-offer-price" class="error-message"></div>
-             </div>
-
-
-             <div>
-               <label for="minimum-price" class="form-label"
-                 >Minimum Price</label
-               >
-               <input
-                 type="text"
-                 name="minimumPrice"
-                 placeholder="Type here"
-                 class="form-control"
-               />
-               <div id="error-minimum-price" class="error-message"></div>
-             </div>
+              <label for="offerType" class="form-label">Select Offer Type</label>
+              <select id="offerType" class="form-control">
+                  <option value="">-- Select Offer Type --</option>
+                  <option value="percentage">Percentage Offer</option>
+                  <option value="flat">Flat Discount</option>
+              </select>
+          </div>
+          
+          <!-- Percentage Offer Fields -->
+          <div id="percentageFields" style="display: none;">
+              <label for="percentageOffer" class="form-label">Percentage Offer</label>
+              <input type="number" id="percentageOffer" name="percentageOffer" class="form-control" min="1" max="100" placeholder="%" />
+              <div id="error-percentage-offer" class="error-message text-danger"></div>
+          
+              <label for="minAmount" class="form-label mt-2">Minimum Purchase Amount</label>
+              <input type="number" id="minAmount" name="minAmount" class="form-control" min="1" />
+              <div id="error-min-amount" class="error-message text-danger"></div>
+          
+              <label for="maxAmount" class="form-label mt-2">Maximum  discount</label>
+              <input type="number" id="maxAmount" name="maxAmount" class="form-control" min="1" />
+              <div id="error-max-amount" class="error-message text-danger"></div>
+          </div>
+          
+          <!-- Flat Discount Fields -->
+          <div id="flatFields" style="display: none;">
+              <label for="flatAmount" class="form-label">Flat Discount</label>
+              <input type="number" id="flatAmount" name="flatAmount" class="form-control" min="1" placeholder="₹" />
+              <div id="error-percentage-offer" class="error-message text-danger"></div>
+              <div id="error-flat-amount" class="error-message text-danger"> </div>
+              <label for="minPurchase" class="form-label mt-2">Minimum Purchase Amount</label>
+              <input type="number" id="minPurchase" name="minPurchase" class="form-control" min="1" />
+              <div id="error-min-purchase" class="error-message text-danger"></div>
+          </div>
 
 
              <div class="d-grid">
@@ -162,86 +160,288 @@
 </section>
 
 
+
+<script>
+  let offerType;
+  document.getElementById("offerType").addEventListener("change", function () {
+       offerType = this.value;
+      let percentageFields = document.getElementById("percentageFields");
+      let flatFields = document.getElementById("flatFields");
+  
+      if (offerType === "percentage") {
+          percentageFields.style.display = "block";
+          flatFields.style.display = "none";
+      } else if (offerType === "flat") {
+          flatFields.style.display = "block";
+          percentageFields.style.display = "none";
+
+      } else {
+          percentageFields.style.display = "none";
+          flatFields.style.display = "none";
+      }
+  });
+  </script>
+  
+
 <script>
 
- function validateForm(e) {
-    let form = document.getElementById("couponForm");
-    e.preventDefault();
-   document.querySelectorAll(".error-message").forEach((element) => (element.innerHTML = ""));
-   const sDate = document.getElementsByName("startDate")[0].value;
-   const eDate = document.getElementsByName("endDate")[0].value;
-   const percentageOffer = document.getElementsByName("percentageOffer")[0].value;
-   const sDateObj = new Date(sDate);
-   const eDateObj = new Date(eDate);
-   const todayDateObj = new Date();
-   todayDateObj.setHours(0, 0, 0, 0);
+//  function validateForm(e) {
+//     let form = document.getElementById("couponForm");
+//     e.preventDefault();
+//    document.querySelectorAll(".error-message").forEach((element) => (element.innerHTML = ""));
+//    const sDate = document.getElementsByName("startDate")[0].value;
+//    const eDate = document.getElementsByName("endDate")[0].value;
 
-    if(!eDate){
-        document.getElementById("error-end-date").innerHTML ="End date is required";
-        return false;
-    }
-   if (sDateObj > eDateObj) {
-     document.getElementById("error-end-date").innerHTML ="End date should be after the start date";
-     return false;
-   }
+//    //for percentage discount
+//    const percentageOffer = document.getElementsByName("percentageOffer")[0].value;
+//    const minAmount = document.getElementsByName("minAmount")[0].value;
+//    const maxAmount = document.getElementsByName("maxAmount")[0].value;
+
+//    //for flat discount
+//    const flatAmount = document.getElementsByName("flatAmount")[0].value;
+//    const minPurchase = document.getElementsByName("minPurchase")[0].value;
+//    const offerType = document.getElementById("offerType").value;
+//    if(offerType =="percentage"){
+//      if(!percentageOffer){
+//          document.getElementById("error-percentage-offer").innerHTML ="Percentage Offer is required";
+//          return false;
+//      }
+//      if(percentageOffer<=0 || percentageOffer>100){
+//          document.getElementById("error-percentage-offer").innerHTML ="Percentage Offer should be between 1 and 100";
+//          return false;
+//      }
+//      if(!minAmount){
+//          document.getElementById("error-min-amount").innerHTML ="Minimum Purchase Amount is required";
+//          return false;
+//      }
+//      if(!maxAmount){
+//          document.getElementById("error-max-amount").innerHTML ="Maximum discount is required";
+//          return false;
+//      }
+//      if(minAmount>maxAmount){
+//          document.getElementById("error-min-amount").innerHTML ="Minimum  purchse amount should be less than or equal to Maximum discount";
+//          return false;
+//      }
+//    }else{
+//      if(!flatAmount){
+//          document.getElementById("error-flat-amount").innerHTML ="Flat discount is required";
+//          return false;
+//      }
+//      if(flatAmount<=0){
+//          document.getElementById("error-flat-amount").innerHTML ="Flat discount should be greater than 0";
+//          return false;
+//      }
+//      if(!minPurchase){
+//          document.getElementById("error-min-purchase").innerHTML ="Minimum Purchase is required";
+//          return false;
+//      }
+//    }
+
+//    const sDateObj = new Date(sDate);
+//    const eDateObj = new Date(eDate);
+//    const todayDateObj = new Date();
+//    todayDateObj.setHours(0, 0, 0, 0);
+
+//     if(!eDate){
+//         document.getElementById("error-end-date").innerHTML ="End date is required";
+//         return false;
+//     }
+//    if (sDateObj > eDateObj) {
+//      document.getElementById("error-end-date").innerHTML ="End date should be after the start date";
+//      return false;
+//    }
 
 
-   if (sDateObj <= todayDateObj) {
-     document.getElementById("error-start-date").innerHTML ="Starting date should be greater than or equal to today's date";
-     return false;
-   }
+//    if (sDateObj <= todayDateObj) {
+//      document.getElementById("error-start-date").innerHTML ="Starting date should be greater than or equal to today's date";
+//      return false;
+//    }
 
 
-   if(!percentageOffer){
+//    if(!percentageOffer){
 
-   }else{
-    if(percentageOffer<=0 || percentageOffer>100){
-     document.getElementById("error-percentage-offer").innerHTML ="Percentage Offer should be between 1 and 100";
-     return false; 
-   }
+//    }else{
+//     if(percentageOffer<=0 || percentageOffer>100){
+//      document.getElementById("error-percentage-offer").innerHTML ="Percentage Offer should be between 1 and 100";
+//      return false; 
+//    }
 
-   }
+//    }
    
 
-   let name = document.getElementsByName("couponName")[0].value;
-   const nameRegex = /^[A-Za-z0-9]{1,50}$/;
+//    let name = document.getElementsByName("couponName")[0].value;
+//    const nameRegex = /^[A-Za-z0-9]{1,50}$/;
 
 
-   if (!nameRegex.test(name)) {
-     document.getElementById("error-coupon-name").innerHTML =
-       "Coupon Name error";
-     return false;
-   }
+//    if (!nameRegex.test(name)) {
+//      document.getElementById("error-coupon-name").innerHTML =
+//        "Coupon Name error";
+//      return false;
+//    }
 
 
-   const offerPriceInput = document.getElementsByName("offerPrice")[0];
-   const minimumPriceInput = document.getElementsByName("minimumPrice")[0];
+//    const offerPriceInput = document.getElementsByName("offerPrice")[0];
+//    const minimumPriceInput = document.getElementsByName("minimumPrice")[0];
 
 
-   const offerPrice = offerPriceInput.value.trim() !== ""? parseInt(offerPriceInput.value): NaN;
-   const minimumPrice = minimumPriceInput.value.trim() !== ""? parseInt(minimumPriceInput.value): NaN;
+//    const offerPrice = offerPriceInput.value.trim() !== ""? parseInt(offerPriceInput.value): NaN;
+//    const minimumPrice = minimumPriceInput.value.trim() !== ""? parseInt(minimumPriceInput.value): NaN;
 
 
-   if (isNaN(offerPrice) || isNaN(minimumPrice) || offerPrice >= minimumPrice) {
-     document.getElementById("error-offer-price").innerHTML = "Offer Price must be greater than Minimum Price";
-     return false;
-   }
+//    if (isNaN(offerPrice) || isNaN(minimumPrice) || offerPrice >= minimumPrice) {
+//      document.getElementById("error-offer-price").innerHTML = "Offer Price must be greater than Minimum Price";
+//      return false;
+//    }
 
 
-   if (isNaN(offerPrice) || isNaN(minimumPrice)) {
-     document.getElementById("error-offer-price").innerHTML ="Please enter numeric values for Offer Price and Minimum Price";
-     return false;
-   }
-       const formData = {
-       couponName: name,
-       startDate: sDateObj,
-       endDate: eDateObj,
-       offerPrice: offerPrice,
-       minimumPrice: minimumPrice
-   };
-   form.submit();
-   return true;
- }
+//    if (isNaN(offerPrice) || isNaN(minimumPrice)) {
+//      document.getElementById("error-offer-price").innerHTML ="Please enter numeric values for Offer Price and Minimum Price";
+//      return false;
+//    }
+//        const formData = {
+//        couponName: name,
+//        startDate: sDateObj,
+//        endDate: eDateObj,
+//        offerPrice: offerPrice,
+//        minimumPrice: minimumPrice
+//    };
+//    form.submit();
+//    return true;
+//  }
+
+
+function validateForm(e) {
+    e.preventDefault();
+    let form = document.getElementById("couponForm");
+
+    // Clear previous errors
+    document.querySelectorAll(".error-message").forEach(el => el.innerHTML = "");
+
+    // Get form values
+    const sDate = document.getElementsByName("startDate")[0].value;
+    const eDate = document.getElementsByName("endDate")[0].value;
+    const offerType = document.getElementById("offerType").value;
+
+    // Percentage Discount Fields
+    let percentageOffer = document.getElementsByName("percentageOffer")[0].value;
+    const minAmount = document.getElementsByName("minAmount")[0].value;
+    const maxAmount = document.getElementsByName("maxAmount")[0].value;
+
+    // Flat Discount Fields
+    const flatAmount = document.getElementsByName("flatAmount")[0].value;
+    const minPurchase = document.getElementsByName("minPurchase")[0].value;
+
+    // Validate Offer Type Specific Fields
+    if (offerType === "percentage") {
+        if (!percentageOffer) {
+            document.getElementById("error-percentage-offer").innerHTML = "Percentage Offer is required";
+            return false;
+        }
+        if (percentageOffer <= 0 || percentageOffer > 100) {
+            document.getElementById("error-percentage-offer").innerHTML = "Percentage Offer should be between 1 and 100";
+            return false;
+        }
+        if (!minAmount) {
+            document.getElementById("error-min-amount").innerHTML = "Minimum Purchase Amount is required";
+            return false;
+        }
+        if (!maxAmount) {
+            document.getElementById("error-max-amount").innerHTML = "Maximum discount is required";
+            return false;
+        }
+        if (parseFloat(minAmount) < parseFloat(maxAmount)) {
+            document.getElementById("error-min-amount").innerHTML = "Minimum purchase amount should be greater than or equal to Maximum discount";
+            return false;
+        }
+    } else if (offerType === "flat") {
+        if (!flatAmount) {
+            document.getElementById("error-flat-amount").innerHTML = "Flat discount is required";
+            return false;
+        }
+        if (flatAmount <= 0) {
+            document.getElementById("error-flat-amount").innerHTML = "Flat discount should be greater than 0";
+            return false;
+        }
+        if (!minPurchase) {
+            document.getElementById("error-min-purchase").innerHTML = "Minimum Purchase is required";
+            return false;
+        }
+        if(parseFloat(flatAmount) > parseFloat(minPurchase)) {
+          document.getElementById("error-flat-amount").innerHTML = "Flat discount should be less than or equal to Minimum purchase amount";
+            return false;
+    
+    }
+  }
+
+    // Date Validation
+    const sDateObj = new Date(sDate);
+    const eDateObj = new Date(eDate);
+    const todayDateObj = new Date();
+    todayDateObj.setHours(0, 0, 0, 0);
+
+    if (!eDate) {
+        document.getElementById("error-end-date").innerHTML = "End date is required";
+        return false;
+    }
+    if (sDateObj > eDateObj) {
+        document.getElementById("error-end-date").innerHTML = "End date should be after the start date";
+        return false;
+    }
+    if (sDateObj < todayDateObj) {
+        document.getElementById("error-start-date").innerHTML = "Starting date should be greater than or equal to today's date";
+        return false;
+    }
+
+    // Coupon Name Validation
+    let name = document.getElementsByName("couponName")[0].value;
+    const nameRegex = /^[A-Za-z0-9\s]{1,50}$/; // Now allows spaces
+
+    if (!nameRegex.test(name)) {
+        document.getElementById("error-coupon-name").innerHTML = "Coupon Name should only contain letters, numbers, and spaces";
+        return false;
+    }
+
+    // Submit the form if all validations pass
+   
+
+    percentageOffer = offerType=="percentage"?percentageOffer:0;
+    let offeredPrice = flatAmount>0?flatAmount:maxAmount;
+    let minimumPrice = minPurchase>0?minPurchase:minAmount;
+    $.ajax({
+      url: "/admin/createcoupon",
+      method: "POST",
+      data: {
+        couponName: name,
+        startDate: sDate,
+        endDate: eDate,
+        percentageOffer: percentageOffer, 
+        offeredPrice:offeredPrice,
+        minimumPrice: minimumPrice
+      },
+      success: function (response) {
+        if(response.success){
+          Swal.fire({
+            icon: "success",
+            title: "Coupon Created!",
+            text: response.message,
+            confirmButtonText: "OK",
+          }).then(() => {
+            window.location.reload();
+          });
+        }else{
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: response.message,
+            confirmButtonText: "OK",
+          });
+        }
+      }
+    })
+
+    return true;
+}
+
 
 
 function confirmDelete(couponId) {

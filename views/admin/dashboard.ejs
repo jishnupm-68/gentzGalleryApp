@@ -7,7 +7,7 @@
   }
 
   .btn {
-    /* Add your button styling here */
+    /* button styling  */
     margin: 0 5px;
     padding: 5px 10px;
     background-color: #f0f0f0;
@@ -17,9 +17,8 @@
   }
 
   .active {
-    /* Add styles for the active page */
 
-    color: #fff;
+    color: #5f5858;
   }
 
   .btn:hover {
@@ -29,11 +28,11 @@
 
   .table-spacing th,
   .table-spacing td {
-    padding-left: 80px; /* Adjust the value as needed for the desired spacing */
+    padding-left: 80px; 
   }
 </style>
 
-
+<!-- content starts here -->
 <main>
   <section class="container " style="margin-left: 20%; padding-top: 5%;">
     <div class="content-header row">
@@ -46,250 +45,189 @@
       <header class="card-header">
         <div class="row gx-3">
           <div class="col-lg-2 col-6 col-md-3">
-        
             <select default="<%= filter %>"
               class="form-select btn-secondary"
               onchange="location.href='/admin/?day=' + this.value"
             >
-        
-            <option value="salesDaily" <%= filter === 'salesDaily' ? 'selected' : '' %>>Daily</option>
-            <option value="salesWeekly" <%= filter === 'salesWeekly' ? 'selected' : '' %>>Weekly</option>
-            <option value="salesMonthly" <%= filter === 'salesMonthly' ? 'selected' : '' %>>Monthly</option>
-            <option value="salesYearly" <%= filter === 'salesYearly' ? 'selected' : '' %>>Yearly</option>
-              <!-- <% if (!locals.salesToday) { %>
-
-              <option value="salesToday" >salesToday</option>
-              <option value="salesWeekly">salesWeekly</option>
-              <option value="salesMonthly">salesMonthly</option>
-              <option value="salesYearly">salesYearly</option> -->
-              <!-- <% } else if (locals.salesWeekly) { %>
-              <option value="salesWeekly" selected>salesWeekly</option>
-              <option value="salesToday">salesToday</option>
-              <option value="salesMonthly">salesMonthly</option>
-              <option value="salesYearly">salesYearly</option>
-              <% } else if (locals.salesMonthly) { %>
-              <option value="salesMonthly" selected>salesMonthly</option>
-              <option value="salesToday">salesToday</option>
-              <option value="salesWeekly">salesWeekly</option>
-              <option value="salesYearly">salesYearly</option>
-              <% } else if (locals.salesYearly) { %>
-              <option value="salesYearly" selected>salesYearly</option>
-              <option value="salesToday">salesToday</option>
-              <option value="salesWeekly">salesWeekly</option>
-              <option value="salesMonthly">salesMonthly</option>
-              <% } %> -->
+              <option value="salesDaily" <%= filter === 'salesDaily' ? 'selected' : '' %>>Daily</option>
+              <option value="salesWeekly" <%= filter === 'salesWeekly' ? 'selected' : '' %>>Weekly</option>
+              <option value="salesMonthly" <%= filter === 'salesMonthly' ? 'selected' : '' %>>Monthly</option>
+              <option value="salesYearly" <%= filter === 'salesYearly' ? 'selected' : '' %>>Yearly</option>             
             </select>
-          </div>
-          <div class="col-md-2 col-6">
-            <!-- <input
-              type="date"
-              id="selectedDate"
-              class="form-control"
-              value="<%= locals.date ? date : '' %>"
-              onchange="dateWiseFilter()"
-            /> -->
-
-            <!-- <label for="startDate">Start Date:</label>
-        <input type="date" id="startDate" value="=startDate">
-        <label for="endDate">End Date:</label>
-        <input type="date" id="endDate" value="=endDate">
-        <button id="filterButton" class="btn btn-primary text-light mt-1">Filter</button>
-
-          </div>
-          <div class="col-lg-6 col-md-6 ms-auto text-md-end">
-            <a href="" id="createSalesReport" class="btn btn-primary  text-light mb-2"
-              >Generate PDF</a
-            >
-            <a href="" id="downloadExcelReport" class="btn btn-primary text-light mb-2"
-              >Download Excel</a
-            >
-            <a href="" id="downloadSummary" class="btn btn-primary text-light mb-2"
-              >Download Summary</a
-            >
-          </div> -->
-        </div>
+          </div>         
       </header>
     </div>
 
     <br><br>
     <div class="card-body col-md-10">
+      <!-- Sales Report -->
       <h3>Sales Report</h3>
       <canvas id="salesChart" width="300" height="200"></canvas>
-    
-      <div class="row col-md-12">
-    
-        <div class="col-md-3">
-       
+      <div class="row col-md-12">  
+        <!-- Top category chart -->
+        <div class="col-md-3">       
           <canvas id="categoryChart" style="width: 300px; height: 300px;"></canvas>
         </div>
-        <div class="col-md-3">
-     
+        <!-- Top brand chart -->
+        <div class="col-md-3">    
           <canvas id="brandChart" style="width: 300px; height: 300px;"></canvas>
-        </div>
-    
-        <div class="col-md-3">
-    
+        </div>  
+        <!-- Top product chart --> 
+        <div class="col-md-3">   
           <canvas id="productChart" style="width: 300px; height: 300px;"></canvas>
         </div>
       </div>
     </div>
-  
-
     
   <script>
     const salesData = <%- JSON.stringify(data) %>;
     const ctx = document.getElementById('salesChart').getContext('2d');
     let salesChart;
-
-        const updateChart = (salesData) => {
-      const labels = salesData.map(entry => entry._id);
-      const totalPrice = salesData.map(entry => entry.totalSales);
-      const discount = salesData.map(entry => entry.totalDiscount);
-      const finalAmount = salesData.map(entry => entry.totalFinalAmount);
-
-    
-      if (salesChart) {
-        salesChart.destroy();
-      }
-
-      salesChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: [
-            {
-              label: 'Total Price',
-              data: totalPrice,
-              backgroundColor: 'rgba(75, 192, 192, 0.2)',
-              borderColor: 'rgba(75, 192, 192, 1)',
-              borderWidth: 1
-            },
-            {
-              label: 'Discount',
-              data: discount,
-              backgroundColor: 'rgba(255, 159, 64, 0.2)',
-              borderColor: 'rgba(255, 159, 64, 1)',
-              borderWidth: 1
-            },
-            {
-              label: 'Final Amount',
-              data: finalAmount,
-              backgroundColor: 'rgba(153, 102, 255, 0.2)',
-              borderColor: 'rgba(153, 102, 255, 1)',
-              borderWidth: 1
-            }
-          ]
-        },
-        options: {
-          scales: {
-            x: {
-              beginAtZero: true,
-              type: 'category',
-              title: {
-                display: true,
-                text: 'Date'
-              }
-            },
-            y: {
-              beginAtZero: true,
-              title: {
-                display: true,
-                text: 'Amount'
-              }
-            }
-          },
-          width: 300, 
-        height: 200,
+    // sales chart 
+      const updateChart = (salesData) => {
+        const labels = salesData.map(entry => entry._id);
+        const totalPrice = salesData.map(entry => entry.totalSales);
+        const discount = salesData.map(entry => entry.totalDiscount);
+        const finalAmount = salesData.map(entry => entry.totalFinalAmount);
+        if (salesChart) {
+          salesChart.destroy();
         }
-      });
+        salesChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: 'Total Price',
+                data: totalPrice,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+              },
+              {
+                label: 'Discount',
+                data: discount,
+                backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                borderColor: 'rgba(255, 159, 64, 1)',
+                borderWidth: 1
+              },
+              {
+                label: 'Final Amount',
+                data: finalAmount,
+                backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                borderColor: 'rgba(153, 102, 255, 1)',
+                borderWidth: 1
+              }
+            ]
+          },
+          options: {
+            scales: {
+              x: {
+                beginAtZero: true,
+                type: 'category',
+                title: {
+                  display: true,
+                  text: 'Date'
+                }
+              },
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: 'Amount'
+                }
+              }
+            },
+            width: 300, 
+          height: 200,
+          }
+        });
     };
-
     updateChart(salesData);  
   </script>
   </section>
 </main>
 
+<!-- script for making charts -->
 <script>
   const bestSellingData = <%- JSON.stringify(bestSellingData) %>;
- 
+  //  Categories
+  const categoryLabels = bestSellingData.flatMap(item => item.bestCategories.map(subItem => subItem._id));
+  const categoryData = bestSellingData.flatMap(item => item.bestCategories.map(subItem => subItem.totalSold));
+  //  Brands
+  const brandLabels = bestSellingData.flatMap(item => item.bestBrands.map(subItem => subItem._id));
+  const brandData = bestSellingData.flatMap(item => item.bestBrands.map(subItem => subItem.totalSold));
+  //  Products
+  const productLabels = bestSellingData.flatMap(item=> item.bestProducts.map(subItem => subItem._id));
+  const productData = bestSellingData.flatMap(item => item.bestProducts.map(subItem => subItem.totalSold));
 
-//  Categories
-const categoryLabels = bestSellingData.flatMap(item => item.bestCategories.map(subItem => subItem._id));
-const categoryData = bestSellingData.flatMap(item => item.bestCategories.map(subItem => subItem.totalSold));
-//  Brands
-const brandLabels = bestSellingData.flatMap(item => item.bestBrands.map(subItem => subItem._id));
-const brandData = bestSellingData.flatMap(item => item.bestBrands.map(subItem => subItem.totalSold));
-//  Products
-const productLabels = bestSellingData.flatMap(item=> item.bestProducts.map(subItem => subItem._id));
-const productData = bestSellingData.flatMap(item => item.bestProducts.map(subItem => subItem.totalSold));
+  // 🎨 Generate Random Colors
+  const getRandomColors = (num) => Array.from({ length: num }, () => `hsl(${Math.random() * 360}, 70%, 60%)`);
 
-// 🎨 Generate Random Colors
-const getRandomColors = (num) => Array.from({ length: num }, () => `hsl(${Math.random() * 360}, 70%, 60%)`);
+  const categoryColors = getRandomColors(categoryLabels.length);
+  const brandColors = getRandomColors(brandLabels.length);
+  const productColors = getRandomColors(productLabels.length);
 
-const categoryColors = getRandomColors(categoryLabels.length);
-const brandColors = getRandomColors(brandLabels.length);
-const productColors = getRandomColors(productLabels.length);
+  // category chart
+  const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+          new Chart(categoryCtx, {
+              type: 'pie', 
+              data: {
+                  labels: categoryLabels,
+                  datasets: [{
+                      data: categoryData,
+                      backgroundColor: categoryColors
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  plugins: {
+                      legend: { position: 'bottom' },
+                      title: { display: true, text: 'Best Selling Categories' }
+                  }
+              }
+          });
 
-
-const categoryCtx = document.getElementById('categoryChart').getContext('2d');
-        new Chart(categoryCtx, {
-            type: 'pie', 
-            data: {
-                labels: categoryLabels,
-                datasets: [{
-                    data: categoryData,
-                    backgroundColor: categoryColors
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { position: 'bottom' },
-                    title: { display: true, text: 'Best Selling Categories' }
-                }
-            }
-        });
-
-const brandCtx = document.getElementById('brandChart').getContext('2d');
-        new Chart(brandCtx, {
-            type: 'pie', 
-            data: {
-                labels: brandLabels,
-                datasets: [{
-                    data: brandData,
-                    backgroundColor: brandColors
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { position: 'bottom' },
-                    title: { display: true, text: 'Best Selling Brands' }
-                }
-            }
-        });
-
-const productCtx = document.getElementById('productChart').getContext('2d');
-        new Chart(productCtx, {
-            type: 'pie', 
-            data: {
-                labels: productLabels,
-                datasets: [{
-                    data: productData,
-                    backgroundColor: productColors
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { position: 'bottom' },
-                    title: { display: true, text: 'Best Selling Products' }
-                }
-            }
-        });
+   // brand chart 
+  const brandCtx = document.getElementById('brandChart').getContext('2d');
+          new Chart(brandCtx, {
+              type: 'pie', 
+              data: {
+                  labels: brandLabels,
+                  datasets: [{
+                      data: brandData,
+                      backgroundColor: brandColors
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  plugins: {
+                      legend: { position: 'bottom' },
+                      title: { display: true, text: 'Best Selling Brands' }
+                  }
+              }
+          });
+  // product chart        
+  const productCtx = document.getElementById('productChart').getContext('2d');
+          new Chart(productCtx, {
+              type: 'pie', 
+              data: {
+                  labels: productLabels,
+                  datasets: [{
+                      data: productData,
+                      backgroundColor: productColors
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  plugins: {
+                      legend: { position: 'bottom' },
+                      title: { display: true, text: 'Best Selling Products' }
+                  }
+              }
+          });
 </script>
 
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <%- include("../../views/partials/admin/footer") %>
 

@@ -59,87 +59,7 @@
   <button class="btn btn-primary col-md-2 m-3" > <a href="/admin/addCoupon" class="text-light">Add Coupon</a></button>
    <div class="card-body">
      <div class="row">
-       <!-- <div class="col-md-3">
-         <form method="post" action="/admin/createCoupon" id="couponForm">
-           <body onload="setDefaultStartDate()"></body>
-             <div class="mb-4">
-               <label for="coupon-name" class="form-label">Coupon Name</label>
-               <input
-                 type="text"
-                 id="coupon-name"
-                 name="couponName"
-                 placeholder="Type here"
-                 class="form-control"
-               />
-               <div id="error-coupon-name" class="error-message"></div>
-             </div>
-
-
-             <div>
-               <label for="startingDate" class="form-label">Start Date</label>
-               <input
-                 type="date"
-                 name="startDate"
-                 class="form-control"
-                 
-                 id="startingDate"
-               />
-               <div id="error-start-date" class="error-message"></div>
-             </div>
-
-
-             <div>
-               <label for="expiringDate" class="form-label">End Date</label>
-               <input
-                 type="date"
-                 name="endDate"
-                 class="form-control"
-                 id="expiringDate"
-                
-               />
-               <div id="error-end-date" class="error-message"></div>
-             </div>
-
-
-             <div>
-               <label for="offer-price" class="form-label">Offer Price</label>
-               <input
-                 type="text"
-                 name="offerPrice"
-                 placeholder="Type here"
-                 class="form-control"
-               />
-               <div id="error-offer-price" class="error-message"></div>
-             </div>
-
-
-             <div>
-               <label for="minimum-price" class="form-label"
-                 >Minimum Price</label
-               >
-               <input
-                 type="text"
-                 name="minimumPrice"
-                 placeholder="Type here"
-                 class="form-control"
-               />
-               <div id="error-minimum-price" class="error-message"></div>
-             </div>
-
-
-             <div class="d-grid">
-               <button
-                 class="btn btn-primary mt-20"
-                 onclick="validateForm(event)"
-                 type="submit"
-               >
-                 Add Coupon
-               </button>
-             </div>
-             <div id="err-msg" class="error-message"></div>
-           </body>
-         </form>
-       </div> -->
+       
        <div class="col-md-11 ml-105">
          <div class="table-responsive">
              <table class="table table-hover">
@@ -148,7 +68,7 @@
                          <th>Name</th>
                          <th>Created On</th>
                          <th>Expire On</th>
-                        <th>Percentage  offer</th>   <!--  newly added   -->
+                         <th>Percentage  offer</th>   <!--  newly added   -->
                          <th>Offer Price</th>
                          <th>Minimum Price</th>
                          <th>Status</th>
@@ -157,7 +77,7 @@
                      </tr>
                  </thead>
                  <tbody>
-                    <% if(coupons) {%>
+                    <% if(coupons && coupons.length>0) {%>
                         <% coupons.forEach((coupon) => { %>
                      <tr>
                          <td class="text-start"><%= coupon.name %></td>
@@ -181,16 +101,16 @@
                             <td class="text-start text-success"><button class="btn btn-danger" onclick="unListCoupon('<%=coupon._id%>')">Unlist</button></td>
                             <%} else {%>
                              <td class="text-start text-danger"><button class="btn btn-success" onclick="listCoupon('<%=coupon._id%>')">List</button></td>
-                             <% } %>
-
-                          
+                             <% } %>  
                          <td class="text-start">
                              <a href="/admin/editCoupon?id=<%=coupon._id%>" class="btn btn-primary btn-sm " >Edit</a>
                              <a href="#" class="btn btn-danger  btn-sm mt-1" onclick="confirmDelete('<%=coupon._id%>')" >Delete</i></a>
                          </td>
                      </tr>
                      <% }) %>
-                     <% } %>
+                     <% }else {%>
+                      No coupon found.
+                      <% } %>
                  </tbody>
              </table>
          </div>
@@ -199,7 +119,6 @@
    </div>
  </div>
 </section>
-
 
 <script>
 

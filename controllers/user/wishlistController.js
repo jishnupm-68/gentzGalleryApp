@@ -33,7 +33,11 @@ const addToWishlist = async (req, res) => {
             return res.status(400).json({ success: false, message: "Invalid user or product ID" });
         }
         let wishlist = await Wishlist.findOne({ userId: userObjectId });
+        if(!userId){
+            console.log("Please login")
+            return res.json({ success: false, message: "Please Login to your account" });
 
+        }
         if (!wishlist) {      
             wishlist = new Wishlist({
                 userId: userObjectId,

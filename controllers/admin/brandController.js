@@ -1,8 +1,6 @@
-const Brand = require("../../models/brandSchema");
-const product = require("../../models/productSchema");
+const Brand = require("../../models/brandSchema");  // importing the brand schema
 
-
-
+//rendering the brand page
 const getBrandPage =async(req, res)=>{
     try {
         const page = parseInt(req.query.page) || 1;
@@ -14,7 +12,7 @@ const getBrandPage =async(req, res)=>{
         ]);
         const totalPages = Math.ceil(totalBrands / limit);
         const reverseBrand =brandData.reverse();
-        console.log("brand is:",brandData,"reverse brand is: ", reverseBrand)
+        console.log("brand data page is rendered")
         res.render("brand", {
             data: reverseBrand,
             currentPage: page,
@@ -27,26 +25,28 @@ const getBrandPage =async(req, res)=>{
     }
 }
 
+// adding new brand
 const addBrand = async (req, res) => {
     try {
         const brand = req.body.name;
         const findBrand = await Brand.findOne({ brandName: brand });
         if (!findBrand) {
-            console.log(req.file, req.file.filename, "File and filename")
             if (req.file && req.file.filename) {
                 const image = req.file.filename;
                 const newBrand = new Brand({
                     brandName: brand,
                     brandImage: image,
                 });
-                console.log(newBrand,image, "New image file creation")
                 await newBrand.save();
-                res.redirect("/admin/brands");
+                console.log("Brand added successfully");
+                res.status(200).json({success:true,message:"Brand successfully added"});              
             } else {
-                res.status(400).send("Image upload failed");
+                console.log("No image uploaded");
+                res.json({success:false, message:"Image upload failed"});
             }
         } else {
-            res.status(400).send("Brand already exists");
+            console.log("Brand already exists");
+            res.status(400).json({success:false, message:"Brand already exists"});
         }
     } catch (error) {
         console.error("Error adding brand:", error);
@@ -54,28 +54,43 @@ const addBrand = async (req, res) => {
     }
 };
 
+// function for blocking the brand
 const blockBrand = async(req,res)=>{
     try{
         const id = req.query.id;
-        await Brand.findByIdAndUpdate(id,{$set:{isBlocked:true}});
-        res.redirect("/admin/brands");
+        let result = await Brand.findByIdAndUpdate(id,{$set:{isBlocked:true}});
+        if(result){
+            res.status(200).json({success:true,message:`Brand  blocked successfully`});
+            console.log("Brand blocked successfully")
+        }else{
+            res.json({success:false,message:`Brand  already blocked`});
+            console.log("Brand already blocked")
+        }
     }catch(error){
         console.error("Error while blocking",error);
-        res.status(500).redirect("/admin/pageError");
+        res.status(400).json({success:false, message:"Failed to block "});
     }
 }
 
+// function for unblocking the brand
 const unBlockBrand = async(req,res)=>{
     try{
         const id = req.query.id;
-        await Brand.findByIdAndUpdate(id,{$set:{isBlocked:false}});
-        res.redirect("/admin/brands");
+        const result = await Brand.findByIdAndUpdate(id,{$set:{isBlocked:false}});
+        if(result){
+            console.log("Brand unblocked successfully")
+            res.status(200).json({success:true,message:`Brand  unblocked successfully`});
+        }else{
+            console.log("Brand already unblocked")
+            res.status(200).json({success:false,message:`Brand  already unblocked`});
+        }   
     }catch(error){
         console.error("Error while unblocking",error);
-        res.status(500).redirect("/admin/pageError");
+        res.status(500).json({success:false, message:"Failed to unblock"})
     }
 }
 
+// function for deleting the brand
 const deleteBrand = async(req,res)=>{
     try{
         const id = req.query.id;
@@ -87,6 +102,7 @@ const deleteBrand = async(req,res)=>{
     }
 }
 
+//exporting functions
 module.exports = {
     getBrandPage,
     addBrand,

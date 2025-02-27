@@ -2,7 +2,7 @@ const User = require('../models/userSchema');
 const Order = require('../models/orderSchema');
 const mongoose = require('mongoose');
 
-
+//function for making range of time for filter function 
 const getDateRange = (type) => {
     const now = new Date();
     let start, end;
@@ -35,6 +35,7 @@ const getDateRange = (type) => {
     return { start, end };
 };
 
+//filtering data according to the filter
 const filter = async (filter,page) => {
     try {
         let limit = 5;      
@@ -58,7 +59,7 @@ const filter = async (filter,page) => {
     }
 }
 
-
+//filter for making the chart
 function chartFilter(timeFrame) {
     const groupBy = timeFrame === "salesDaily"
         ? { $dateToString: { format: "%Y-%m-%d", date: "$createdOn" } } 
@@ -76,8 +77,7 @@ function chartFilter(timeFrame) {
     return groupBy;
 }
 
-
-
+// exporting the modules
 module.exports = {
     filter,
     chartFilter

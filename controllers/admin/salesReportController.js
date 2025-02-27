@@ -1,25 +1,25 @@
-const User = require('../../models/userSchema');
 const Order = require('../../models/orderSchema');
 const filterSalesReportAdmin  = require('../../helpers/filterSalesReportAdmin')
 const PDFDocument = require('pdfkit');
 const ExcelJS = require('exceljs');
 const fs = require('fs'); 
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
 let currentPageData;
+let countDocumentsFilter = {
+  status: "Verified",
+  "orderedItems.productStatus": "Delivered"
+}
 
-
+//rendering and display sales report
 const salesReport =async(req,res)=>{
   try {
     const limit =5;
-      const filter = req.query.day==undefined? "salesToday":req.query.day;
-     
+      const filter = req.query.day==undefined? "salesToday":req.query.day;    
       const page = req.query.page || 1;
-      console.log(filter,page,"query",req.query,"body",req.body,"params",req.params);
       const {orders,count,start,end} = await filterSalesReportAdmin.filter(filter,page);
       currentPage = orders
       currentPageData = orders
-      console.log("result",filter,orders, start,end,count)
+      console.log("Rendering the sales report page")
       res.render("salesReport", {
         data: orders,
         currentPage: page,
@@ -27,15 +27,14 @@ const salesReport =async(req,res)=>{
         startDate: start.toISOString().split('T')[0],
         endDate: end.toISOString().split('T')[0],
         filter: filter,
-      });
-      
+      });   
   } catch (error) {
       console.error("Error while displaying sales report", error);
       res.redirect("/admin/pageError");      
   }
 }
 
-
+//rendering and display the filtered data
 const displayFilteredData = async (req, res) => {
     if (req.session.admin) {
         try {
@@ -67,7 +66,7 @@ const displayFilteredData = async (req, res) => {
                     }
                 }),
                  Order.aggregate([
-                    { $match: { status: "Verified", "orderedItems.productStatus": "Delivered" } },
+                    { $match: countDocumentsFilter },
                     { $match: { createdOn: { $gte: start, $lte: end } } },
                     { $unwind: "$orderedItems" },
                     {
@@ -82,7 +81,6 @@ const displayFilteredData = async (req, res) => {
                 ])
             ]);           
             if (orderData.length > 0) {
-                console.log(orderData)
                 currentPageData = orderData;
                 const [{ totalSales, totalPrice, discount, finalAmount }] = salesCount;
                 res.render("salesReport",{
@@ -95,8 +93,10 @@ const displayFilteredData = async (req, res) => {
                     currentPage: page,
                     totalPages: Math.ceil(count / limit),
                     startDate,
-                    endDate
+                    endDate,
+                    filter:null,
                 });
+                console.log("Rendering the sales report page after filtering")
             } else {
                 res.render("salesReport",{
                     totalOrders: 0,
@@ -108,8 +108,10 @@ const displayFilteredData = async (req, res) => {
                     currentPage: page,
                     totalPages: 1,
                     startDate,
-                    endDate
+                    endDate,
+                    filter:null,
                 });
+                console.log("Rendering the sales report page after filtering but no data found")
             }
         } catch (error) {
             console.error("Error while displaying the data", error);
@@ -118,91 +120,21 @@ const displayFilteredData = async (req, res) => {
     }
 };
 
-const generatePdf = async (req, res) => {
-  try {
-    console.log("data to be converted", currentPageData)
-    const orderData = currentPageData;
-    const [count, salesCount] = await Promise.all([
-      Order.countDocuments({
-        status: "Verified",
-        "orderedItems.productStatus": "Delivered",
-      }),
-      Order.aggregate([
-        { $unwind: "$orderedItems" },
-        {
-          $group: {
-            _id: null,
-            totalSales: { $sum: "$orderedItems.quantity" },
-            totalPrice: { $sum: "$totalPrice" },
-            discount: { $sum: "$discount" },
-            finalAmount: { $sum: "$finalAmount" },
-          },
-        },
-      ]),
-    ]);
-    const totalsales = salesCount;
-    const doc = new PDFDocument();
-    let chunks = [];
-    let result;
-    doc.on("data", (chunk) => {
-      chunks.push(chunk);
-    });
-    doc.on("end", () => {
-      result = Buffer.concat(chunks);
-      res.setHeader("Content-Type", "application/pdf");
-      res.setHeader(
-        "Content-Disposition",
-        "attachment; filename=sales_report.pdf"
-      );
-      res.send(result);
-    });
-    //  title
-    doc.fontSize(20).text("Sales Report : GentzGallery", { align: "center" });
-    //  space
-    doc.moveDown();
-    // Add total sales data
-    // doc.fontSize(12).text(`Total Orders: ${count}`);
-    // doc.fontSize(12).text(`Total sales: ${totalsales[0].totalSales}`);
-    // doc.fontSize(12).text(`Total Price: ${totalsales[0].totalPrice}`);
-    // doc.fontSize(12).text(`Total Discount: ${totalsales[0].discount}`);
-    // doc.fontSize(12).text(`Final Amount: ${totalsales[0].finalAmount}`);
-    
-    doc.moveDown();
-    // Add each order's details
-    orderData.forEach((order, index) => {
-      doc.fontSize(12).text(`Order #${index + 1}`);
-      doc
-        .fontSize(10)
-        .text(
-          `Invoice Date: ${new Date(order.createdOn).toLocaleDateString()}`
-        );
-      doc.fontSize(10).text(`User Name: ${order.userId.name}`);
-      doc.fontSize(10).text(`User Email: ${order.userId.email}`);
-      doc.fontSize(10).text(`Total Price: ${order.totalPrice}`);
-      doc.fontSize(10).text(`Discount: ${order.discount}`);
-      doc.fontSize(10).text(`Final Amount: ${order.finalAmount}`);
-      doc.fontSize(10).text(`Payment Method: ${order.payment}`);
-      doc.moveDown();
-    });
-    // Finalize the PDF
-    doc.end();
-    console.log("PDF generated successfully");
-  } catch (error) {
-    console.error("Error while generating the PDF", error);
-    res.redirect("/admin/pageError");
-  }
-};
-
+//generating excel report
 const generateExcelReport = async (req, res) => {
   try {
     const orderData = currentPageData; 
+    const totals = orderData.reduce((acc, order) => {
+      acc.totalSales += 1;
+      acc.totalPrice += order.totalPrice;
+      acc.discount += order.discount;
+      acc.finalAmount += order.finalAmount;
+      return acc;
+    }, { totalSales: 0, totalPrice: 0, discount: 0, finalAmount: 0 });
     const [count, salesCount] = await Promise.all([
-      Order.countDocuments({
-        status: "Verified",
-        "orderedItems.productStatus": "Delivered",
-      }),
+      Order.countDocuments(countDocumentsFilter),
       Order.aggregate([
-        { $match: { status: "Verified", "orderedItems.productStatus": "Delivered" } },
+        { $match: countDocumentsFilter },
         { $unwind: "$orderedItems" },
         {
           $group: {
@@ -224,12 +156,12 @@ const generateExcelReport = async (req, res) => {
     worksheet.getCell("A1").font = { size: 20, bold: true };
     worksheet.getCell("A1").alignment = { horizontal: "center" };
     // Add total sales data
-    // worksheet.addRow([]);
-    // worksheet.addRow(["Total Orders:", count]);
-    // worksheet.addRow(["Total Sales:", totalsales.totalSales]);
-    // worksheet.addRow(["Total Price:", totalsales.totalPrice]);
-    // worksheet.addRow(["Total Discount:", totalsales.discount]);
-    // worksheet.addRow(["Final Amount:", totalsales.finalAmount]);
+    worksheet.addRow([]);
+    worksheet.addRow(["Total Orders:", count]);
+    worksheet.addRow(["Total Sales:", totals.totalSales]);
+    worksheet.addRow(["Total Price:", totals.totalPrice]);
+    worksheet.addRow(["Total Discount:", totals.discount]);
+    worksheet.addRow(["Final Amount:", totals.finalAmount]);
     // Add some space
     worksheet.addRow([]);
     // Add each order's details in a table
@@ -273,18 +205,13 @@ const generateExcelReport = async (req, res) => {
   }
 };
 
+//create and display sales summary pdf
 const salesSummary = async (req, res) => {
   try {
     const [count, summary] = await Promise.all ([ 
-      Order.countDocuments({
-        status: "Verified",
-        "orderedItems.productStatus": "Delivered"
-      }),
+      Order.countDocuments(countDocumentsFilter),
         Order.aggregate([
-          { $match:{
-            "status":"Verified", 
-            "orderedItems.productStatus":"Delivered"
-          }},
+          { $match: countDocumentsFilter },
           { $unwind: "$orderedItems" },
           {
             $group: {
@@ -297,7 +224,6 @@ const salesSummary = async (req, res) => {
           },
         ]),
   ]);
-  console.log(summary);
   const totalsales = count;
     const doc = new PDFDocument();
     let chunks = [];
@@ -325,9 +251,7 @@ const salesSummary = async (req, res) => {
     doc.fontSize(12).text(`Total Discount: ${summary[0].discount}`);
     doc.fontSize(12).text(`Final Amount: ${summary[0].finalAmount}`);
     // Add some space
-    doc.moveDown();
-    // Add each order's details
-    
+    doc.moveDown();  
     // Finalize the PDF
     doc.end();
     console.log("PDF generated successfully");
@@ -338,9 +262,115 @@ const salesSummary = async (req, res) => {
   }
 }
   
+// Function to generate a PDF
+const generatePdf = async (req, res) => {
+  try {
+    const orderData = currentPageData;
+    // Calculate totals
+    const totals = orderData.reduce((acc, order) => {
+      acc.totalSales += 1;
+      acc.totalPrice += order.totalPrice;
+      acc.discount += order.discount;
+      acc.finalAmount += order.finalAmount;
+      return acc;
+    }, { totalSales: 0, totalPrice: 0, discount: 0, finalAmount: 0 });
 
-module.exports = {
-    
+    const doc = new PDFDocument({ margin: 30, layout: 'landscape' });
+
+    let chunks = [];
+    let result;
+    doc.on("data", (chunk) => {
+      chunks.push(chunk);
+    });
+    doc.on("end", () => {
+      result = Buffer.concat(chunks);
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=sales_report.pdf"
+      );
+      res.send(result);
+    });
+
+    // Title
+    doc.fontSize(20).text("Sales Report : GentzGallery", { align: "center" });
+    doc.moveDown();
+
+    // Add total sales data
+    doc.fontSize(12).text(`Total Orders: ${totals.totalSales}`);
+    doc.fontSize(12).text(`Total Sales: ${totals.totalSales}`);
+    doc.fontSize(12).text(`Total Price: ${totals.totalPrice}`);
+    doc.fontSize(12).text(`Total Discount: ${totals.discount}`);
+    doc.fontSize(12).text(`Final Amount: ${totals.finalAmount}`);
+    doc.moveDown();
+
+    // Add table heading
+    doc.fontSize(16).text("Order Details", { underline: true, align: "left" });
+    doc.moveDown();
+
+    // Add a single table for all orders
+    const table = {
+      headers: ["Invoice Date", "User Name", "User Email", "Total Price", "Discount", "Final Amount", "Payment Method"],
+      rows: orderData.map(order => [
+        new Date(order.createdOn).toLocaleDateString(),
+        order.userId.name,
+        order.userId.email,
+        order.totalPrice,
+        order.discount,
+        order.finalAmount,
+        order.payment,
+      ]),
+    };
+    drawTable(doc, table);
+    // Finalize the PDF
+    doc.end();
+    console.log("PDF generated successfully");
+  } catch (error) {
+    console.error("Error while generating the PDF", error);
+    res.redirect("/admin/pageError");
+  }
+};
+
+// Function to draw a table with alignment and borders
+function drawTable(doc, table) {
+  const startX = doc.x;
+  let startY = doc.y;
+
+  const colWidths = [80, 120, 150, 70, 70, 100, 100];
+
+  // Draw table border
+  doc.rect(startX, startY, colWidths.reduce((acc, width) => acc + width, 0), 20 + (table.rows.length * 20)).stroke();
+
+  // Headers
+  doc.font("Helvetica-Bold").fontSize(10);
+  table.headers.forEach((text, i) => {
+    doc.rect(startX + colWidths.slice(0, i).reduce((acc, width) => acc + width, 0), startY, colWidths[i], 20).stroke();
+    doc.text(text, startX + colWidths.slice(0, i).reduce((acc, width) => acc + width, 0) + 5, startY + 5, {
+      width: colWidths[i] - 10,
+      align: 'center'
+    });
+  });
+  startY += 20;
+
+  doc.font("Helvetica").fontSize(10);
+
+  // Rows
+  table.rows.forEach(row => {
+    row.forEach((text, i) => {
+      doc.rect(startX + colWidths.slice(0, i).reduce((acc, width) => acc + width, 0), startY, colWidths[i], 20).stroke();
+      doc.text(text.toString(), startX + colWidths.slice(0, i).reduce((acc, width) => acc + width, 0) + 5, startY + 5, {
+        width: colWidths[i] - 10,
+        align: 'center'
+      });
+    });
+    startY += 20;
+  });
+
+  doc.moveDown();
+}
+
+//exporting functions
+module.exports = {   
     generatePdf,
     generateExcelReport,
     displayFilteredData,

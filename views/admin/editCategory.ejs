@@ -1,43 +1,93 @@
 <%- include('../partials/admin/header.ejs') %>
+
+<!-- category edit page -->
 <div class="container  " >
     <div class="row  justify-content-center" style="padding-top: 5%;">
-
         <div class="content-header">
             <div  >
               <h2 class="content-title card-title mt-3 mb-2" >Category</h2>
             </div>
           </div>
-
-
-        <div class="col-md-6 mt-60 mt-5 " style = "margin-top: 20%;">
-            <form method="post" action="/admin/editCategory/<%=category._id%>">
-                <div class="d-grid text-end mt-30 col-md-5 mt-5 mb-2" >
-                    <button class="btn btn-primary" type="submit">Update category</button>
-                </div>
+        <div class="col-md-6 mt-60 mt-5" style="margin-top: 20%;">
+            <form method="post" id="categoryUpdate">
+                <div class="d-grid text-end mt-30 col-md-5 mt-5 mb-2">
+                    <button class="btn btn-primary" type="button" onclick="categoryUpdate('<%=category._id%>')">
+                        Update category
+                    </button>
+                </div>       
                 <div class="mb-4 mt-30">
                     <label for="product_name" class="form-label">Name</label>
                     <input type="text" name="categoryName" value="<%=category.name %>" class="form-control border" />
-                    <% if(locals.message) {%>
-                        
-                        <div class="text-danger"><%=locals.message%></div>
-                        <% } %>
-                </div>
-                
+                    <% if (locals.message) { %>
+                        <div class="text-danger"><%= locals.message %></div>
+                    <% } %>
+                </div>      
                 <div class="mb-4">
                     <label class="form-label">Description</label>
                     <textarea name="description" class="form-control border"><%=category.description %></textarea>
                 </div>
-            </form>
-
-            <a href="/admin/category" style="text-decoration: none;"><div class="d-grid text-end mt-30 col-md-5 mt-2 mb-5">
-                <button class="btn btn-warning" type="submit">Cancel</button>
-            </div> </a>
+            </form>      
+            <div class="d-grid text-end mt-30 col-md-5 mt-2 mb-5">
+                <button class="btn btn-warning" type="button" onclick="window.location.href='/admin/category'">
+                    Cancel
+                </button>
+            </div>
         </div>
     </div>
 </div>
 
+<!-- script for category update -->
+<script>
+    
+    // categoryUpdate function with ajax request
+    function categoryUpdate(categoryId) {
+    console.log("categoryUpdate called", categoryId);
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "Are you sure you want to update?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, update it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: `/admin/editCategory/${categoryId}`,
+                method: 'POST',
+                data: $('#categoryUpdate').serialize(),
+                contentType: 'application/x-www-form-urlencoded',
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire(
+                            'Updated!',
+                            response.message,
+                            'success'
+                        );
+                        setTimeout(function () {
+                            window.location.href = '/admin/category';
+                        }, 1500);
+                    } else {
+                        Swal.fire(
+                            'Error!',
+                            response.message,
+                            'error'
+                        );
+                    }
+                },
+                error: function (response) {
+                    Swal.fire(
+                        'Error!',
+                        response.message,
+                        'error'
+                    );
+                }
+            });
+        }
+    });
+}
 
-
+</script>
 
 
 <%- include('../partials/admin/footer.ejs') %>

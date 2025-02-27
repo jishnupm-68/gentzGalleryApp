@@ -26,25 +26,22 @@ const loadAddCoupon = async (req,res)=>{
 
 const createCoupon = async(req,res)=>{
     try {
-        
-        let percentage =parseInt(req.body.percentageOffer)
-        let percentageOffer;
-        percentageOffer = (isNaN(percentage) || percentage === null) ? 0 : percentage;
-        console.log(percentageOffer)    
+
         const data=  {
             name: req.body.couponName,
             createdOn: req.body.startDate,
             expireOn: req.body.endDate,
-            percentageOffer: percentageOffer, 
-            offeredPrice: parseInt(req.body.offerPrice),
+            percentageOffer: parseInt(req.body.percentageOffer), 
+            offeredPrice: parseInt(req.body.offeredPrice),
             minimumPrice: parseInt(req.body.minimumPrice)
         }
         const newCoupon = new Coupon(data);
         await newCoupon.save();
-        res.redirect('/admin/coupon')    
+        res.json({success:true, message:"Coupon saved successfully"})
+
     } catch (error) {
         console.error("error while creating a coupon",error)
-        res.redirect('/admin/pageError')       
+        res.json({success:false, message:"Error while adding new coupon"})     
     }
 }
 
@@ -65,7 +62,7 @@ const loadEditCoupon = async(req,res)=>{
 
 const updateCoupon = async(req,res)=>{
     try {
-        const {couponId, couponName, startDate, endDate, offerPrice, minimumPrice} = req.body;
+        const {couponId, couponName, startDate, endDate, offeredPrice, minimumPrice} = req.body;
         let percentage =parseInt(req.body.percentageOffer)
         let percentageOffer;
         percentageOffer = (isNaN(percentage) || percentage === null) ? 0 : percentage;
@@ -75,8 +72,8 @@ const updateCoupon = async(req,res)=>{
                 name: couponName,
                 createdOn: new Date(startDate),
                 expireOn: new Date(endDate),
-                percentageOffer: percentageOffer,
-                offeredPrice: parseInt(offerPrice),
+                percentageOffer: parseInt(percentageOffer),
+                offeredPrice: parseInt(offeredPrice),
                 minimumPrice: parseInt(minimumPrice)
             },
             {new: true}

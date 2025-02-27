@@ -11,7 +11,7 @@ const bcrypt = require("bcrypt")
 const pageNotFound = (req,res)=>{
     try{
         res.render('page-404')
-        consile.log("rendering error page")
+        console.log("rendering error page")
     }catch(error){
         console.error("Error while loading error page", error)     
         res.redirect('/pageNotFound')
@@ -98,11 +98,15 @@ const loadShopPage = async (req,res)=>{
     }
 }
 
+let sessionProducts;
 const filterProduct  = async (req, res) => {
     try {
         const user = req.session.user;
         const { filter: advancedFilter, filterOutOfStock: outOfStock, category, brand, page, gt, lt } = req.query;
-        console.log("Filter Params:", req.query);   
+        console.log("Filter Params: from backend", req.query);   
+
+       
+
         const [userData, findCategory, findBrand, brands, categories] = await Promise.all([
             User.findOne({ _id: user }),
             category ? Category.findById(category).select('_id') : null,
@@ -170,7 +174,9 @@ const filterProduct  = async (req, res) => {
                 await userData.save();
             }
         }
-        req.session.filteredProducts = findProducts;    
+        sessionProducts = findProducts; 
+        req.session.selectedCategory = categories || null;
+        req.session.selectedBrand = brands || null;   
         console.log("Rendering shop page with filters");
         res.render("shopPage", {
             user: userData,
@@ -189,13 +195,14 @@ const filterProduct  = async (req, res) => {
     }
 };
 
+
 const searchProducts  = async(req,res)=>{
     try{
         let productLength =0;
         const user = req.session.user;      
         let search = req.body.query;
         console.log(req.body,req.query,req.params);
-        const [userData, brands, categories]  = await  Pormise.all([ 
+        const [userData, brands, categories]  = await  Promise.all([ 
             User.findOne({_id:user}),
             Brand.find({}).lean(),
             Category.find({isListed:true}).lean(),
@@ -208,14 +215,17 @@ const searchProducts  = async(req,res)=>{
         let currentPage = parseInt(req.query.page) || 1;
         let skipCount = (currentPage - 1) * itemsPerPage;
         let query = {};
-        // If session has filtered products, use it
+        // If session has filtered products
         if (req.session.filteredProducts && req.session.filteredProducts.length > 0) {
             query = { 
+                isBlocked:false,
                 productName: { $regex: search, $options: "i" } 
             };
         } else {
             query = {
+                isBlocked:false,
                 $or: [
+                    
                     { productName: { $regex: search, $options: "i" } },
                     { description: { $regex: search, $options: "i" } },
                     { brand: { $regex: search, $options: "i" } }
@@ -230,7 +240,9 @@ const searchProducts  = async(req,res)=>{
                 .limit(itemsPerPage) 
                 .lean() 
         ]);
-         const totalPages = Math.ceil(totalProducts / itemsPerPage);    
+        req.session.filteredProducts = searchResult; 
+        sessionProducts = searchResult
+        const totalPages = Math.ceil(totalProducts / itemsPerPage);    
         res.render('shopPage',{
             user:userData,
             products:searchResult,

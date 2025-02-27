@@ -67,27 +67,19 @@
     }
   </style>
 </head>
-<body>
   <section class="content-main" style="margin-left: 20%; padding-top: 5%;">
     <div class="content-header">
       <div >
         <h2 class="content-title card-title mt-3" >Category</h2>
       </div>
     </div>
-    <header class="card-header text-center mb-20">
-      
-      
-    </header>
     <div class="card">
       <div class="card-body">
         <div class="row">
 
-          <!--  Add new Category was here-->
+          <!--   new Category entry here-->
           <div class="col-md-3">
-            
-
-          
-            <form method="post" action="/admin/addCategory" onsubmit="return handleFormSubmit(event)">
+            <form method="post" action="#" onsubmit="return handleFormSubmit(event)">
               <div class="mb-4">
                 <label for="product_name" class="form-label">Name</label>
                 <input type="text" name="name" placeholder="Type here" class="form-control" id="product_name" />
@@ -104,21 +96,24 @@
                 </button>
               </div>
             </form>
-            <a href="/admin/category" style="text-decoration: none;"><div class="d-grid text-end mt-30 col-md-5 ">
+            <a href="/admin/category" style="text-decoration: none;">
+              <div class="d-grid text-end mt-30 col-md-5 ">
               <button class="btn btn-warning" type="submit">Cancel</button>
-          </div> </a>
-
+              </div> 
+           </a>
           </div>
         </div>
-        </div>
-        </div>
-
+      </div>
+    </div>
   </section>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
  
 
+  <!-- script for handling category operations -->
   <script>
+
+    //function for adding new category
     function handleFormSubmit(event) {
       event.preventDefault();
 
@@ -128,47 +123,46 @@
       const name = document.getElementsByName('name')[0].value;
       const description = document.getElementById("descriptionId").value;
       console.log(name,description)
-      fetch('/admin/addCategory',{
-        method:'post',
-        headers:{
-          'Content-Type': 'application/json'
+
+      $.ajax({
+        url: '/admin/addCategory',
+        method: 'POST',
+        data: {name, description},
+        success: function(response){
+          console.log(response)
+          if(response.success){
+            Swal.fire({
+              title: "Success",
+              text: response.message,
+              icon: "success",
+              confirmButtonText: "Okay"
+            }).then((result) => {
+              if (result.isConfirmed) {
+                window.location.href = "/admin/category";
+              }
+            });
+          } else {
+            Swal.fire({
+              title: "OOPS",
+              text: response.message,
+              icon: "error",
+              confirmButtonText: "Okay"
+            });
+          }
         },
-        body: JSON.stringify({name, description })
-      })
-      .then(response =>{
-        if(!response.ok){
-          return response.json().then(err=>{
-            throw new Error(err.error);
-          })
-        }
-        return response.json()
-      })
-      .then(data=>{
-        location.reload()
-      })
-      .catch(error=>{
-        if(error.message ==="Category already exist"){
+        error: function(error,xhr){
+          
           Swal.fire({
-            icon:'error',
             title: "OOPS",
-            text:"Category already exists"
-          })
-        }else{
-          Swal.fire({
-            icon:"error",
-            title:"OOPS",
-            text:"An error occured while adding the category"
-          })
-
+            text: "",
+            icon: "error",
+            confirmButtonText: "Okay"
+          });
         }
       })
-
-     
     }
 
-
-
-
+    // function for validating form data before submission
     function validateForm(){
         clearErrorMessages();
         const name = document.getElementsByName('name')[0].value.trim();
@@ -191,15 +185,14 @@
         return isValid;
     }   
 
-
-
-
+    // function for displaying error messages
     function displayErrorMessage(elementId, message){
         let errorElement = document.getElementById(elementId);
         errorElement.innerText = message;
         errorElement.style.display = 'block'
     }
 
+    // function for clearing error messages
     function clearErrorMessages(){
         const errorElements = document.getElementsByClassName('error-message');
         Array.from(errorElements).forEach((element)=>{
@@ -209,8 +202,7 @@
         }
 
 
-
-
+      //function for adding offer with alert and ajax request
       async function addOffer(categoryId){
         const {value:amount} = await Swal.fire({
           title:"Offer in Percentage",
@@ -243,7 +235,6 @@
               Swal.fire("Success",data.message || "Adding offer successfull", "success")
               .then(()=>{
                 location.reload();
-
               })
             }
           }catch(error){
@@ -253,12 +244,12 @@
               "error"
             );
             console.log("Error while adding offer",error)
-
           }
       }
     }
 
 
+    //function for removing offer with alert and ajax request
       async function removeOffer(categoryId){
         try{
           const response = await fetch("/admin/removeCategoryOffer",{
@@ -268,10 +259,7 @@
             },
             body: JSON.stringify({categoryId:categoryId})
           })
-          console.log("Fetch called")
-
           const data  = await response.json();
-          console.log("data,", response.ok,data.success)
           if(response.ok ){
             Swal.fire(
               "offer removed",
@@ -284,7 +272,6 @@
             Swal.fire("Failed",data.message || "Removing offer failed", "error")
             .then(()=>location.reload())
           }
-
         }
         catch(error){
           Swal.fire(
@@ -293,12 +280,9 @@
             "error"
           );
           console.log("Error while removing offer",error)
-
         }
       }
 
-
-  
   </script>
  
   <%- include('../partials/admin/footer.ejs') %>
