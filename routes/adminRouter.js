@@ -24,15 +24,14 @@ const uploads = multer({
 });
 
 
-
 //admin login logout and dashboard
 router.get("/pageError", adminController.pageError)
 router.get('/login',adminController.loadLogin)
 router.post('/login',adminController.login);
 router.get('/logout',adminAuth,adminController.logout);
-
 //dashboard management
 router.get('/',adminAuth,adminController.loadDashboard)
+
 
 //sales report management
 router.get('/salesReport', adminAuth, salesReportController.salesReport)
@@ -60,13 +59,11 @@ router.post("/editCategory/:id",adminAuth, categoryController.editCategory)
 
 
 //brand management
-//router.get("/brands",adminAuth,brandController.getBrandPage);
 router.get("/brands",adminAuth,brandController.getBrandPage);
 router.post("/addBrand",adminAuth,uploads.single("image"),brandController.addBrand);
 router.get("/blockBrand", adminAuth, brandController.blockBrand);
 router.get("/unBlockBrand", adminAuth, brandController.unBlockBrand);
 router.get("/deleteBrand", adminAuth, brandController.deleteBrand);
-
 
 
 //product Management
@@ -79,10 +76,7 @@ router.get('/blockProduct',adminAuth,productController.blockProduct)
 router.get('/unBlockProduct',adminAuth,productController.unBlockProduct)
 router.get('/editProduct',adminAuth, productController.getEditProduct);
 router.post('/editProduct',adminAuth,uploads.array('images',4), productController.editProduct);
-
-
-
-
+//delete image from edit product page
 router.post('/deleteImage',adminAuth, productController.deleteSingleImage);
 
 
@@ -105,4 +99,6 @@ router.get('/orderDetails',adminAuth,orderController.getOrderDetailsPageAdmin);
 //stockManagement
 router.get('/stock',adminAuth,stockController.getStockPage)
 router.post("/addQuantity", adminAuth,stockController.addQuantity);
+
+
 module.exports = router

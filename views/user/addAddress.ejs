@@ -1,7 +1,10 @@
 <%- include("../../views/partials/user/header") %>
+
+<!-- add address content here -->
 <div class="container mt-4">
    <h3 class="mt-3" style="color: #046963; margin-bottom:70px">Create User Address</h3>
-   <form id="addressForm" method="POST" action="/addAddress" class="border-0 p-3">
+
+   <form id="addressForm" method="POST" action="#" class="border-0 p-3">
        <div class="row mb-50">
            <div class="form-group col-md-4">
                <label for="addressType">Address Type:</label>
@@ -43,16 +46,49 @@
        <button type="submit" id="submitButton" class="btn text-white"  style="background-color: #1e918b;">Submit</button>
    </form>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- script for validating the address  -->
 <script>
-  
+    // event listner for validating the address
+
    document.getElementById('addressForm').addEventListener('submit', function(event) {
-       if (!validateForm()) {
-           event.preventDefault();
+       if (validateForm()) {
+        event.preventDefault();
+        $('#addressForm').on('submit', function(e) {           
+            $.ajax({
+                url: `/addAddress`,
+                type: 'POST',
+                data: $(this).serialize(),                
+                success: function(response) {
+                    if(response.success) {
+                        Swal.fire({
+                            icon:'success',
+                            title: response.message,
+                            showConfirmButton: false,
+                            timer: 1500,
+                        }).then(() => {
+                            window.location.href = response.redirectUrl;
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: response.message,
+                        });
+                        window.location.href = response.redirectUrl;
+                    }
+                },
+                error: function(xhr) {
+                    console.error("Error:", xhr.responseText);
+                }
+            });
+        });
+       }else{     
+        event.preventDefault();
        }
    });
 
-
+   //function for validating the address
    function validateForm() {
        let isValid = true;
        const requiredFields = ["addressType", "name", "city", "landMark", "state", "pincode", "phone", "altPhone"];
@@ -60,7 +96,6 @@
            const input = document.getElementById(field);
            const inputValue = input.value.trim();
            const errorElement = document.getElementById(field + '-error');
-
 
            if (inputValue === "") {
                if (!errorElement) {
@@ -78,7 +113,6 @@
                }
            }
        });
-
 
        const addressType = document.getElementById('addressType').value;
        const name = document.getElementById('name').value;
@@ -107,14 +141,6 @@
            });
            isValid = false;
        }
-    //    if (!namePattern.test(landMark)) {
-    //        Swal.fire({
-    //            title: 'Error',
-    //            text: 'Landmark should contain alphabets only.',
-    //            icon: 'error'
-    //        });
-    //        isValid = false;
-    //    }
        if (!namePattern.test(state)) {
            Swal.fire({
                title: 'Error',
@@ -157,5 +183,6 @@
        }
        return isValid;
    }
+
 </script>
 <%- include("../../views/partials/user/footer") %>

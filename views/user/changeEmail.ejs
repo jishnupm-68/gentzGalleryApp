@@ -1,16 +1,11 @@
 <%- include("../../views/partials/user/header") %>
 
+
 <!-- content -->
 <section class="p-3 p-md-4 p-xl-5">
     <div class="container  ">
       <div class=" ">
         <div class="row g-0 justify-content-center align-items-center">
-          <!-- here logo -->
-          <!-- <div class="col-12 col-md-6">
-            <img class="img-fluid rounded-start w-100 h-100 object-fit-cover" loading="lazy"
-              src="assets/img/logo/logo-img-1.jpg" alt="GentzGallery Logo">
-              
-          </div> -->
           <div
             class="col-12 col-md-6 col-lg-4 d-flex justify-content-center align-items-center  card border-light-subtle shadow-sm">
             <div class="card-body p-3 p-md-4 p-xl-5" style="background-color: rgb(224, 224, 224);">
@@ -18,14 +13,11 @@
                 <div class="col-12">
                   <div class="mb-5">
                     <h3 class="h3">Change your Email Account </h3>
-                    <!-- <h3 class="fs-6 fw-normal text-secondary m-0">Please enter your email address to search for your account.</h3> -->
                   </div>
                 </div>
               </div>
-              <!-- <form action="/changeEmail" method="post" id="loginForm" onsubmit="return validateForm()"> -->
               <form id="loginForm" onsubmit="return validateForm()">
                 <div class="row gy-3 gy-md-4 overflow-hidden">
-
                   <div class="col-12">
                     <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
                     <input type="text" class="form-control bg-white" name="email" id="email" placeholder="name@example.com">
@@ -35,12 +27,12 @@
                     <div class="alert alert-danger text-center text-warning">
                     <h6 class="h6 text-danger"> <%=message%></h6>
                     </div>
-                    <%}%>
-                      <div class="col-12">
-                        <div class="d-grid">
-                          <button class="btn bsb-btn-xl " type="submit">Submit</button>
-                        </div>
-                      </div>        
+                  <%}%>
+                    <div class="col-12">
+                      <div class="d-grid">
+                        <button class="btn bsb-btn-xl " type="submit">Submit</button>
+                      </div>
+                    </div>        
                 </div>
               </form>
             </div>
@@ -50,109 +42,93 @@
     </div>
   </section>
 
+<!-- script for validating email and ajax request -->
+<script>
+  const emailid = document.getElementById("email");
+  const errorInEmail = document.getElementById("errorInEmail");
+  const loginform = document.getElementById("loginForm");
+
+  //function for email validation
+  function emailValidateChecking(e) {
+    const emailval = emailid.value;
+    const emailpattern =
+      /^[a-zA-Z0-9._-]+@([a-zA-Z0-9.-]+)\.([a-zA-Z]{2,4})$/;
+
+    if (!emailpattern.test(emailval)) {
+      errorInEmail.style.display = "block";
+      errorInEmail.innerHTML = "Invalid Format";
+      return false;
+    } else {
+      errorInEmail.style.display = "none";
+      errorInEmail.innerHTML = "";
+      return true;
+    }
+  }
 
 
-     <!-- from login page -->
-     <script>
-        const emailid = document.getElementById("email");
-        const errorInEmail = document.getElementById("errorInEmail");
-        const loginform = document.getElementById("loginForm");
-  
-        function emailValidateChecking(e) {
-          console.log("called emailValidateChecking");
-          const emailval = emailid.value;
-          console.log(emailval,"Validation called");
-          const emailpattern =
-            /^[a-zA-Z0-9._-]+@([a-zA-Z0-9.-]+)\.([a-zA-Z]{2,4})$/;
-  
-          if (!emailpattern.test(emailval)) {
-            errorInEmail.style.display = "block";
-            errorInEmail.innerHTML = "Invalid Format";
-            return false;
-          } else {
-            errorInEmail.style.display = "none";
-            errorInEmail.innerHTML = "";
-            return true;
-          }
-        }
-  
-        function validateForm(){
-          console.log("called validateForm");
-          const value = emailValidateChecking()
-          console.log(value);
-          if(value){
-              console.log("form submitted");
-              const emailval = emailid.value;
-              $.ajax({
-                  url:"changeEmail",
-                  type:"POST",
-                  data:{email:emailval},
-                  success:function(response){
-                      console.log(response);
-                      if(response.success){
-                        console.log("success");
-                        Swal.fire({
-                          icon: "success",
-                          title: "Email verified successfully",
-                          text: "",
-                          showConfirmButton: false,
-                          timer: 3000,
-                          timerProgressBar: true
-                        }).then(()=>{
-                          location.href = response.redirectUrl;
-                        })
-                      }else{
-                        Swal.fire({
-                          icon: "error",
-                          title: "Failed to change email",
-                          text: "The email do not match with this account",
-                          showConfirmButton: false,
-                          timer: 3000,
-                          timerProgressBar: true
-                        })
-                        console.log("Failure")
-                      }
-                  },
-                  error: function(error){
-                    console.error("Error:", error);
-                    Swal.fire({
-                      icon: "error",
-                      title: "Failed to change email",
-                      text: response.message,
-                      showConfirmButton: false,
-                      timer: 3000,
-                      timerProgressBar: true
-                    })
-                    // Handle error here
-                  }
+  //validate and ajax request
+  function validateForm(){
+    const value = emailValidateChecking()
+    if(value){
+        const emailval = emailid.value;
+        $.ajax({
+            url:"changeEmail",
+            type:"POST",
+            data:{email:emailval},
+            success:function(response){
+                if(response.success){
+                  Swal.fire({
+                    icon: "success",
+                    title: "Email verified successfully",
+                    text: "",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true
+                  }).then(()=>{
+                    location.href = response.redirectUrl;
+                  })
+                }else{
+                  Swal.fire({
+                    icon: "error",
+                    title: "Failed to change email",
+                    text: "The email do not match with this account",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true
+                  })
+                }
+            },
+            error: function(error){
+              console.error("Error:", error);
+              Swal.fire({
+                icon: "error",
+                title: "Failed to change email",
+                text: response.message,
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
               })
-             // loginform.submit();
-          }else{
-              return false
-          }
-        }
-  
-
-
-        document.addEventListener("DOMContentLoaded", function () {
-          loginform.addEventListener("submit", function (e) {
-            e.preventDefault();
-            console.log("called 1")
-            emailValidateChecking();
-  
-            if (!emailid || !errorInEmail ||  !loginform) {
-              console.error("One or more elements not found");
             }
-  
-            if (errorInEmail.innerHTML ) {
-              e.preventDefault();
-            }
-          });
-        });
-      </script>
+        })
+    }else{
+        return false
+    }
+  }
 
-     
+  //event listener for form submission
+  document.addEventListener("DOMContentLoaded", function () {
+    loginform.addEventListener("submit", function (e) {
+      e.preventDefault();
+      emailValidateChecking();
+      if (!emailid || !errorInEmail ||  !loginform) {
+        console.error("One or more elements not found");
+      }
+      if (errorInEmail.innerHTML ) {
+        e.preventDefault();
+      }
+    });
+  });
+</script>
 
-      <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-      <%- include("../../views/partials/user/footer") %>
+<!-- footer -->
+<%- include("../../views/partials/user/footer") %>

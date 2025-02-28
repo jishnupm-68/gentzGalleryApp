@@ -1,15 +1,13 @@
 const User = require('../../models/userSchema')
-const Address = require('../../models/addressSchema')
-const Order = require("../../models/orderSchema")
 const nodemailer = require('nodemailer')
-const bcrypt = require('bcrypt')
-const env = require('dotenv').config();
 const session = require("express-session");
 
+//function for generating otp
 function generateOtp(){
     return Math.floor(100000 + Math.random() * 900000)
 }
 
+//function for sending the otp via email
 const sentVerificationEmail =  async(email,otp)=>{
     try {
         const transporter = nodemailer.createTransport({
@@ -22,7 +20,6 @@ const sentVerificationEmail =  async(email,otp)=>{
                 pass:process.env.NODEMAILER_PASSWORD
             }
         })
-
         const mailOptions ={
             from: process.env.NODEMAILER_EMAIL,
             to: email,
@@ -30,35 +27,35 @@ const sentVerificationEmail =  async(email,otp)=>{
             text: `Your verification code is ${otp}`,
             html: `<b>Your Verification Code for changing the password: ${otp}</b> `
         }
-        
         const info = await transporter.sendMail(mailOptions);
-        console.log("Email sent", info.messageId, otp)
+        console.log("Email sent", otp)
         return true
-    
-        } catch (error) {
-            console.error("ERror while sending email",error)
-            return false
-        }
+    } catch (error) {
+        console.error("ERror while sending email",error)
+        return false
+    }
 }
 
+
+//function for rendering change email initial page
 const loadChangeEmail = async (req,res)=>{
     const email= req.body;
     const findUser =  await User.findOne({_id: req.session.user});
     try{
         res.render("changeEmail",{user:findUser})
+        console.log("rendering changeEmail page")
     }catch(error){
         console.error("error while rendering the change email page",error)
         res.redirect('/pageNotFound')
     }
 }
 
+//function for senting the otp
 const changeEmail = async (req,res)=>{
     try{
         const {email} = req.body;
-        console.log("email is", email)
         const userId = req.session.user;
         const sessionUser = await User.findOne({_id:userId});
-        //const userExists =  await User.findOne({email:email});
         if(email === sessionUser.email){
             const otp = generateOtp();
             const emailSent = await sentVerificationEmail(email,otp);
@@ -75,13 +72,14 @@ const changeEmail = async (req,res)=>{
             console.log("no user with given email id")
             res.json({success:false, message:"No user with given email id"})
         }
-        }
+    }
     catch(error){
         console.error("error while changing the email",error)
-        res.redirect('/pageNotFound')
+        res.json({success:false, message:"Error while changing the email"})
     }
 }
 
+// rendering the   otp verification page for changing email
 const loadVerifyEmailOtp = async(req,res)=>{
     try {
         let sessionUser= await User.findOne({_id:req.session.user});
@@ -93,12 +91,11 @@ const loadVerifyEmailOtp = async(req,res)=>{
     }
 }
 
+// function for verifying otp
 const verifyEmailOtp  =  async(req,res)=>{
     try{
         const enteredOtp = Number(req.body.otp);
-        console.log(req.body.otp, req.session.userOtp)
-        if(enteredOtp === req.session.userOtp){
-            
+        if(enteredOtp === req.session.userOtp){     
             res.json({success:true, redirectUrl:"/changeEmailNew"})
         }else{
             console.log("error while validating the otp")
@@ -121,7 +118,7 @@ const loadChangeEmailNew = async (req,res)=>{
     }
 }
 
-
+//function for updating the email
 const updateEmail =async (req,res)=>{
     try{
         const {email} = req.body;
@@ -131,17 +128,17 @@ const updateEmail =async (req,res)=>{
         if(user){
             console.log(" email updation successful")
             res.json({success:true, message:"Email successfully updated",redirectUrl:"/userProfile"})
-
         }else{
             console.log("unable to update email")
             res.json({success:false, message:"Email updatation failed"})
         }    
     }catch(error){
         console.error("error while changing the email",error)
-        res.redirect('/pageNotFound')
+        res.json({success:false, message:"Error while changing the email"});
     }
 }
 
+// exporting functions
 module.exports = {
     loadChangeEmail,
     changeEmail,

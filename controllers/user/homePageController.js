@@ -1,13 +1,10 @@
-const { render } = require("../../app")
-const env= require("dotenv").config();
+
 const User = require('../../models/userSchema')
 const Category = require('../../models/categorySchema');
 const Product  = require('../../models/productSchema');
 const Brand = require('../../models/brandSchema');
-const Banner = require('../../models/bannerSchema');
-const nodemailer = require("nodemailer");
-const bcrypt = require("bcrypt")
 
+//rendering error page-404
 const pageNotFound = (req,res)=>{
     try{
         res.render('page-404')
@@ -18,9 +15,9 @@ const pageNotFound = (req,res)=>{
     }
 }
 
+// rendering home page
 const loadHomePage = async(req,res)=>{
     try{
-        console.log("Session detaiils from load home page", req.session.user)
         const user = req.session.user;
         const categories = await Category.find({isListed:true});
         const productData = await Product.find({
@@ -30,30 +27,30 @@ const loadHomePage = async(req,res)=>{
         })
         productData.sort((a,b)=>{new Date(b.createdOn)-new Date(a.createdOn)})       
         let productDataResponse = productData.slice(0,4)
-        console.log(productData.length,"Is the no of products aVailable",productDataResponse.length)
-       // console.log("User from loadhomePage",user)
-        if(user ){
+        if(user){
             const userData = await User.findOne({_id:user})
-            console.log("userdata while using load homepage",userData.isBlocked)
             if( userData.isBlocked==true){
                 console.log("User is not blocked")
                 req.session.user = undefined
                 return res.render("home",{user:undefined, products:productDataResponse})
             }else{
+                console.log("render home page")
                 return res.render("home",{user:userData, products:productDataResponse})
             }
+            console.log("render home page")
             return res.render("home",{user:userData, products:productDataResponse})
-           //return res.render("home",{user:userData})
         }
         else{
+            console.log("render home page")
             return res.render("home",{products:productData})
-        }
+        }      
     }catch(error){
         console.log("home page not found");
         res.status(500).send("server error");
     }   
 }
 
+// rendering shop page
 const loadShopPage = async (req,res)=>{
     try{
         const userId = req.session.user;
@@ -83,7 +80,6 @@ const loadShopPage = async (req,res)=>{
         ]);       
         const totalPages = Math.ceil(totalProducts/limit);   
         const categoriesWithIds = categories.map((category)=>({_id:category._id,name:category.name}));
-        //console.log(products[0])
         res.render("shopPage",{
             user:userData,
             products:products,
@@ -91,7 +87,8 @@ const loadShopPage = async (req,res)=>{
             brand:brands,
             currentPage:page,
             totalPages:totalPages
-        })      
+        })  
+        console.log("render the shop page");    
     }catch(error){
         console.log("error while loading the shop page",error)
         res.redirect("/pageNotFound")
@@ -99,14 +96,11 @@ const loadShopPage = async (req,res)=>{
 }
 
 let sessionProducts;
+// function for filtering products
 const filterProduct  = async (req, res) => {
     try {
         const user = req.session.user;
         const { filter: advancedFilter, filterOutOfStock: outOfStock, category, brand, page, gt, lt } = req.query;
-        console.log("Filter Params: from backend", req.query);   
-
-       
-
         const [userData, findCategory, findBrand, brands, categories] = await Promise.all([
             User.findOne({ _id: user }),
             category ? Category.findById(category).select('_id') : null,
@@ -120,12 +114,10 @@ const filterProduct  = async (req, res) => {
         if (findBrand) query.brand = findBrand.brandName;
         if (outOfStock === "true") query.quantity = { $gte: 0 };
         if (gt && lt) query.salePrice = { $gt: gt, $lt: lt };
-        
         // Rating filter
         if (["1", "2", "3", "4"].includes(advancedFilter)) {
             query.rating = { $gte: Number(advancedFilter) };
         }
-        
         // Popularity & Featured Conditions
         if (advancedFilter === "Popularity") {
             query.rating = { $gte: 3 };
@@ -190,18 +182,17 @@ const filterProduct  = async (req, res) => {
             selectedPriceRange: gt && lt ? { gt, lt } : null
         });
     } catch (error) {
-        console.error(`Filter error at ${req.url}:`, error.message);
+        console.error(` error while filtering :`, error);
         res.status(500).json({ error: "Something went wrong. Please try again later." });
     }
 };
 
-
+// function for search product
 const searchProducts  = async(req,res)=>{
     try{
         let productLength =0;
         const user = req.session.user;      
         let search = req.body.query;
-        console.log(req.body,req.query,req.params);
         const [userData, brands, categories]  = await  Promise.all([ 
             User.findOne({_id:user}),
             Brand.find({}).lean(),
@@ -210,7 +201,6 @@ const searchProducts  = async(req,res)=>{
         const categoryIds = categories.map((category)=>{
             cateogry=>category._id.toString()
         }) 
-        console.log("filtered products:", req.session.filteredProducts)
         let itemsPerPage = 6;
         let currentPage = parseInt(req.query.page) || 1;
         let skipCount = (currentPage - 1) * itemsPerPage;
@@ -252,6 +242,7 @@ const searchProducts  = async(req,res)=>{
             totalPages:totalPages,
             count:searchResult.length
         })
+        console.log("search result to the shop page")
     }
     catch(error){
         console.error("Search error", error)
@@ -259,6 +250,7 @@ const searchProducts  = async(req,res)=>{
     }
 }
 
+// exporting function 
 module.exports = {
     loadHomePage,
     pageNotFound,

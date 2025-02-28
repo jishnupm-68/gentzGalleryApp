@@ -1,6 +1,8 @@
 <%- include('../partials/user/header.ejs') %>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<!-- styling here -->
 <style>
   .btn {
       display: inline-block;
@@ -15,7 +17,6 @@
       cursor: pointer;
       text-align: center;
   }
-
 
   .btn:hover {
       background-color: #1e918b;
@@ -99,7 +100,7 @@
   }
 </style>
 
-
+    <!-- content starts here -->
     <main>
         <!--? Hero Area Start-->
         <div class="container-fluid">
@@ -107,11 +108,7 @@
                 <!-- Mobile Device Show Menu-->
                 <div class="header-right2 d-flex align-items-center">
                     <!-- Social -->
-                    <div class="header-social  d-block d-md-none">
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="https://bit.ly/sai4ull"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-pinterest-p"></i></a>
-                    </div>
+                    
                     <!-- Search Box -->
                     <div class="search d-block d-md-none" >
                         <ul class="d-flex align-items-center">
@@ -123,7 +120,7 @@
                             <li>
                                 <div class="card-stor">
                                     <img src="assets/img/gallery/card.svg" alt="">
-                                    <span>0</span>
+                                    <span></span>
                                 </div>
                             </li>
                         </ul>
@@ -181,151 +178,80 @@
         <!--? Popular Items Start -->
         <div class="popular-items pt-50">
             <div class="container-fluid">
-                <div class="row">
-                    
-                 
-
- <div class="col-lg-12 col-md-6 col-sm-12">
-    <div class="single-popular-items mb-50 text-center wow fadeInUp" data-wow-duration="1s" data-wow-delay=".2s">
-        <div class="popular-img">
-            <img src="/uploads/brands/1736849786662-830146210-hand-wrist-watch-business-suit-elegant-handsome-man-suit-man-suit-male-beard-mustache-black-white_293990-4461.jpg" style=" height: 50%;" alt="">
-            <div class="img-cap">
-                <span>Watches</span>
-            </div>
-            <div class="favorit-items">
-             <a href="/shop" class="btn" style="background-color: #088178;">Shop </a>
-         </div>
-     </div>
- </div>
-</div>
-
-</div> 
-</div>
-<!-- Popular Items End -->
-<!--? New Arrival Start -->
-<div class="new-arrival">
-    <div class="container">
-        <!-- Section tittle -->
-        <!-- <div class="row justify-content-center">
-            <div class="col-xl-7 col-lg-8 col-md-10">
-                <div class="section-tittle mb-60 text-center wow fadeInUp" data-wow-duration="2s" data-wow-delay=".2s">
-                    <h2>new<br>arrival</h2>
-                </div>
-            </div>
-        </div> -->
-        <div class="row">
-            <section class="product spad">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <ul class="filter__controls">
-                                <li data-filter=".new-arrivals">New Arrivals</li>
-                            </ul>
+                <div class="row">  
+                    <div class="col-lg-12 col-md-6 col-sm-12">
+                        <div class="single-popular-items mb-50 text-center wow fadeInUp" data-wow-duration="1s" data-wow-delay=".2s">
+                            <div class="popular-img">
+                                <img src="/uploads/brands/1736849786662-830146210-hand-wrist-watch-business-suit-elegant-handsome-man-suit-man-suit-male-beard-mustache-black-white_293990-4461.jpg" style=" height: 50%;" alt="">
+                                <div class="img-cap">
+                                    <span>Watches</span>
+                                </div>
+                                <div class="favorit-items">
+                                <a href="/shop" class="btn" style="background-color: #088178;">Shop </a>
+                            </div>
                         </div>
                     </div>
-                    <div class="row product__filter">
-                      <% for(let i=0;i<4;i++){ %>
-                            <div class="col-lg-3 col-md-4 col-12 col-sm-6">
-                                <div class="product-cart-wrap mb-30">
-                                    <div class="product-img-action-wrap">
-                                        <div class="product-img product-img-zoom">
-                                            <a href="/productDetails?id=<%= products[i]._id %>">
-                                                <img class="default-img" src="/uploads/product-imagesResized/<%=products[i].productImage[0]%>" alt="<%=products[i].productName%>">
-                                            </a>
-                                        </div>
-                                        <a href="#" onclick="addToWishlist('<%= products[i]._id %>')" class="wishlist-btn">
-                                            <i class="fas fa-heart "></i>
-                                        </a>
-                                    </div>
-              
-              
-                                    <div class="product-content-wrap">
-                                        <h6><%= products[i].productName %></h6>
-                                        <!-- <% if(products[i].offerPrice>0) {%>
-                                            <h5>₹<%= products[i].offerPrice %></h5>
-                                            <% }else {%>
-                                                <h5>₹<%= products[i].salePrice %></h5>
-                                                <% } %> -->
-                                                <h5>₹<%= products[i].salePrice %></h5>
-                                       
-                                        <form action="/addToCart" method="post">
-                                             <input type="hidden" name="productId" value="<%= products[i]._id %>">
-                                             <input type="hidden" name="quantity" value="1">
-                                             <% if(products[i].offerPrice>0) {%>
-                                             <input type="hidden" name="price" id="price" value="<%= products[i].offerPrice %>">
-                                             <% }else {%>
-                                             <input type="hidden" name="price" id="price" value="<%= products[i].salePrice %>">
-                                             <% } %>
-                                             <button type="submit" class="btn add-to-cart-btn" style="background-color: #088178;">Add to Cart</button>
-                                        </form>
-                                      
-                                    </div>
+                </div>
+            </div> 
+        </div>
+        <!-- Popular Items End -->
+        <!--? New Arrival Start -->
+        <div class="new-arrival">
+            <div class="container">
+                <div class="row">
+                    <section class="product spad">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <ul class="filter__controls">
+                                        <li data-filter=".new-arrivals">New Arrivals</li>
+                                    </ul>
                                 </div>
                             </div>
-                            <% } %>
-                    </div>
+                            <div class="row product__filter">
+                             <% for(let i=0;i<4;i++){ %>
+                                <div class="col-lg-3 col-md-4 col-12 col-sm-6">
+                                    <div class="product-cart-wrap mb-30">
+                                        <div class="product-img-action-wrap">
+                                            <div class="product-img product-img-zoom">
+                                                <a href="/productDetails?id=<%= products[i]._id %>">
+                                                    <img class="default-img" src="/uploads/product-imagesResized/<%=products[i].productImage[0]%>" alt="<%=products[i].productName%>">
+                                                </a>
+                                            </div>
+                                            <a href="#" onclick="addToWishlist('<%= products[i]._id %>')" class="wishlist-btn">
+                                                <i class="fas fa-heart "></i>
+                                            </a>
+                                        </div>
+                                <div class="product-content-wrap">
+                                    <h6><%= products[i].productName %></h6>
+                                    <h5>₹<%= products[i].salePrice %></h5>
+                                    <form action="/addToCart" method="post">
+                                            <input type="hidden" name="productId" value="<%= products[i]._id %>">
+                                            <input type="hidden" name="quantity" value="1">
+                                            <% if(products[i].offerPrice>0) {%>
+                                            <input type="hidden" name="price" id="price" value="<%= products[i].offerPrice %>">
+                                            <% }else {%>
+                                            <input type="hidden" name="price" id="price" value="<%= products[i].salePrice %>">
+                                            <% } %>
+                                            <button type="submit" class="btn add-to-cart-btn" style="background-color: #088178;">Add to Cart</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    <% } %>
                 </div>
-                
-
-              </section>
+            </div> 
+        </div>        
+        <!-- Button -->
+        <div class="row justify-content-center">
+            <div class="room-btn">
+                <a href="/shop" class="border-btn">Browse More</a>
             </div>
-            
-           
-        
-
-<!-- Button -->
-<div class="row justify-content-center">
-    <div class="room-btn">
-        <a href="/shop" class="border-btn">Browse More</a>
+        </div>
     </div>
-</div>
-</div>
 </div>
 <!--? New Arrival End -->
-<!--? collection -->
-<section class="collection section-bg2 section-padding30 section-over1 ml-15 mr-15" data-background="assets/img/gallery/section_bg01.png">
-    <div class="container-fluid"></div>
-    <div class="row justify-content-center">
-        <div class="col-xl-7 col-lg-9">
-            <div class="single-question text-center">
-                <h2 class="wow fadeInUp" data-wow-duration="2s" data-wow-delay=".1s">collection houses our first-ever</h2>
-                <a href="about.html" class="btn class="wow fadeInUp" data-wow-duration="2s" data-wow-delay=".4s" style="background-color: #088178;">About Us</a>
-            </div>
-        </div>
-    </div>
-</div>
-</section>
-<!-- End collection -->
-<!--? Popular Locations Start 01-->
-<div class="popular-product pt-50">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-6 col-md-6 col-sm-12">
-                <div class="single-product mb-50">
-                    <div class="location-img">
-                        <img src="assets/img/gallery/popular-imtes1.png" alt="">
-                    </div>
-                    <div class="location-details">
-                        <p><a href="product_details.html">Established fact that by the<br> readable content</a></p>
-                        <a href="product_details.html" class="btn" style="background-color: #088178;">Read More</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-6 col-md-6 col-sm-12">
-                <div class="single-product mb-50">
-                    <div class="location-img">
-                        <img src="assets/img/gallery/popular-imtes2.png" alt="">
-                    </div>
-                    <div class="location-details">
-                        <p><a href="product_details.html">Established fact that by the<br> readable content</a></p>
-                        <a href="product_details.html" class="btn" style="background-color: #088178;">Read More</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Popular Locations End -->
+
 <!--? Services Area Start -->
 <div class="categories-area section-padding40 gray-bg">
     <div class="container-fluid">
@@ -383,14 +309,14 @@
 
 </main>
 
+<!-- scrit for add to wishlist -->
 <script>
+    //function for add to wishlist ajax request
     function addToWishlist(productId) {
-        console.log("Function addtowishlist called with productid", productId);
         $.ajax({
             url: '/addToWishlist?id=' + productId,
             method: 'get',
             data: { productId: productId },
-
             success: function(response) {
                 console.log("Response from server:", response);
                 if (response.success) {

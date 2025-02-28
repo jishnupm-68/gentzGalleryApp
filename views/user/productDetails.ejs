@@ -20,14 +20,11 @@
             <a href="/" rel="nofollow">Home</a>
             <span></span>
             <a href="/shop" rel="nofollow">Shop</a>
-            <span></span>
-            
+            <span></span>       
             <a href="#" rel="nofollow">Product details</a>
         </nav>
     </div>
 </div>
-
-
 
  <section class="mt-50 mb-50">
      <div class="container">
@@ -51,13 +48,13 @@
                             <div class="carousel-inner">
                               <div class="carousel-item active product-image-container">
 
-                                <img class="d-block w-100 product-image" id="zoom-image" src="/uploads/product-imagesResized/<%= product.productImage[0] %>" alt="First slide" style="object-fit:contain ;">
+                                <img class="d-block w-100 product-image" id="zoom-image" name="imagezoom" src="/uploads/product-imagesResized/<%= product.productImage[0] %>" alt="First slide" style="object-fit:contain ;">
                               </div>
                               <div class="carousel-item   product-image-container">
-                                <img class="d-block w-100 product-image" id="zoom-image" src="/uploads/product-imagesResized/<%= product.productImage[1] %>" alt="Second slide" style="object-fit:contain ;">
+                                <img class="d-block w-100 product-image" id="zoom-image" name="imagezoom" src="/uploads/product-imagesResized/<%= product.productImage[1] %>" alt="Second slide" style="object-fit:contain ;">
                               </div>
                               <div class="carousel-item   product-image-container">
-                                <img class="d-block w-100 product-image" id="zoom-image" src="/uploads/product-imagesResized/<%= product.productImage[2] %>" alt="Third slide" style="object-fit:contain ;">
+                                <img class="d-block w-100 product-image" id="zoom-image" name="imagezoom" src="/uploads/product-imagesResized/<%= product.productImage[2] %>" alt="Third slide" style="object-fit:contain ;">
                               </div>
                             </div>
                             <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
@@ -121,19 +118,6 @@
                                   </div>
                                 
                                   <div class="bt-1 border-color-1 mt-30 mb-30"></div>
-                                  <!-- <div class="detail-extralink">
-                                      <div class="detail-qty border radius">
-                                          <a href="#" class="qty-down" onclick="return decrementValue()" ><i class="fi-rs-angle-small-down"></i></a>
-                                          <div class="qty-val" id="quantity" value="">1</div>
-                                          <a href="#" class="qty-up" onclick="return incrementValue()"><i class="fi-rs-angle-small-up"></i></a>
-                                      </div>
-                                      <div class="product-extra-link2">
-
-                                        <button type="submit" class="button button-add-to-cart" onclick="addToCart('<%= product._id %>')" >Add to Cart</button>
-                                          <a aria-label="Add To Wishlist" class="action-btn hover-up" href="#"><i class="fi-rs-heart"></i></a>
-                                      </div>
-                                  </div> -->
-
                                     <form action="/addToCart" method="post">
                                         <div class="detail-extralink">
                                             <% if(quantity<=0) {%>
@@ -143,16 +127,12 @@
                                                 
                                                 <a href="#" class="qty-up" onclick=""><i class="fi-rs-angle-small-up"></i></a>
                                             </div>
-
-
                                             <% }else {%>
                                                 <div class="detail-qty border radius">
                                                     <a href="#" class="qty-down" onclick="return decrementValue()"  ><i class="fi-rs-angle-small-down"></i></a>
-                                                    <div class="qty-val" id="quantity" value="" name="quantity">1</div>
-                                                    
+                                                    <div class="qty-val" id="quantity" value="" name="quantity">1</div>                                                   
                                                     <a href="#" class="qty-up" onclick="return incrementValue()" ><i class="fi-rs-angle-small-up"></i></a>
                                                 </div>
-
                                                 <% } %>
                                             <div class="product-extra-link2">
                                                 <input type="text" style="display: none;"name="quantity" id = "quantityUpdated" value="1">
@@ -163,28 +143,21 @@
                                                 <% }else{ %>
                                                     <button type="submit" class="button button-add-to-cart btn"  >Add to Cart</button>
                                                     <% } %>
-                                              <!-- <button type="submit" class="button button-add-to-cart" onclick="addToCart('<%= product._id %>')" >Add to Cart</button> -->
                                                 <a aria-label="Add To Wishlist" class="action-btn hover-up" href="#" onclick="addToWishlist('<%= product._id %>')"><i class="fi-rs-heart"></i></a>
                                             </div>
                                         </div>
                                     </form>
-
-
-
                                   <ul class="product-meta font-xs color-grey mt-50">
-                                      <!-- <li class="mb-5">Stock Code: <a href="#">FWM15VKT</a></li> -->
                                       <li class="mb-5">Tags: <a href="#" rel="tag"></a><%=category.name %> <a href="#" rel="tag"></a> <a href="#" rel="tag"></a> </li>
                                       <% if(quantity==0) {%>
-                                         <li>Availability:<span class="out-of-stock text-danger ml-5">Out of Stock</span></li>
- 
+                                         <li>Availability:<span class="out-of-stock text-danger ml-5">Out of Stock</span></li> 
                                          <% }else{ %>
                                       <li id="availability" data-quantity="<%= quantity %>">Availability:<span class="in-stock text-success ml-5" ><%=quantity %></span></li>
                                       <% } %>
                                   </ul>
                               </div>
                           </div>
-                      </div>
-                     
+                      </div>                   
                   </div>
               </div>
           </div>
@@ -238,6 +211,29 @@
  
  
  </main>
+
+
+ <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const img = document.getElementById("zoom-image");
+        const container = document.querySelector('.product-image-container');
+        const zoomFactor = 2; // Zoom level
+        container.addEventListener("mousemove", (e) => {
+            const rect = container.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+            img.style.transformOrigin = `${x}% ${y}%`;
+            img.style.transform = `scale(${zoomFactor})`;
+        });
+
+        container.addEventListener("mouseleave", () => {
+            img.style.transform = "scale(1)";
+        });
+    });
+</script>
+
+
 
 
  <script>
@@ -297,15 +293,6 @@
     }
  </script>
 
-<script>
-    const image = document.getElementById('zoom-image');
-    image.addEventListener('mouseenter', function() {
-      this.style.transform = 'scale(1.5)';
-    });
-    image.addEventListener('mouseleave', function() {
-      this.style.transform = 'scale(1)';
-    });
-  </script> 
 
 <!-- quantity changing -->
   <script>

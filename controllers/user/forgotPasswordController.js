@@ -4,11 +4,12 @@ const bcrypt = require('bcrypt')
 const env = require('dotenv').config();
 const session = require("express-session");
 
-
+//function for generating otp
 function generateOtp(){
     return Math.floor(100000 + Math.random() * 900000)
 }
 
+//function for senting the otp via email
 const sentVerificationEmail =  async(email,otp)=>{
     try {
         const transporter = nodemailer.createTransport({
@@ -29,7 +30,7 @@ const sentVerificationEmail =  async(email,otp)=>{
             html: `<b>Your Verification Code for changing the password: ${otp}</b> `
         }       
         const info = await transporter.sendMail(mailOptions);
-        console.log("Email sent", info.messageId, otp)
+        console.log("Email sent", otp)
         return true    
     } catch (error) {
         console.error("ERror while sending email",error)
@@ -37,6 +38,7 @@ const sentVerificationEmail =  async(email,otp)=>{
     }
 }
 
+//function for rendering the forgot password page
 const loadForgotPasswordPage =async (req,res)=>{
     try {
         console.log("rendering the page for verify email to change the password")
@@ -47,9 +49,9 @@ const loadForgotPasswordPage =async (req,res)=>{
     }
 }
 
+//function for senting otp
 const forgotEmailValid = async (req,res)=>{
     try {
-        console.log(req.body,req.query.email,req.params)
         const {email} = req.body
         const findUser = await User.findOne({email:email})
         if(findUser){
@@ -75,6 +77,7 @@ const forgotEmailValid = async (req,res)=>{
     }
 }
 
+//function for rendering the verify otp page
 const loadForgotPasswordVerifyOtp = async (req,res)=>{
     try {
         console.log("rendering verify otp page for password change")
@@ -85,6 +88,7 @@ const loadForgotPasswordVerifyOtp = async (req,res)=>{
     }
 }
 
+//function for verifying the otp and redirect to the next page
 const verifyForgotPasswordOtp = async(req,res)=>{
     try{
         const enteredOtp  = Number(req.body.otp);
@@ -103,6 +107,7 @@ const verifyForgotPasswordOtp = async(req,res)=>{
     }
 }
 
+//function for rendering the change password page
 const loadChangePassword = async(req,res)=>{
     try{
         console.log("rendering page for adding the new password")
@@ -113,6 +118,7 @@ const loadChangePassword = async(req,res)=>{
     }
 }
 
+//function for resenting the otp
 const resendOtpForgotPassword = async(req,res)=>{
     console.log("Resending otp to change password")
     try {
@@ -127,6 +133,7 @@ const resendOtpForgotPassword = async(req,res)=>{
             console.log("Resend otp", otp);
             res.status(200).json({success:true, message:"Otp resent successfully"})
         }else{
+            console.log("Email otp not sent, something went wrong");
             res.status(500).json({success:false, message:"Failed to resend the otp Please try again"})
         }
     } catch (error) {
@@ -135,13 +142,12 @@ const resendOtpForgotPassword = async(req,res)=>{
     }
 }
 
+//function for resetting the password
 const resetPassword = async(req,res)=>{
     try{
-        console.log(req.body)
         const newPassword = req.body.password;
         const confirmPassword = req.body.confirmPassword;
         if(newPassword !== confirmPassword){
-            //res.render('changePassword', {message:"Password do not match"})
             res.status(400).json({success:false, message:"Password do not match"})
         }else{
             const hashedPassword = await bcrypt.hash(newPassword,10);
@@ -151,6 +157,7 @@ const resetPassword = async(req,res)=>{
                 {$set:{password:hashedPassword}}
             );
             req.session.userData = undefined
+            console.log("Password changed successfully")
             res.status(200).json({success:true, message:"Password changed successfully" , redirectUrl:"/login"})
         }
     }catch(error){
@@ -159,6 +166,7 @@ const resetPassword = async(req,res)=>{
     }
 }
 
+//exporting functions
 module.exports = {
     loadForgotPasswordPage,
     forgotEmailValid,

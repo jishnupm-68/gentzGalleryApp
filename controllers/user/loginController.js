@@ -1,13 +1,6 @@
-const { render } = require("../../app")
-const env= require("dotenv").config();
-const User = require('../../models/userSchema')
-const Category = require('../../models/categorySchema');
-const Product  = require('../../models/productSchema');
-const Brand = require('../../models/brandSchema');
-const Banner = require('../../models/bannerSchema');
-const nodemailer = require("nodemailer");
-const bcrypt = require("bcrypt")
 
+const User = require('../../models/userSchema')
+const bcrypt = require("bcrypt")
 
 
 //render the login page
@@ -25,11 +18,11 @@ const loadLogin = async(req,res)=>{
     }
 }
 
+// function for login 
 const login = async(req,res)=>{
     try {
         const {email,password} = req.body
         const findUser = await User.findOne({isAdmin:false, email:email});
-        //console.log(findUser)
         if(!findUser){
             return res.render("login",{message:"User not found"})
         }
@@ -49,6 +42,7 @@ const login = async(req,res)=>{
     }
 }
 
+// function for logout
 const logout = async (req,res)=>{
     try {
         req.session.destroy((err)=>{
@@ -64,23 +58,17 @@ const logout = async (req,res)=>{
     }
 }
 
+// function for google login
 const googleLogin = async (req,res)=>{
     try{
-        const userEmail= req.user.email;
-        
+        const userEmail= req.user.email;       
         const user = await User.findOne({isAdmin:false,email:userEmail});
-        // if(!user){
-        //     return res.redirect("/signup")
-        // }
-       
         if(!user){
             return res.render("login",{message:"User not found"})
         }
         if(user.isBlocked){
-            //res.json({success:false, message:"User is blocked by admin"})
             res.render("login",{message:"User is blocked by admin"})
-        }  
-        console.log("google login",req.session)   
+        }    
         req.session.user = user._id;
         res.redirect('/')
     }
@@ -90,6 +78,7 @@ const googleLogin = async (req,res)=>{
     }
 }
 
+//exporting modules
 module.exports= {
     loadLogin,  
     login,

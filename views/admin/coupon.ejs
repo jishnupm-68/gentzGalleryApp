@@ -49,17 +49,16 @@
    border-color: #0056b3;
  }
  </style>
-<section class="content-main container " style="margin-left: 19%; padding-top: 5%;">
+<section class="content-main  " style="margin-left: 19%; padding-top: 5%;">
  <div class="content-header">
    <div>
      <h2 class="content-title card-title">Coupons</h2>
    </div>
  </div>
- <div class="card">
+ <div class="card " >
   <button class="btn btn-primary col-md-2 m-3" > <a href="/admin/addCoupon" class="text-light">Add Coupon</a></button>
-   <div class="card-body">
-     <div class="row">
-       
+   <div class="card-body ">
+     <div class="row"> 
        <div class="col-md-11 ml-105">
          <div class="table-responsive">
              <table class="table table-hover">
@@ -68,9 +67,9 @@
                          <th>Name</th>
                          <th>Created On</th>
                          <th>Expire On</th>
-                         <th>Percentage  offer</th>   <!--  newly added   -->
-                         <th>Offer Price</th>
-                         <th>Minimum Price</th>
+                         <th>Percentage  offer</th>   
+                         <th>Flat/ Maximum discount</th>
+                         <th>Minimum Purchase amount</th>
                          <th>Status</th>
                          <th>Change status</th>
                          <th>Edit/Delete</th>
@@ -118,78 +117,27 @@
      </div>
    </div>
  </div>
+
+  <!-- pagination -->
+  <div class="container mt-3">
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center mb-20" style="margin-right: 200px;">
+            <% for (let i = 1; i <= totalPages; i++) { %>
+                <li class="page-item <%= (i === currentPage) ? 'active' : '' %>">
+                    <a class="page-link" href="?page=<%= i %>">
+                        <%= i %>
+                    </a>
+                </li>
+            <% } %>
+        </ul>
+    </nav>
+</div>
 </section>
 
+<!-- script for performing the operations in the coupon page -->
 <script>
 
- function validateForm(e) {
-    let form = document.getElementById("couponForm");
-    e.preventDefault();
-   document.querySelectorAll(".error-message").forEach((element) => (element.innerHTML = ""));
-   const sDate = document.getElementsByName("startDate")[0].value;
-   const eDate = document.getElementsByName("endDate")[0].value;
-   const sDateObj = new Date(sDate);
-   const eDateObj = new Date(eDate);
-   const todayDateObj = new Date();
-   todayDateObj.setHours(0, 0, 0, 0);
-
-    if(!eDate){
-        document.getElementById("error-end-date").innerHTML ="End date is required";
-        return false;
-    }
-   if (sDateObj > eDateObj) {
-     document.getElementById("error-end-date").innerHTML ="End date should be after the start date";
-     return false;
-   }
-
-
-   if (sDateObj <= todayDateObj) {
-     document.getElementById("error-start-date").innerHTML ="Starting date should be greater than or equal to today's date";
-     return false;
-   }
-
-
-   let name = document.getElementsByName("couponName")[0].value;
-   const nameRegex = /^[A-Za-z0-9]{1,50}$/;
-
-
-   if (!nameRegex.test(name)) {
-     document.getElementById("error-coupon-name").innerHTML =
-       "Coupon Name error";
-     return false;
-   }
-
-
-   const offerPriceInput = document.getElementsByName("offerPrice")[0];
-   const minimumPriceInput = document.getElementsByName("minimumPrice")[0];
-
-
-   const offerPrice = offerPriceInput.value.trim() !== ""? parseInt(offerPriceInput.value): NaN;
-   const minimumPrice = minimumPriceInput.value.trim() !== ""? parseInt(minimumPriceInput.value): NaN;
-
-
-   if (isNaN(offerPrice) || isNaN(minimumPrice) || offerPrice >= minimumPrice) {
-     document.getElementById("error-offer-price").innerHTML = "Offer Price must be greater than Minimum Price";
-     return false;
-   }
-
-
-   if (isNaN(offerPrice) || isNaN(minimumPrice)) {
-     document.getElementById("error-offer-price").innerHTML ="Please enter numeric values for Offer Price and Minimum Price";
-     return false;
-   }
-       const formData = {
-       couponName: name,
-       startDate: sDateObj,
-       endDate: eDateObj,
-       offerPrice: offerPrice,
-       minimumPrice: minimumPrice
-   };
-   form.submit();
-   return true;
- }
-
-
+//function for alert for comfirming delete
 function confirmDelete(couponId) {
    Swal.fire({
      title: "Are you sure?",
@@ -205,6 +153,8 @@ function confirmDelete(couponId) {
      }
    });
  }
+
+ //function for unlisting the coupon
  function unListCoupon(couponId) {
    Swal.fire({
      title: "Are you sure?",
@@ -250,6 +200,7 @@ function confirmDelete(couponId) {
    }) 
   }
 
+  //function for listing the coupon
   function listCoupon(couponId) {
    Swal.fire({
      title: "Are you sure?",
@@ -294,10 +245,8 @@ function confirmDelete(couponId) {
       } 
    }) 
   }
-
   
-
-
+ // function for deleting the coupon
  function deleteCoupon(couponId) {
    $.ajax({
      url: `/admin/deletecoupon?id=${couponId}`,
@@ -331,18 +280,5 @@ function confirmDelete(couponId) {
    });
  }
 
- 
- function setDefaultStartDate() {
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = (today.getMonth()+1).toString().padStart(2,"0");
-        const day = today.getDate().toString().padStart(2,"0");
-        console.log(":added today",`${year}-${month}-${day}`);
-        const tomorrow = new Date(today);
-        tomorrow.setDate(today.getDate() + 1);
-        console.log(":added today",`${year}-${month}-${day}`);
-        document.getElementsByName("startDate")[0].value = `${year}-${month}-${day}`;
-        document.getElementsByName("expiringDate")[0].value = tomorrow.toISOString().split("T")[0];
-    }
 </script>
 <%- include("../../views/partials/admin/footer") %>

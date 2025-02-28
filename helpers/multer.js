@@ -1,20 +1,7 @@
 const multer = require("multer");
 const path = require("path");
 
-// const storage = multer.diskStorage({
-//     destination:(req,file,cb)=>{
-//         cb(null,path.join(__dirname,"../../public/uploads/product-images"));
-
-//     },
-//     filename:(req,file,cb)=>{
-//         cb(null,Date.now()+"-"+file.originalname)
-//     }
-// })
-
-
-
-
-
+//function for handling the uploaded images
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         const uploadPath = path.join(__dirname, "../../GentzGalleryApp/public/uploads/brands");
@@ -25,10 +12,6 @@ const storage = multer.diskStorage({
         cb(null, uniqueSuffix + "-" + file.originalname); // Add a unique suffix to the file name
     },
 });
-
-
-
-
 
 module.exports = storage
 

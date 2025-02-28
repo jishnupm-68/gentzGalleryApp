@@ -1,4 +1,6 @@
 <%- include("../../views/partials/user/header") %>
+
+<!-- contents in edit address page-->
 <div class="container mt-4">
    <h3 class="mt-3" style="color: #046963; margin-bottom:70px">Edit User Address</h3>
    <form id="addressForm" method="post" action="/editAddress?id=<%= address._id %>" class="border-0 p-3">
@@ -43,16 +45,53 @@
        <button type="submit" id="submitButton" class="btn btn-primary">Submit</button>
    </form>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<input type="text" name="" id="addressId" value="<%= address._id %>" hidden>
+
+<!-- Script for validating edit address data -->
 <script>
-  
+  // event listner for Validate edit address data with ajax request
    document.getElementById('addressForm').addEventListener('submit', function(event) {
        if (!validateForm()) {
            event.preventDefault();
-       }
-   });
+       }else{
+        let addressId = document.getElementById('addressId').value;
+        $('#addressForm').on('submit', function(e) {
+            e.preventDefault(); 
+            
+            $.ajax({
+                url: `/editAddress?id=${addressId}`,
+                type: 'POST',
+                data: $(this).serialize(),                
+                    success: function(response) {
+                        if(response.success) {
+                            Swal.fire({
+                                icon:'success',
+                                title: response.message,
+                                showConfirmButton: false,
+                                timer: 1500,
+                            }).then(() => {
+                                window.location.href = response.redirectUrl;
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: response.message,
+                            });
+                            window.location.href = response.redirectUrl;
+                        }                  
+                    },
+                    error: function(xhr) {
+                        console.error("Error:", xhr.responseText);
+                    }
+                });
+            });  
+        }
+    });
 
-
+   //function for validate edit address data 
    function validateForm() {
        let isValid = true;
        const requiredFields = ["addressType", "name", "city", "landMark", "state", "pincode", "phone", "altPhone"];
@@ -60,7 +99,6 @@
            const input = document.getElementById(field);
            const inputValue = input.value.trim();
            const errorElement = document.getElementById(field + '-error');
-
 
            if (inputValue === "") {
                if (!errorElement) {
@@ -78,7 +116,6 @@
                }
            }
        });
-
 
        const addressType = document.getElementById('addressType').value;
        const name = document.getElementById('name').value;
@@ -107,14 +144,6 @@
            });
            isValid = false;
        }
-    //    if (!namePattern.test(landMark)) {
-    //        Swal.fire({
-    //            title: 'Error',
-    //            text: 'Landmark should contain alphabets only.',
-    //            icon: 'error'
-    //        });
-    //        isValid = false;
-    //    }
        if (!namePattern.test(state)) {
            Swal.fire({
                title: 'Error',
@@ -157,5 +186,6 @@
        }
        return isValid;
    }
+   
 </script>
 <%- include("../../views/partials/user/footer") %>
