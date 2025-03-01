@@ -3,7 +3,7 @@ const Product = require("../../models/productSchema");
 const User = require("../../models/userSchema");
 const mongoose = require("mongoose");
 
-
+//rendering the wishlist page
 const loadWishlist = async(req,res)=>{
     try {
         const userId = req.session.user; 
@@ -21,6 +21,7 @@ const loadWishlist = async(req,res)=>{
     }
 }
 
+
 //add the item to the wishlist
 const addToWishlist = async (req, res) => {
     try {
@@ -36,7 +37,6 @@ const addToWishlist = async (req, res) => {
         if(!userId){
             console.log("Please login")
             return res.json({ success: false, message: "Please Login to your account" });
-
         }
         if (!wishlist) {      
             wishlist = new Wishlist({
@@ -46,8 +46,8 @@ const addToWishlist = async (req, res) => {
             await wishlist.save();
             console.log("New wishlist created and product added");
         } else {  
-            const productExists = wishlist.products.some(item => item.productId.equals(productObjectId));
 
+            const productExists = wishlist.products.some(item => item.productId.equals(productObjectId));
             if (productExists) {
                 console.log("Product already in wishlist");
                 return res.status(200).json({ success: false, message: "Product already in wishlist" });
@@ -56,9 +56,8 @@ const addToWishlist = async (req, res) => {
             await wishlist.save();
             console.log("Product added to wishlist");
         }
-
+        console.log("Product added to wishlist")
         res.status(200).json({ success: true, message: "Product added to wishlist successfully" });
-
     } catch (error) {
         console.error("Failed to add product to wishlist", error);
         res.status(500).json({ success: false, message: "Failed to add product to wishlist, please try again later" });
@@ -76,8 +75,7 @@ const deleteWishlistItem = async (req,res)=>{
                 {products:{productId:new mongoose.Types.ObjectId(productId)}}       
             },
             {new:true}
-        );
-        
+        ); 
         if(result){
             console.log("Wishlist item deleted successfully",result);
             res.status(200).json({success:true, message:"Wishlist item deleted successfully"})    
@@ -92,6 +90,7 @@ const deleteWishlistItem = async (req,res)=>{
 }
 
 
+//exporting functions
 module.exports = {
     loadWishlist,
     addToWishlist,

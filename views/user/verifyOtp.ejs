@@ -51,6 +51,7 @@
     </div>
   </div>
   <!-- Preloader Start-->
+
   <header>
     <!-- Header Start -->
     <div class="header-area ">
@@ -71,34 +72,18 @@
                         <li><a href="#">Men</a></li>
                         <li><a href="#">Boys</a></li>
                         <li><a href="#">Contact</a></li>
-                        <!-- <li><a href="blog.html">Blog</a>
-                            <ul class="submenu">
-                                <li><a href="blog.html">Blog</a></li>
-                                <li><a href="blog_details.html">Blog Details</a></li>
-                                <li><a href="elements.html">Elements</a></li>
-                                <li><a href="product_details.html">Product Details</a></li>
-                            </ul>
-                        </li> -->
                         <% if(locals.user ) { %>
                             <div class="dropdown">
                                <li><a href="" class="sign-in-link"><%=locals.user.name %></a></li> 
-                                <div class="dropdown-content">
-                                    
+                                <div class="dropdown-content">                                   
                                         <a href="/userProfile">Profile</a>
                                         <a href="/logout">Logout</a>
-                                   
-                                   
-
                                 </div>
                             </div>
                         <% } else {%>
                             <li><a href="/login">Login</a></li>
                             <li><a href="/signup">Signup</a></li>
-
-                            <% } %>
-                        
-                        
-                   
+                        <% } %>              
                     </ul>
                 </nav>
             </div>   
@@ -106,20 +91,11 @@
         <div class="header-right1 d-flex align-items-center">
             <!-- Social -->
             <div class="header-social d-none d-md-block">
-                <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="#"><i class="fab fa-facebook-f"></i></a>
-                <a href="#"><i class="fab fa-pinterest-p"></i></a>
                 <a href="/Wishlist" ><i class="fas fa-heart "></i></a>
             </div>
             <!-- Search Box -->
             <div class="search d-none d-md-block">
                 <ul class="d-flex align-items-center">
-                    <!-- <li class="mr-15">
-                        <div class="nav-search search-switch">
-                            <i class="ti-search"></i>
-                        </div>
-                    </li> -->
-                    
                         <div class="card-stor">
                             <a href="/cart"><img src="assets/img/gallery/card.svg" alt=""></a>
                             <span></span>
@@ -139,78 +115,48 @@
     <!-- Header End -->
   </header>
   <!-- header end -->
+
+  <!-- contents starts here -->
   <main>
-
-    <!--? Services Area End -->
-
-
-    <!-- Registration 4 - Bootstrap Brain Component -->
     <section class="p-3 p-md-4 p-xl-5">
       <div class="container">
         <div class="">
           <div class="row g-0 justify-content-center align-items-center ">
-            <!-- here logo -->
-            <!-- <div class="col-12 col-md-6">
-              <img class="img-fluid rounded-start w-100 h-100 object-fit-cover" loading="lazy"
-                src="assets/img/logo/logo-img-1.jpg" alt="GentzGallery Logo">
-            </div> -->
             <div class="col-12 col-md-6 col-lg-4 d-flex justify-content-center align-items-center  ">
-              <div class="card-body p-3 p-md-4 p-xl-5 " style="background-color: rgb(224, 224, 224);">
-                <div class="row">
-                  <div class="col-12">
-                    <div class="mb-5">
-                      <!-- <h2 class="h3">Registration</h2>
-                      <h3 class="fs-6 fw-normal text-secondary m-0">Enter your details to register</h3> -->
-                    </div>
-                  </div>
+              <div class="card-body p-3 p-md-4 p-xl-5 " style="background-color: rgb(224, 224, 224);">               
+                <div class="heading_s1">
+                    <h3 class="h3">Verify Your Email </h3>
                 </div>
-
-
-               
-                 
-                      
-                          <div class="heading_s1">
-                              <h3 class="h3">Verify Your Email </h3>
-                          </div>
-                          <form id="otpForm" action="/verifyOtp" method="post" onsubmit="return validateOtpForm()">
-                              <div class="form-group">
-                                  <label for="otp">Enter OTP:</label>
-                                  <input type="text" id="otp" name="otp" class="form-control" required maxlength="6" pattern="\d*" />
-                              </div>
-                              <button id="verifyButton" type="submit" class="btn text-light" style="background-color: #088178;">Verify Email</button>
-                              <div class="form-group text-center">
-                                  <div id="otpTimer" class="otp-timer text-danger">
-                                    <h3 class="h3">
-                                      <span id="timerValue" class="text-danger"> </span>
-                                    </h3>
-                                  </div>
-                                  <button id="resendButton" type="button" class="btn btn-secondary" onclick="resendOtp()">Resend OTP</button>
-                              </div>
-                              <% if (locals.message && message.length > 0) { %>
-                              <div class="alert alert-danger"><%= message %></div>
-                              <% } %>
-                          </form>
-                          <div class="text-muted text-center pt-25">
-                              Already verified? <a href="/login">Login now</a>
-                          </div>
-                      
-                  
-              
-  
-
-
-
+                <form id="otpForm" action="/verifyOtp" method="post" onsubmit="return validateOtpForm()">
+                    <div class="form-group">
+                        <label for="otp">Enter OTP:</label>
+                        <input type="text" id="otp" name="otp" class="form-control" required maxlength="6" pattern="\d*" />
+                    </div>
+                    <button id="verifyButton" type="submit" class="btn text-light" style="background-color: #088178;">Verify Email</button>
+                    <div class="form-group text-center">
+                        <div id="otpTimer" class="otp-timer text-danger">
+                          <h3 class="h3">
+                            <span id="timerValue" class="text-danger"> </span>
+                          </h3>
+                        </div>
+                        <button id="resendButton" type="button" class="btn btn-secondary" onclick="resendOtp()">Resend OTP</button>
+                    </div>
+                    <% if (locals.message && message.length > 0) { %>
+                    <div class="alert alert-danger"><%= message %></div>
+                    <% } %>
+                </form>
+                <div class="text-muted text-center pt-25">
+                    Already verified? <a href="/login">Login now</a>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </section>
-
-
-
-
   </main>
+
+
   <footer>
     <!-- Footer Start-->
     <div class="footer-area footer-padding bg-secondary">
@@ -221,18 +167,12 @@
               <div class="single-footer-caption mb-30">
                 <!-- logo -->
                 <div class="footer-logo mb-35">
-                  <a href="index.html" class="h1 text-light" text-decoration:none>GentzGallery</a>
+                  <a href="/" class="h1 text-light" text-decoration:none>GentzGallery</a>
                 </div>
                 <div class="footer-tittle">
                   <div class="footer-pera">
                     <p>Where to find the perfect watch</p>
                   </div>
-                </div>
-                <!-- social -->
-                <div class="footer-social">
-                  <a href="#"><i class="fab fa-twitter"></i></a>
-                  <a href="https://bit.ly/sai4ull"><i class="fab fa-facebook-f"></i></a>
-                  <a href="#"><i class="fab fa-pinterest-p"></i></a>
                 </div>
               </div>
             </div>
@@ -255,7 +195,6 @@
                 <ul>
                   <li><a href="#">Our Story</a></li>
                   <li><a href="#">Contact Us</a></li>
-
                 </ul>
               </div>
             </div>
@@ -267,7 +206,6 @@
                 <ul>
                   <li><a href="#">Men</a></li>
                   <li><a href="#">Boys</a></li>
-
                 </ul>
               </div>
             </div>
@@ -310,9 +248,7 @@
     </div>
     </footer>
     <!-- Footer End-->
-    <!--? Search model Begin -->
-   
-    <!-- Search model end -->
+ 
     <!-- Scroll Up -->
     <div id="back-top">
       <a title="Go to Top" href="#"> <i class="fas fa-level-up-alt"></i></a>
@@ -359,27 +295,23 @@
     <script src="./assets/js/main.js"></script>
 
 
-
-
   
-
+    <!-- script for validating and verifying otp -->
     <script>
       document.getElementById("otp").focus();
   
       let timer = 60;
       let timerInterval;
   
+      //function for starting the timer
       function startTimer() {
-          console.log("Timer started");
           // Disable the resend button and reset the timer visually
           document.getElementById("resendButton").disabled = true;
           document.getElementById("timerValue").classList.remove("expired");
           document.getElementById("timerValue").textContent = timer;
-  
           timerInterval = setInterval(() => {
               timer--;
               document.getElementById("timerValue").textContent = "Resend in " +timer+'s';
-  
               if (timer <= 0) {
                   clearInterval(timerInterval);
                   document.getElementById("verifyButton").disabled = true;
@@ -387,14 +319,15 @@
                   document.getElementById("resendButton").disabled = false;
                   document.getElementById("timerValue").classList.add("expired");
                   document.getElementById("timerValue").textContent = "Expired";
-  
                   // Disable the OTP input when time expires
                   document.getElementById("otp").disabled = true;
               }
           }, 1000);
       }
+      
       startTimer();
-  
+      
+      // Function to verify the OTP entered by ajax request
       function validateOtpForm() {
           const otpInput = document.getElementById("otp").value;
           $.ajax({
@@ -409,7 +342,6 @@
                           showConfirmButton: false,
                           timer: 5000,
                           timerProgressBar: true,
-                          
                       }).then(() => {
                           window.location.href = response.redirectUrl;
                       });
@@ -417,7 +349,7 @@
                       Swal.fire({
                           icon: "error",
                           title: "Error",
-                          text: response.message, // Fixed this line to use the actual response message
+                          text: response.message, 
                       });
                   }
               },
@@ -432,11 +364,10 @@
           return false;
       }
   
+      //function for resending otp
       function resendOtp() {
-          clearInterval(timerInterval); // Stop the previous timer
-          timer = 60; // Reset the timer countdown
-  
-          // Re-enable OTP input and reset timer UI
+          clearInterval(timerInterval); 
+          timer = 60; 
           document.getElementById("verifyButton").disabled = false;
           document.getElementById("otp").disabled = false;
           document.getElementById("timerValue").classList.remove("expired");
@@ -473,7 +404,7 @@
               },
           });
   
-          return false; // Prevent default form submission if inside a form
+          return false; 
       }
   </script>
 

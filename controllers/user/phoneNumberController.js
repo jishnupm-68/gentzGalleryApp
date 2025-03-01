@@ -1,16 +1,13 @@
 const User= require("../../models/userSchema");
-const Address = require("../../models/addressSchema");
-
 const nodemailer =require("nodemailer");
-const bcrypt = require("bcrypt");
-
-const env = require('dotenv').config();
 const session = require('express-session');
 
+//function for generating otp
 function generateOTP() {
     return Math.floor(100000 + Math.random() * 900000);
 }
 
+//function for sending the otp via email when the user tries to change their phone number
 const sentVerificationEmail = async(email,otp)=>{
     try {
         const transporter = nodemailer.createTransport({
@@ -31,7 +28,7 @@ const sentVerificationEmail = async(email,otp)=>{
             html: `<b>Your Verification Code for changing the phone number: ${otp}</b> `
         }
         const info = await transporter.sendMail(mailOption);
-        console.log("Email sent", info.messageId, otp);
+        console.log("Email sent", otp);
         return true       
     } catch (error) {
         console.log("error while senting the email",error);
@@ -53,17 +50,18 @@ const loadChangePhone  = (req,res)=>{
     })
 }
 
+//function for confirming email and sent the otp 
 const changePhoneEmailVerify = async (req,res)=>{
     try {
         const {email}  = req.body;
         const user = await User.findOne({_id:req.session.user});
-        console.log(email===user.email,email,user.email,email==user.email)
         if(email===user.email){
             const otp = generateOTP();
             const emailSent = await sentVerificationEmail(email,otp);
             if(emailSent){
                 req.session.userOtp = otp;
                 req.session.userData = {email};
+                console.log("email verified and otp sent successfully")
                 res.json({success:true, message:"Otp sent successfully", redirectUrl:"/changePhoneVerifyOtp"}) // success message to changePhoneVerifyOtp page
             }else{
                 console.log("Email not sent , something went wrong");
@@ -79,6 +77,7 @@ const changePhoneEmailVerify = async (req,res)=>{
     }
 }
 
+// rendering the verify otp page for changing the phone number
 const loadChangePhoneVerifyOtp = async (req,res)=>{
     try{
     const user = await User.findOne({_id:req.session.user});;
@@ -90,6 +89,7 @@ const loadChangePhoneVerifyOtp = async (req,res)=>{
     }
 }
 
+// function for verifying otp and redirect to the next page
 const verifyPhoneOtp =  (req,res)=>{ 
     const enteredOtp =  Number(req.body.otp);
     new Promise((resolve,reject)=>{
@@ -100,6 +100,7 @@ const verifyPhoneOtp =  (req,res)=>{
         }
     })
     .then(()=>{
+        console.log("otp verified and redirect to adding new phone number page")
         res.status(200).json({success:true, redirectUrl:"/changePhoneNew"});
     })
     .catch((error)=>{
@@ -108,6 +109,7 @@ const verifyPhoneOtp =  (req,res)=>{
     })   
 }
 
+// rendering the add new phone number page for changing the phone number
 const  loadChangePhoneNew =  (req,res)=>{
     User.findOne({email:req.session.userData.email})
     .then((user)=>{
@@ -121,8 +123,8 @@ const  loadChangePhoneNew =  (req,res)=>{
 
 }
 
+// function for updating the phone number
 const updatePhone =  (req,res)=>{
-    console.log(req.body)
     const {phone}= req.body;
     const userId = req.session.user;
     new Promise((resolve,reject)=>{
@@ -133,11 +135,6 @@ const updatePhone =  (req,res)=>{
                 }
                 console.log("Phone number updated successfully");
                 req.session.userData = {email:user.email};
-                // resolve({
-                //     success:true,
-                //     message:"Phone number updated successfully",
-                //     redirectUrl:"/userProfile"
-                // })
                 resolve(true)
             })
             .catch((error)=>{
@@ -159,6 +156,7 @@ const updatePhone =  (req,res)=>{
     })
 }
 
+//exporting functions
 module.exports = {
     loadChangePhone,
     changePhoneEmailVerify,

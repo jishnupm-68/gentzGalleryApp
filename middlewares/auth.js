@@ -4,7 +4,6 @@ const userAuth = (req,res,next) => {
     if(req.session.user){
         User.findOne({_id:req.session.user,isBlocked:false})
         .then(data=>{
-            //console.log(data)
             if(data && !data.isBlocked){
                 next();
             }else{

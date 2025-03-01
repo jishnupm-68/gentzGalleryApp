@@ -7,10 +7,12 @@ const bcrypt = require('bcrypt')
 const env = require('dotenv').config();
 const session = require("express-session");
 
+//function for generating otp
 function generateOtp(){
     return Math.floor(100000 + Math.random() * 900000)
 }
 
+//function for sending the otp via email
 const sentVerificationEmail =  async(email,otp)=>{
     try {
         const transporter = nodemailer.createTransport({
@@ -23,7 +25,6 @@ const sentVerificationEmail =  async(email,otp)=>{
                 pass:process.env.NODEMAILER_PASSWORD
             }
         })
-
         const mailOptions ={
             from: process.env.NODEMAILER_EMAIL,
             to: email,
@@ -31,20 +32,16 @@ const sentVerificationEmail =  async(email,otp)=>{
             text: `Your verification code is ${otp}`,
             html: `<b>Your Verification Code for changing the password: ${otp}</b> `
         }
-        
         const info = await transporter.sendMail(mailOptions);
-        console.log("Email sent", info.messageId, otp)
+        console.log("Email sent", otp)
         return true
-    
-} catch (error) {
-    console.error("ERror while sending email",error)
-    return false
-    
+    } catch (error) {
+        console.error("ERror while sending email",error)
+        return false 
+    }
 }
 
-
-}
-
+//rendering the user profile page
 const loadUserProfile = async(req,res)=>{
     try{
         console.log(req.body , req.session)
@@ -64,9 +61,11 @@ const loadUserProfile = async(req,res)=>{
     }
 }
 
+//rendering the change password page from user profile
 const loadChangePasswordFromProfile = async (req,res)=>{
     try{
         const user= await User.findOne({_id:req.session.user})
+        console.log("rendering the change password page from user profile")
         res.render('changePasswordFromProfile',{user:user})
     }catch(error){
         console.error("error while rendering the change password page",error)
@@ -74,30 +73,26 @@ const loadChangePasswordFromProfile = async (req,res)=>{
     }
 }
 
+//function for verifying email and senting the otp
 const verifyEmail = async (req,res)=>{
     try{
         const {email} = req.body;
-        console.log("email is", email,req.body,req.session)
         const userId = req.session.user;
         const sessionUser = await User.findOne({_id:userId});
-        //const userExists =  await User.findOne({email:email});
         if(email === sessionUser.email){
             const otp = generateOtp();
             const emailSent = await sentVerificationEmail(email,otp);
             if(emailSent){
                 req.session.userOtp = otp;
                 req.session.userData = {email}
-               // res.render('changeEmailVerifyOtpForPassword',{user:sessionUser})
                 res.json({success:true, message:"OTP successfully sent", redirectUrl:"/loadChangeEmailVerifyOtpForPassword"})
                 console.log("OTP SEND",otp)        
             }else{
                 console.log("Email not sent , something went wrong")
                 res.json({success:false, message:"Email not sent , something went wrong"})
-                //res.redirect('/login')
             }
         }else{
             console.log("no user with given email id")
-            //res.render("changePasswordFromProfile", {message:"The given email id is not matching with your account"})
             res.json({success:false, message:"The given email id is not matching with your account"})
         }
     }catch(error){
@@ -106,22 +101,24 @@ const verifyEmail = async (req,res)=>{
     }
 }
 
+//rendering the verify otp page for changing password 
 const loadChangeEmailVerifyOtpForPassword = async (req,res)=>{
     try{
         const user= await User.findOne({email:req.session.userData.email})
         res.render('changeEmailVerifyOtpForPassword',{user:user})
         console.log("rendering changeEmailVerifyOtpForPassword page")
     }catch(error){
-        console.error("error while rendering the change password new page",error)
+        console.error("error while rendering the change password  page",error)
         res.redirect('/pageNotFound')
     }
 }
 
+//function for verifying email otp for changing password
 const verifyEmailOtpForPassword =  async(req,res)=>{
     try{
         const enteredOtp = Number(req.body.otp);
-        console.log(req.body.otp, req.session.userOtp)
-        if(enteredOtp === req.session.userOtp){            
+        if(enteredOtp === req.session.userOtp){     
+            console.log("Otp verified successfully")       
             res.json({success:true, message:"OTP verified successfully", redirectUrl:"/changePasswordNew"})
         }else{
             console.log("error while validating the otp")
@@ -133,9 +130,11 @@ const verifyEmailOtpForPassword =  async(req,res)=>{
     }
 }
 
+//rendering the change password new page
 const loadChangePasswordNew = async (req,res)=>{
     try{
         const user= await User.findOne({email:req.session.userData.email})
+        console.log("rendering the change password new page")
         res.render('changePasswordNew',{user:user})
     }catch(error){
         console.error("error while rendering the change password new page",error)
@@ -143,21 +142,19 @@ const loadChangePasswordNew = async (req,res)=>{
     }
 }
 
+//function for updating the password  to the database  and hashed before storing
 const  updatePassword = async(req,res)=>{
     try{
-        console.log(req.body)
         const newPassword = req.body.password;
         const confirmPassword = req.body.confirmPassword;
         if(newPassword !== confirmPassword){        
             res.json({success:false, message:"Password do not match"})
         }else{
             const hashedPassword = await bcrypt.hash(newPassword,10);
-            console.log(req.session.userData,req.session)
             const {email} = req.session.userData;
             const user = await User.updateOne({email:email},
                 {$set:{password:hashedPassword}}
-            );
-            //req.session.userData = undefined    
+            );  
             res.json({success:true, message:"Password changed successfully", redirectUrl:"/userProfile"})
         }
     }catch(error){
@@ -166,6 +163,7 @@ const  updatePassword = async(req,res)=>{
     }
 }
 
+//exporting the functions  for user profile and change password
 module.exports = {
     loadUserProfile,
     loadChangePasswordFromProfile,

@@ -1,4 +1,4 @@
-const { render } = require("../../app")
+
 const env= require("dotenv").config();
 const User = require('../../models/userSchema')
 const nodemailer = require("nodemailer");
@@ -78,16 +78,16 @@ const signup = async (req, res) => {
         }
         req.session.userOtp = otp;
         req.session.userData = { name, phone, email, password };
-        //res.render("verifyOtp");
         res.status(200).json({success:true, message:"Otp sent successfully", redirectUrl:"/verifyOtp"})
         console.log("OTP SENT", otp);
-        return; // Prevent further execution
+        return; 
     } catch (error) {
         console.error("signup error", error);
-        res.status(500).render("pageNotFound"); // Ensure correct response
+        res.status(500).render("pageNotFound"); 
     }
 };
 
+//render the verify otp page
 const loadVerifyOtp = async (req,res)=>{
     try{
         console.log("rendering verify otp page for signup")
@@ -102,10 +102,8 @@ const loadVerifyOtp = async (req,res)=>{
 const verifyOtp = async (req,res)=>{
     try{
         const {otp} = req.body;
-        console.log(otp)
         if(otp === req.session.userOtp){
             const user = req.session.userData;
-            console.log("googleId", user.googleId, user)
             const passwordHash = await securePassword(user.password)
             let undefinedForGoogleId = undefined
             const saveUserData  = new User({
@@ -120,6 +118,7 @@ const verifyOtp = async (req,res)=>{
             req.session.user =saveUserData._id;
             res.json({success:true, redirectUrl :'/'})
         }else{
+            console.log("Invalid otp, please try again")
             res.status(400).json({success:false, message:"Invalid otp, please try again"})
         }
     }catch(error){
@@ -142,6 +141,7 @@ const resendOtp = async(req,res)=>{
             console.log("Resend otp", otp);
             res.status(200).json({success:true, message:"Otp resent successfully"})
         }else{
+            console.log("Email otp not sent, something went wrong");
             res.status(500).json({success:false, message:"Failed to resend the otp Please try again"})
         }
     } catch (error) {
@@ -150,6 +150,7 @@ const resendOtp = async(req,res)=>{
     }
 }
 
+//exporting functions
 module.exports={
     loadSignup,
     signup,

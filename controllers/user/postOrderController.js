@@ -2,8 +2,6 @@ const User = require("../../models/userSchema");
 const Product = require('../../models/productSchema');
 const Address =  require('../../models/addressSchema');
 const Order = require('../../models/orderSchema');
-const Coupon = require('../../models/couponSchema');
-const Cart = require('../../models/cartSchema');
 const mongoose = require("mongoose");
 const env = require('dotenv').config();
 const Razorpay  = require('razorpay');
@@ -13,7 +11,7 @@ const path = require("path");
 const payment = require('../../helpers/payment')
 
 
-
+//function for changing the quantity as per order status
 const decrementSaleCounts = async (cartItemQuantities) => {
     try {
       const bulkOperations = cartItemQuantities.map(item => ({
@@ -31,14 +29,13 @@ const decrementSaleCounts = async (cartItemQuantities) => {
     }
   };
 
+//function for rendering the order details page
 const getOrderDetailsPage = async (req,res)=>{
     try {
         const userId = req.session.user;
         const orderId = req.query.id;
-        //const addressId = req.session.addressId;
         const addressId  = await Order.findOne({_id:orderId},{address:1,_id:0});
         const aId= addressId.address
-        console.log("addressId",addressId.address,aId)
         const [addressData,findOrder,findUser]= await Promise.all ([
             Address.findOne({"address._id":aId}),
             Order.findOne({_id:orderId, userId:userId}),
@@ -48,7 +45,6 @@ const getOrderDetailsPage = async (req,res)=>{
         let grandTotal = findOrder.finalAmount;
         let discount = findOrder.discount;
         let totalPrice = findOrder.totalPrice;
-        console.log("FindOrdeR:",findOrder,address);
         res.render("orderDetails",{
             orders: findOrder,
             user: findUser,
@@ -58,17 +54,17 @@ const getOrderDetailsPage = async (req,res)=>{
             finalAmount : totalPrice,
             address:address,
         })
-        console.log(req.session,req.body, req.params,req.query)  
+        console.log("Render the order details page")  
     } catch (error) {
         console.error("error while loading the order details page", error)
         res.redirect('/pageNotFound')   
     }
 }
 
+//function for cancelling the order
 const cancelOrder = async(req,res)=>{
     try {
         let findOrder;
-        console.log(req.body, req.body.productId, req.session.user);
         const {productId, orderId, payment}= req.body;
         const userId = req.session.user;
         if(payment!="cod"){
@@ -101,7 +97,6 @@ const cancelOrder = async(req,res)=>{
                 quantity: -item.quantity
             })
             );
-            console.log("findCancelled order","cancelItemQuantities",cancelItemQuantities)
             if(findOrder){
                 let walletUpdate;
                 if(findOrder.payment !== "cod"){
@@ -117,7 +112,7 @@ const cancelOrder = async(req,res)=>{
                 }
                 decrementSaleCounts(cancelItemQuantities)
                   .then(result =>                     
-                    {console.log('Decrement successful:', result)
+                    {console.log('Decrement successful:')
                     if (result.modifiedCount === 1 && walletUpdate) {
                         return res.json({
                             success: true,
@@ -132,15 +127,16 @@ const cancelOrder = async(req,res)=>{
                         });
                     }}
                     )
-                  .catch(error => console.error('Decrement failed:', error)); 
-                console.log("findorder.payment", findOrder.payment )              
-            }       
+                  .catch(error => console.error('Decrement failed:', error));             
+            }  
+            console.log("Updating the cancel order status")     
     } catch (error) {
         console.error("Error while cancelling the order",error);
         res.redirect('/pageNotFound')
     }
 }
 
+//function for returning the order
 const returnrequestOrder = async(req,res)=>{
     try {
         const userId = req.session.user;
@@ -168,45 +164,38 @@ const returnrequestOrder = async(req,res)=>{
                 message: "Return request failed. Please try again later"
             });
         }  
-           
-
     } catch (error) {
         console.log("Error while creating the return request",error);
         res.json({success:false, message:"An error occured while creating the return request"});      
     }
 }
 
+//function for generating the invoice
 const downloadInvoice = async (req, res) => {
 try {
     const userId = req.session.user;
     const orderId = req.query.id;
-
     // Fetching address ID from order
     const order = await Order.findOne({ _id: orderId, userId: userId });
     if (!order) {
       return res.status(404).json({ success: false, message: "Order not found" });
     }
-
     const aId = order.address;
     const [addressData, findUser] = await Promise.all([
       Address.findOne({ "address._id": aId }),
       User.findOne({ _id: userId }),
     ]);
-
     if (!addressData || !findUser) {
       return res.status(404).json({ success: false, message: "User or Address not found" });
     }
-
     const address = addressData.address.find((addr) => addr._id.toString() === aId.toString());
     if (!address) {
       return res.status(404).json({ success: false, message: "Address details not found" });
     }
-
     // Creating PDF document
     const doc = new PDFDocument();
     let chunks = [];
     let result;
-
     doc.on("data", (chunk) => chunks.push(chunk));
     doc.on("end", () => {
       result = Buffer.concat(chunks);
@@ -216,12 +205,9 @@ try {
     });
     doc.registerFont("NotoSans", path.join(__dirname, "../../public/assets/fonts", "NotoSans-Regular.ttf"));
     doc.font("NotoSans");
-
     // Invoice Title
     doc.fontSize(22).text("Invoice: GentzGallery", { align: "center", underline: true });
-
     doc.moveDown(2);
-
     // Order Information
     doc.fontSize(16).text("Order Information", { align: "left", underline: true });
     doc.fontSize(12).text(`Order Date: ${new Date(order.createdOn).toLocaleDateString()}`);
@@ -256,32 +242,27 @@ try {
     doc.fontSize(12).text(`State: ${address.state}`);
     doc.fontSize(12).text(`Pincode: ${address.pinCode}`);
     doc.fontSize(12).text(`Phone: ${address.phone}`);
-
     doc.end();
     console.log("Invoice PDF generated successfully");
-
   } catch (error) {
     console.error("Error while generating the invoice:", error);
     res.status(500).json({ success: false, message: "An error occurred while generating the invoice" });
   }
 };
 
+//function for retrying the payment
 const retryPayment = async(req,res)=>{
     try {
         const {orderId} = req.body;
         const [findUser,orderDone] = await Promise.all([
             User.findOne({_id:req.session.user}),
             Order.findOne({_id:orderId})
-            
         ])
-        
-        console.log("Orderid,body", orderId,req.body)
         payment.generateRazorpay(orderDone._id,orderDone.finalAmount,(err,order)=>{
             if(err){
                 console.log("error whil creating the razorpay payment",err)
             }else{
                 console.log("order placed now for razorpay",order)
-                
                 req.session.orderId = order.id
                 res.json({
                     payment: true,
@@ -291,22 +272,20 @@ const retryPayment = async(req,res)=>{
                     user:findUser,
                 });
             }
-        });   
-        
+        });     
     } catch (error) {
-        console.log("Erro while retrying the payment", error);
-        res.json({success:false, message:"An error occured while retrying the payment"});
-        
+        console.log("Error while retrying the payment", error);
+        res.json({success:false, message:"An error occured while retrying the payment"});    
     }
 }
 
+//exporting the functions
 module.exports = {
     getOrderDetailsPage,
     cancelOrder,
     returnrequestOrder,
     downloadInvoice,
     retryPayment,
-    
 }
 
 

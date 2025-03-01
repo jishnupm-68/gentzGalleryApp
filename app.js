@@ -11,8 +11,6 @@ const passport = require('./config/passport');
 const adminRouter = require('./routes/adminRouter');
 db();
 
-
-
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({extended : true}));
@@ -36,12 +34,9 @@ app.use(passport.session())
 
 app.set("view engine", "ejs")
 app.set("views", [path.join(__dirname, 'views/user'),path.join(__dirname,'views/admin')])
-//app.use(express.static(path.join(__dirname, "public")))
 app.use(express.static('public'));
 app.use("/uploads/brands", express.static(path.join(__dirname, "../../GentzGalleryApp/public/uploads/brands")));
 app.use("/uploads/product-imagesResized", express.static(path.join(__dirname, "../../GentzGalleryApp/public/uploads/product-imagesResized")));
-
-
 
 app.use('/',userRouter)
 app.use('/admin',adminRouter)

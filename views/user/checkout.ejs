@@ -29,6 +29,8 @@
             background-color: #45a049;
         }
     </style>
+
+    <!-- contents of checkout page starts here -->
     <section>
         <div class="container">
             <div class="row">
@@ -50,47 +52,42 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-
-                                        <% if (product && Array.isArray(product) && product.length> 0) { %>
-                                            <% for (let i=0; i < product.length; i++) { %>
-                                                <tr>
-
-                                                    <td class="image product-thumbnail"><img
-                                                            src="/uploads/product-imagesResized/<%= product[i].image %>"
-                                                            alt="#"></td>
-
-                                                    <td>
-                                                        <h5><a href="productDetails?id=<%= product[i].productId %>">
-                                                                <%= product[i].name %>
-                                                            </a></h5>
-                                                    </td>
-                                                    <td>
-                                                        <%= product[i].quantity %>
-                                                    </td>
-                                                    <td>
-                                                        <%= product[i].price*product[i].quantity %>
-                                                    </td>
-                                                    <td class="action" data-title="Remove" onclick="return false">
-                                                        <button class="btn btn-sm" type="button"
-                                                            onclick="return confirmRemove('<%= product[i].productId %>')">
-                                                            <i class="fi-rs-trash"></i>
-                                                            </a>
-                                                    </td>
-                                                </tr>
-                                                <% } %>
-                                                    <% } else { %>
-                                                        <tr>
-                                                            <td colspan="4">No products found</td>
-                                                        </tr>
-                                                        <% } %>
-                                    </tbody>
-                                    <% let totalAmount=0; %>
-                                </table>
+                            <% if (product && Array.isArray(product) && product.length> 0) { %>
+                                <% for (let i=0; i < product.length; i++) { %>
+                                    <tr>
+                                        <td class="image product-thumbnail"><img
+                                                src="/uploads/product-imagesResized/<%= product[i].image %>"
+                                                alt="#"></td>
+                                        <td>
+                                            <h5><a href="productDetails?id=<%= product[i].productId %>">
+                                                    <%= product[i].name %>
+                                                </a></h5>
+                                        </td>
+                                        <td>
+                                            <%= product[i].quantity %>
+                                        </td>
+                                        <td>
+                                            <%= product[i].price*product[i].quantity %>
+                                        </td>
+                                        <td class="action" data-title="Remove" onclick="return false">
+                                            <button class="btn btn-sm" type="button"
+                                                onclick="return confirmRemove('<%= product[i].productId %>')">
+                                                <i class="fi-rs-trash"></i>
+                                                </button>
+                                        </td>
+                                    </tr>
+                                    <% } %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="4">No products found</td>
+                                </tr>
+                            <% } %>
+                                </tbody>
+                                <% let totalAmount=0; %>
+                            </table>
                             </div>
                         </div>
                     </div>
-
-
                     <div class="col-8">
                         <div class="row align-items-start mt-10 ml-190">
                             <% if (locals.userAddress) { %>
@@ -104,7 +101,6 @@
                                                 <label class="form-check-label"
                                                     for="addressRadio<%= address._id %>">Select Address</label>
                                             </div>
-
                                             <div class="card-header">
                                                 <h5 class="mb-0">
                                                     <%= address.addressType %>
@@ -113,9 +109,9 @@
                                             <div class="card-body">
                                                 <address>
                                                     <%= address.name %><br />
-                                                        <%= address.city %>,<br />
-                                                            <%= address.landMark %> <br />
-                                                                <%= address.state %>
+                                                    <%= address.city %>,<br />
+                                                    <%= address.landMark %> <br />
+                                                    <%= address.state %>
                                                 </address>
                                                 <p>
                                                     <%= address.pincode %>
@@ -136,83 +132,58 @@
                                         </div>
                                     </div>
                                     <% }) %>
-                                        <% } else { %>
-                                            <div class="col-lg-6 mb-3">
-                                                <div class="card">
-                                                    <div class="card-header">
-                                                        <h5 class="mb-0"></h5>
-                                                    </div>
-                                                    <div class="card-body">
-                                                        <address>
-                                                            No address
-                                                        </address>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <% } %>
-                                                <div class="col-lg-6 mb-3">
-                                                    <a href="/addAddress">
-                                                        <button class="btn btn-primary w-100">Add address</button>
-                                                    </a>
-                                                </div>
+                            <% } else { %>
+                                <div class="col-lg-6 mb-3">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5 class="mb-0"></h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <address>
+                                                No address
+                                            </address>
+                                        </div>
+                                    </div>
+                                </div>
+                        <% } %>
+                            <div class="col-lg-6 mb-3">
+                                <a href="/addAddress">
+                                    <button class="btn btn-primary w-100">Add address</button>
+                                </a>
+                            </div>
                         </div>
                     </div>
-
-                    <div class="col-6">
-                        <!-- <div class="input-group mb-1 col-2" style="border: 1px solid #ced4da; border-radius: 5px; width: 300px; margin-left: 200px; margin-top: 10px;">
-                            <input type="text" class="form-control" id="inputCoupon" placeholder="Paste Coupon Name">
-                            <div class="input-group-append">
-                                <button class="btn btn-primary" id="applyButton" type="button" onclick="applyCoupon('<%=grandTotal%>')">Apply</button>
-
-                            </div>
-                        </div> -->
-                    </div>
                     <div>
-
-                            <div class="mb-25 ml-150 pt-10">
-                                <h5>Available Coupons</h5>
-                            </div>
-
+                        <div class="mb-25 ml-150 pt-10">
+                            <h5>Available Coupons</h5>
+                        </div>
                             <ul>
-                                <% if (Coupon) { %>
-                                   
-                                  
-                                    <% Coupon.forEach((item)=>{ %>
-                                        <li>
-                                            <div class="coupon-card col-4" style="margin-left: 150px;">
-                                                <div class="coupon-details">
-                                                    <span class="coupon-name">
-                                                        <%= item.name %>
-                                                    </span><br>
-                                                </div>
-                                               
-                                                
-                                                <% if((item.userId).length>0) {%>
-                                              <% item.userId.forEach(element => { %>
-                                                
-                                                <% if(element.toString()==(user._id).toString()){ %>
-                                                    <button onclick="removeCoupon('<%= item.name %>',' <%= item._id %>')" id="useButton_<%= item.name %>" class="use-button" style="background-color: #e93838;;" >Remove</button>
-                                                <% }else {%>
-                                                    <!-- <button onclick="useCoupon('<%= item.name %>',' <%= item._id %>')" id="useButton_<%= item.name %>" class="use-button">Apply</button> -->
-
-                                                    <% } %>
-                                                
-                                            <%  }); %>
-                                            <% }else {%>
-                                                <button onclick="useCoupon('<%= item.name %>',' <%= item._id %>','<%=grandTotal%>')" id="useButton_<%= item.name %>" class="use-button" style="background-color: #088178;">Apply</button>
-                                                
-                                                <% } %>
-                                                <button onclick="cancelCoupon('<%= item.name %>')" id="cancelButton_<%= item.name %>" class="cancel-button btn-danger" style="display: none;">Cancel</button>
-                                                <!-- <button onclick="cancelCoupon('<%= item.name %>')" id="cancelButton_<%= item.name %>" class="cancel-button btn-danger" >Cancel</button> -->
+                            <% if (Coupon) { %>
+                                <% Coupon.forEach((item)=>{ %>
+                                    <li>
+                                        <div class="coupon-card col-4" style="margin-left: 150px;">
+                                            <div class="coupon-details">
+                                                <span class="coupon-name">
+                                                    <%= item.name %>
+                                                </span><br>
                                             </div>
-                                        </li>
-                                        
-                                        <% }) %>
-                                            <% }else{ %>
-
-                                                <h5>No coupons available</h5>
-
-                                                <% } %>
+                                            <% if((item.userId).length>0) {%>
+                                            <% item.userId.forEach(element => { %>  
+                                            <% if(element.toString()==(user._id).toString()){ %>
+                                                <button onclick="removeCoupon('<%= item.name %>',' <%= item._id %>')" id="useButton_<%= item.name %>" class="use-button" style="background-color: #e93838;;" >Remove</button>
+                                            <% }else {%>
+                                            <% } %> 
+                                        <%  }); %>
+                                        <% }else {%>
+                                            <button onclick="useCoupon('<%= item.name %>',' <%= item._id %>','<%=grandTotal%>')" id="useButton_<%= item.name %>" class="use-button" style="background-color: #088178;">Apply</button>
+                                            <% } %>
+                                            <button onclick="cancelCoupon('<%= item.name %>')" id="cancelButton_<%= item.name %>" class="cancel-button btn-danger" style="display: none;">Cancel</button>
+                                        </div>
+                                    </li>
+                                    <% }) %>
+                            <% }else{ %>
+                                <h5>No coupons available</h5>
+                            <% } %>
                             </ul>
                         </div>
                     <div class="payment_method">
@@ -226,7 +197,6 @@
                                 product-target="#CashOnDelivey" aria-controls="CashOnDelivey">Cash on
                                 Delivery</label>
                         </div>
-
                         <div class="custome-radio ml-150">
                             <input class="form-check-input payment" required="" value="razorpay" type="radio"
                                 name="payment_option" id="Razorpay" checked="">
@@ -239,76 +209,51 @@
                             <label class="form-check-label" for="wallet" data-bs-toggle="collapse" data-target="#wallet"
                                 aria-controls="wallet">wallet</label>
                         </div>
-
                     </div>
                 </div>
-
             </div>
             <div class="container col-6 mt-3">
-
                 <% for (let i=0; i < product.length; i++) { %>
                     <% if (locals.isCart==="true" ) { %>
                         <% totalAmount +=product[i].price * product[i].quantity; %>
-                            <% } else { %>
-                                <% totalAmount +=product[i].price; %>
-                                    <% } %>
-                                        <% } %>
-                                            <div class="ml-150">
-                                                <table class="table mt-45">
-                                                    <tbody>
-                                                        <tr>
-                                                            <th>Shipping</th>
-                                                            <% if (grandTotal>1000) { %>
-                                                                <td colspan="2"><em>Free Shipping</em></td>
-                                                            <% } else { %>
-                                                            <td colspan="2"><em>Shipping charge included</em></td>
-                                                            <% } %>
-                                                        </tr>
-                                                        <!-- <tr>
-                                                            <th>Total</th>
-                                                            <td colspan="2" id="discount">
-                                                                ₹<%= grandTotal %>
-                                                            </td>
-                                                        </tr> -->
-                                                        <!-- <tr>
-                                                            <th>Discount</th>
-                                                            <td colspan="2" id="discount">
-                                                                <% if (discount>0) { %>
-                                                                    <%= discount %>
-                                                                        <% }else{ %>
-                                                                            0
-                                                                            <% } %>
-                                                            </td>
-                                                        </tr> -->
-                                                        <tr>
-                                                            <th>Amount to pay </th>
-                                                            <td colspan="2" class="product-subtotal">
-                                                                <span class="font-xl text-brand fw-900"
-                                                                    id="totalValue">₹<%= finalAmount %></span>
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-
-                                                <div class="ml-65">
-
-                                                    <button type="button" class="btn"
-                                                        onclick="placeOrder('<%= user._id %>','<%= discount %>')">Place Order</button>
-
-                                                </div>
-
-                                            </div>
+                    <% } else { %>
+                        <% totalAmount +=product[i].price; %>
+                    <% } %>
+                <% } %>
+                <div class="ml-150">
+                    <table class="table mt-45">
+                        <tbody>
+                            <tr>
+                                <th>Shipping</th>
+                                <% if (grandTotal>1000) { %>
+                                    <td colspan="2"><em>Free Shipping</em></td>
+                                <% } else { %>
+                                <td colspan="2"><em>Shipping charge included</em></td>
+                                <% } %>
+                            </tr>
+                            <tr>
+                                <th>Amount to pay </th>
+                                <td colspan="2" class="product-subtotal">
+                                    <span class="font-xl text-brand fw-900"
+                                        id="totalValue">₹<%= finalAmount %></span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="ml-65">
+                        <button type="button" class="btn"
+                            onclick="placeOrder('<%= user._id %>','<%= discount %>')">Place Order</button>
+                    </div>
+                </div>
             </div>
-        </div>
         </div>
     </section>
     
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
    
+    <!-- script for checkout page validation and ajax request -->
     <script>
-
-
-
+        //function for removing item from checkout
         function confirmRemove(productId) {
             Swal.fire({
                 title: 'Are you sure?',
@@ -320,19 +265,46 @@
                 confirmButtonText: 'Yes, remove it!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = `/deleteItemCheckout?id=${productId}`;
+                    $.ajax({
+                        url:  `/deleteItemCheckout?id=${productId}`,
+                        method: 'get',
+                        success: (response) => {
+                            if (response.success) {
+                                Swal.fire(
+                                    'Item Removed!',
+                                    response.message,
+                                   'success'
+                                )
+                                window.location.href= response.redirectUrl;  
+                            }else{
+                                Swal.fire(
+                                    'Error!',
+                                    response.message,
+                                    'error'
+                                )
+                                window.location.href= response.redirectUrl;
+                            }
+                        },
+                        error: (error) => {
+                            console.error(error);
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'Failed to remove item.',
+                                icon: 'error',
+                            });
+                        }
+                    })
                 }
             })
         }
         
+        //function for checkout page validation, placing order and ajax request
         async function placeOrder(userId, discount) {
             let address = $("input[name='selectedAddress']:checked").val();
             let payment = $("input[name='payment_option']:checked").val();
-
             const sum = document.getElementById("totalValue").textContent;
             const numericValue = parseInt(sum.replace(/[^\d.]/g, ''));
             console.log("checkout details",numericValue, payment, typeof(payment), payment.length);
-
 
             if (!payment) {
                 Swal.fire({
@@ -388,8 +360,7 @@
                                     location.href = '/'
                                 }
                             });
-
-                        } else if (response.method === "wallet") {
+                        }else if (response.method === "wallet") {
                             if (response.payment === true) {
                                 Swal.fire({
                                     title: "Order success",
@@ -403,14 +374,14 @@
                                     if (result.value) {
                                         let orderId = response.order._id
                                         location.href = `/orderDetails?id=${orderId}`;
-                                    } else if (result.dismiss === "cancel") {
-                                        location.href = '/'
+                                    } else {
+                                        location.href = `/`;
                                     }
                                 });
                             } else {
                                 Swal.fire({
-                                    title: "Order failed",
-                                    text: "Wallet amount is not enough",
+                                    title: "Order Success",
+                                    text: response.message,
                                     icon: "error",
                                     showConfirmButton: true,
                                 }).then(function (result) {
@@ -419,32 +390,20 @@
                                     }
                                 });
                             }
-
                         }
                         else if (response.method === "razorpay") {
                             console.log("response", response);
                             let orderAmount = response.order.finalAmount;
-                           // console.log("final amount",response.order.finalAmount,orderAmount);
                             let order = response.orderId;
+                            let orderDbId = response.order._id
                             var options = {
                                 "key": "rzp_test_2ntRCkhdtoc7jm",
                                 "amount": orderAmount,
                                 "currency": "INR",
                                 "name": "GentzGallery",
                                 "description": "Test Transaction",
-                               //"image": "https://firebasestorage.googleapis.com/v0/b/ecommerce-397a7.appspot.com/o/logo.jpg?alt=media&token=07b6be19-1ce8-4797-a3a0-f0eaeaafedad",
                                 "order_id": response.orderId,
-                                // "handler": function (response, status) {
-                                //     alert("paymentid",response.razorpay_payment_id);
-                                //     alert("orderid",response.razorpay_order_id);
-                                //     alert("signature",response.razorpay_signature)
-                                //     alert("resposnse",response);  
-                                //     verifyPayment(response.razorPayOrder, status, response.order._id);
-                                // },
                                 "handler": function (response){
-                                    // alert(response.razorpay_payment_id);
-                                    // alert(response.razorpay_order_id);
-                                    // alert(response.razorpay_signature)
                                     verifyPayment(response,order);
                                 },
                                 "prefill": {
@@ -452,7 +411,6 @@
                                     "email": response.user.email,
                                     "contact": response.user.phone
                                 },
-
                                 "theme": {
                                     "color": "#5CFF9A"
                                 }
@@ -466,16 +424,8 @@
                                      timer: 5000,
                                      showConfirmButton: true
                                      });
-                                     location.href='/cart';
+                                     location.href=`/orderDetails?id=${orderDbId}`;
                                 })
-                                    // alert(response.error.code);
-                                    // alert(response.error.description);
-                                    // alert(response.error.source);
-                                    // alert(response.error.step);
-                                    // alert(response.error.reason);
-                                    // alert(response.error.metadata.order_id);
-                                    // alert(response.error.metadata.payment_id);
-                           
                             rzp1.open();
 
                         } else {
@@ -485,16 +435,14 @@
                                 icon: 'fail',
                                 timer: 5000
                             })
-                            location.href = '/cart';
+                            location.href =`/orderDetails?id=${orderDbId}`;
                         }
                     },
                 });
             }
         }
 
-
-        
-
+        //function for verifing paayment
         function verifyPayment(response,order) {
             let payment = response
             $.ajax({
@@ -504,20 +452,8 @@
                     response,
                     order,
                     orderId:null,
-
                 }, success: (response) => {
                     if (response.success) {
-                        // $.ajax({
-                        //     url: '/paymentConfirm',
-                        //     method: 'post',
-                        //     data: {
-                        //         status: "Confirmed",
-                        //         order,
-                        //         payment
-                        //     },
-                        //     success: (response) => {
-                        //     }
-                        // })
                         console.log("Response", response)
                         Swal.fire({
                             title: "Order success",
@@ -534,8 +470,7 @@
                                 location.href = orderDetailsUrl;
                             } else if (result.dismiss === "cancel") {
                                 console.log("failed");
-
-                               window.location.reload();
+                               window.location.href = `/orderDetails?id=${response.orderId}`
                             }
                         });
                     }else{
@@ -554,12 +489,10 @@
                                 location.href = orderDetailsUrl;
                             } else if (result.dismiss === "cancel") {
                                 console.log("failed",response);
-
-                               window.location.reload();
+                               window.location.href = `/`
                             }
                         });
                     }
-
                 },
                 error: (error) => {
                     console.log(error);
@@ -573,75 +506,10 @@
             })
         }
 
-        // function showCouponDetails(couponName) {
-        //     Swal.fire({
-        //         title: 'Coupon Details',
-        //         text: `${couponName}`,
-        //         icon: 'info',
-        //         confirmButtonText: 'OK'
-        //     }).then((result) => {
-        //         if (result.isConfirmed) {
-        //             copyToClipboard(couponName);
-        //         }
-        //     });
-        // }
-
-        // function copyToClipboard(text) {
-        //     var tempInput = document.createElement('input');
-        //     document.body.appendChild(tempInput);
-        //     tempInput.value = text;
-
-        //     tempInput.select();
-        //     document.execCommand('copy');
-
-        //     document.body.removeChild(tempInput);
-
-        //     Swal.fire({
-        //         title: 'Copied!',
-        //         text: 'Coupon name has been copied to the clipboard.',
-        //         icon: 'success',
-        //         confirmButtonText: 'OK'
-        //     });
-        // }
-
         let discount = 0;
-
-
-
-        const applyCoupon = async (totalAmount) => {
-            const couponName = document.getElementById("inputCoupon").value.trim();
-            if (!couponName) {
-                Swal.fire({ icon: 'error', title: 'Error', text: 'Please enter a coupon code.' });
-                return;
-            }
-
-            try {
-                const response = await fetch('/applyCoupon', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ coupon: couponName, total: totalAmount }),
-                });
-
-                const data = await response.json();
-                if (data.success) {
-                    Swal.fire({ icon: 'success', title: 'Success', text: `Coupon Discount ${data.offerPrice} Applied` });
-                    document.getElementById("totalValue").innerText = `₹${data.gt}`;
-                    document.getElementById("discount").innerText = data.offerPrice;
-                    document.getElementById("inputCoupon").value = "";
-                    discount = data.offerPrice;
-                } else {
-                    Swal.fire({ icon: 'error', title: 'Error', text: data.message });
-                }
-            } catch (error) {
-                console.error('Error applying coupon:', error);
-                Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to apply coupon.' });
-            }
-        };
-
-
-
-
         var usedCoupon = null;
+
+        //function for using coupon
         function useCoupon(couponName, couponId,grandTotal){
             console.log('Using coupon', couponName, couponId);
             $.ajax({
@@ -657,22 +525,24 @@
                         Swal.fire({
                             title: 'Coupon Used',
                             text: 'Coupon has been used successfully',
+                            showConfirmButton:false,
                             icon:'success',
                             timer: 5000
                         })
                         window.location.reload()
-
-                }else{
-                    Swal.fire({
-                        title: 'Error',
-                        text: response.message,
-                        icon: 'error',
-                        timer: 5000
-                    })
+                    }else{
+                        Swal.fire({
+                            title: 'Error',
+                            text: response.message,
+                            icon: 'error',
+                            timer: 5000
+                        })
+                    }
                 }
-            }
             })
         }
+
+        //function for removing coupon
         function removeCoupon(couponName, couponId){
             console.log('Using coupon', couponName, couponId);
             $.ajax({
@@ -687,54 +557,22 @@
                             title: 'Coupon removed',
                             text: response.message,
                             icon:'success',
+                            showConfirmButton:false,
                             timer: 5000
                         })
                         window.location.reload()
-
-                }else{
-                    Swal.fire({
-                        title: 'Error',
-                        text: response.message,
-                        icon: 'error',
-                        timer: 5000
-                    })
+                    }else{
+                        Swal.fire({
+                            title: 'Error',
+                            text: response.message,
+                            icon: 'error',
+                            timer: 5000
+                        })
+                    }
                 }
-            }
             })
         }
-        // const useCoupon = async (couponName) => {
-        //     disableOtherCoupons(couponName);
-        //     copyToClipboard(couponName);
-        //     document.getElementById("inputCoupon").value = couponName;
-        //     document.getElementById('useButton_' + couponName).style.display = 'none';
-        //     document.getElementById('cancelButton_' + couponName).style.display = 'block';
-        //     usedCoupon = couponName;
-        // }
-
-        const cancelCoupon = async (couponName) => {
-            enableAllCoupons();
-            document.getElementById('useButton_' + couponName).style.display = 'block';
-            document.getElementById('cancelButton_' + couponName).style.display = 'none';
-            usedCoupon = null;
-            window.location.reload();
-        }
-        function disableOtherCoupons(excludeCoupon) {
-            var couponButtons = document.querySelectorAll('.use-button');
-            couponButtons.forEach(function (button) {
-                var couponName = button.id.replace('useButton_', '');
-                if (couponName !== excludeCoupon) {
-                    button.disabled = true;
-                }
-            });
-        }
-
-        function enableAllCoupons() {
-            var couponButtons = document.querySelectorAll('.use-button');
-            couponButtons.forEach(function (button) {
-                button.disabled = false;
-            });
-        }
+ 
     </script>
-
    
-    <%- include("../../views/partials/user/footer") %>
+<%- include("../../views/partials/user/footer") %>

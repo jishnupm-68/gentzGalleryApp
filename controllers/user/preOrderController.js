@@ -10,26 +10,29 @@ const env = require('dotenv').config();
 const Razorpay  = require('razorpay');
 const crypto = require("crypto");
 
+//creating the instance for razorpay
 var instance = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
     key_secret: process.env.RAZORPAY_KEY_SECRET,
   });
 
+//function for generating the razorpay order
 function generateRazorpay(orderId,totalPrice,callback){
     var options = {
         amount: totalPrice*100, 
         currency: "INR",
         receipt: orderId
       };
-      instance.orders.create(options, function(err, order) {
-        if(err){
-            console.error("error in generate razorpay function",err)
-        }else{
-            callback(null,order)
-        }
-      });
+    instance.orders.create(options, function(err, order) {
+    if(err){
+        console.error("error in generate razorpay function",err)
+    }else{
+        callback(null,order)
+    }
+    });
 }
 
+//function for reducing the count of stock
 const decrementSaleCounts = async (cartItemQuantities) => {
     try {
       const bulkOperations = cartItemQuantities.map(item => ({
@@ -39,7 +42,7 @@ const decrementSaleCounts = async (cartItemQuantities) => {
         },
       }));
       const result = await Product.bulkWrite(bulkOperations);
-      console.log('Bulk decrement result:', result);
+      console.log('Bulk decrement result:',result);
       return result;
     } catch (error) {
       console.error('Error decrementing sale counts:', error);
@@ -47,9 +50,9 @@ const decrementSaleCounts = async (cartItemQuantities) => {
     }
 };
 
+//function for rendering the checkout page
 const getCheckoutPage = async (req, res) => {
     try {
-        console.log("req.session in getcheckout", req.session)
         const user = req.query.userId
         const [findUser,addressData,coupon] = await Promise.all ([
             User.findOne({ _id: user }),
@@ -57,7 +60,6 @@ const getCheckoutPage = async (req, res) => {
             Coupon.find({expireOn: { $gte: new Date()} ,
                 isListed:true})
         ]);
-        //console.log("usercoupon", coupon)
         const oid = new mongoose.Types.ObjectId(user);
         const cart = await Cart.findOne({ userId:user }).populate("items.productid");       
         let couponAppliedId = coupon.map(item=> item.userId==user?item._id:null) ;
@@ -79,28 +81,17 @@ const getCheckoutPage = async (req, res) => {
         });
         let finalAmount=0;
         let couponApplied = await Coupon.findById(validCouponId)
-        //console.log(" coupon",couponApplied, req.session.discount,couponApplied.offeredPrice)
         if(couponApplied){
            console.log("Coupon applied initially")
             finalAmount = req.session.grandTotal - req.session.discount;
         }else{  
             finalAmount = req.session.grandTotal 
-        }
-        console.log("discount",req.session.discount)    
+        }  
         const gTotal = req.session.grandTotal;
         req.session.finalAmount = finalAmount;
-        // const today = new Date().toString();
-
-        // const findCoupon = await Coupon.findOne({
-        //     isListed:true,
-        //     createdOn: {$lt: new Date()},
-        //     expireOn: {$gt: new Date()},
-        //    // minimumPrice:{$lt: grandTotal[0].totalPrice},
-        // });
-        console.error("cart length", cart.items.length)
         if(cart.items.length>0){
+            console.log("rendering the checkout page with cart")
             res.render('checkout', {
-               // product: data,
                product:cartItems,
                 user: findUser,
                 isCart:true,
@@ -108,24 +99,22 @@ const getCheckoutPage = async (req, res) => {
                 grandTotal : req.session.grandTotal,
                 discount: req.session.discount,
                 finalAmount:finalAmount,
-               // Coupon:findCoupon,
-               Coupon:coupon
-                //grandTotal: grandTotal[0].totalPrice,    
+               Coupon:coupon  
             });
         }else{
+            console.log("rendering the shop page since thhere is no product in checkout  page")
             res.redirect('/shop')
         }
-        console.log("user", user,"oid",oid,req.session.grandTotal);      
     } catch (error) {
         console.error("error while rendering the checkout page", error);
         res.redirect('/pageNotFound');   
     }
 }
 
+//function for removing item in checkout page
 const deleteItemCheckout = async(req,res)=>{
     try {
         const productToDeleteId = req.query.id;  
-        console.log('Item ID:', productToDeleteId);
         const userId = req.session.user;  
         const updatedCart = await Cart.findOneAndUpdate(
             {userId:userId},
@@ -135,48 +124,46 @@ const deleteItemCheckout = async(req,res)=>{
                 }
             },
             {new:true}
-    )
-    if(!updatedCart){
-        console.log("error while deleting")
-        return res.redirect("/pageNotFound")}
-        else{
+        )
+        if(!updatedCart){
+            console.log("error while deleting")
+            return res.json({success:false,message: "Unable to remove product"})
+        }else{
             console.log("product deleted successfully")
-            res.redirect("/cart")
+            res.json({success:true,message: "Product removed successfully", redirectUrl:'/cart'})
         }        
     } catch (error) {
         console.error("unable to delete the product from cart",error);
-        res.redirect("/pageNotFound")     
+        res.json({success:false, message:"Error while removing the product"})  
     }
 }
-  
+
+//function for placing the order
 const orderPlaced = async (req,res)=>{
     try{
-        console.log(req.body)
         const {totalPrice, addressId, payment, discount} = req.body;
         req.session.addressId = addressId;
         const userId = req.session.user;
-        const findUser = await User.findOne({_id:userId});
-        const cart = await Cart.findOne({userId:userId});
+        const [findUser,cart] = await Promise.all ([
+            User.findOne({_id:userId}),
+            Cart.findOne({userId:userId})
+        ]);
         if(!findUser){
             console.error("User not found error")
             return res.json(404).json({error:"User not found"})
         }
-        // const productIds = findUser.cart.map((item)=>item.productid);
-        //console.log("Cart", cart)
         const productIds = cart.items.map((item)=>item.productid);
         const findAddress = await Address.findOne({"address._id":addressId});
         if(!findAddress){
             console.error("Address not found error")
             return res.json(404).json({error:"Address not found"})
         }
-        //console.log("Productids",productIds) 
         const desiredAddress = findAddress.address.find((item)=>item._id.toString()===addressId.toString());
         if(!desiredAddress){
             console.error("Desired Address not found error")
             return res.json(404).json({error:"Address not found"})
         } 
         const findProducts = await Product.find({_id:{$in:productIds}});
-        //console.log("findPRoducts", findProducts, "productIds", productIds)
         if(findProducts.length !== productIds.length){
             console.error("products not found")
             return res.json(404).json({error:"Products not found"})
@@ -187,16 +174,15 @@ const orderPlaced = async (req,res)=>{
             quantity: item.quantity
         })
         );
-        console.log("cartItemQuantities",cart, cartItemQuantities)
         const orderedProducts = findProducts.map((item)=>
-        ({
-            productName: item.productName,
-            product: item._id,
-            price: item.salePrice,
-            image: item.productImage[0],
-            productStatus : "Pending",
-            quantity: cartItemQuantities.find((cartItem)=>cartItem.productId.toString()===item._id.toString()).quantity
-        })
+            ({
+                productName: item.productName,
+                product: item._id,
+                price: item.salePrice,
+                image: item.productImage[0],
+                productStatus : "Pending",
+                quantity: cartItemQuantities.find((cartItem)=>cartItem.productId.toString()===item._id.toString()).quantity
+            })
         );
        
         let orderDone,newOrder;
@@ -212,18 +198,36 @@ const orderPlaced = async (req,res)=>{
             orderDate: new Date()
         })
         orderDone = await newOrder.save(); 
-        console.log("orderedProducts", orderDone)
         req.session.orderDbId = orderDone._id
-        if(payment === "cod"){
-              
+        if(payment === "wallet"){
+            if(findUser.wallet>= req.session.finalAmount){
+                await User.findOneAndUpdate(
+                    { _id: userId },
+                    { $inc: { wallet: -req.session.finalAmount } },
+                    { new: true }
+                );
+                await Order.findOneAndUpdate(
+                    { _id: orderDone._id },
+                    { $set: { status: "Verified" } },
+                    { new: true }
+                );
+                res.json({
+                    payment: true,
+                    method: "wallet",
+                    order: orderDone,
+                    quantity: cartItemQuantities,
+                    orderId: orderDone._id,
+                  });
+            }else{
+                console.log("Insufficient balance in wallet")
+                res.json({ payment: false, message: "Insufficient balance in wallet" });
+            }   
         }else if(payment === "razorpay"){
-            console.log("razorpay")
             generateRazorpay(orderDone._id,orderDone.finalAmount,(err,order)=>{
                 if(err){
                     console.log("error whil creating the razorpay payment",err)
                 }else{
-                    console.log("order placed now for razorpay",order)
-                    
+                    console.log("order placed now for razorpay") 
                     req.session.orderId = order.id
                     res.json({
                         payment: true,
@@ -252,7 +256,6 @@ const orderPlaced = async (req,res)=>{
               await product.save();
             }
           }
-          console.log("orderDone", orderDone, "newOrder",newOrder)
           if(orderDone){
               decrementSaleCounts(cartItemQuantities)
                 .then(result => console.log('Decrement successful:', result))
@@ -268,16 +271,15 @@ const orderPlaced = async (req,res)=>{
               orderId: orderDone._id,
             });
           } 
-      //console.log("order placed successfully", cartItemQuantities);
     }catch(error){
         console.error("error while placing the order", error)
         res.redirect('/pageNotFound')
     }
 }
 
+//function for verifying payment
 const verifyPayment = async(req,res)=>{
     try {
-        console.log("payment verification, req.body", req.body);
         const order_id = req.session.orderId 
         const payment_id = req.body.response.razorpay_payment_id;
         const razorpay_signature = req.body.response.razorpay_signature;
@@ -289,115 +291,125 @@ const verifyPayment = async(req,res)=>{
            order_id + "|" + payment_id
         )
         hmac  = hmac.digest('hex');
-        //console.log("hmac",hmac, req.body)
-    if (hmac == razorpay_signature) {
-        console.log("payment verified");
-         const newTransaction  = new Transaction({
-            userId: req.session.user,
-            details:{
-                amount: findOrder.finalAmount,
-                currency: "INR",
-                orderId: orderDbId,
-                orderRazorpayId: req.session.orderId,
-                paymentId: payment_id,
-                paymentStatus: "success",
-                paymentMethod: "razorpay",
-                paymentDate: new Date(),  
-            }          
-         }) 
-        await Promise.all([
-            newTransaction.save(),
-            Order.findOneAndUpdate({ _id: orderDbId }, { status: "Verified" })
-        ]);
-        res.json({ success: true, message: "Payment verified successfully" ,orderId:orderDbId});
-        console.log("payment verification completed")
-    }else{
-        console.log("Order not verified")
-        res.json({ success: false, message: "Payment verification failed" ,orderId:orderDbId, redirectUrl:"/cart"});
-    }     
-    } catch (error) {
-        console.log("error while verifying the payment", error);
-        res.redirect('/pageNotFound')  
-    }
-}
-
-const useCoupon = async(req,res)=>{
-    try {
-        let {couponName, couponId,grandTotal} = req.body
-        couponId = couponId.trim()
-        const oid = new mongoose.Types.ObjectId(couponId);
-        //console.log("useCoupon",req.body, oid,"REQSESSION FROM COUPON APPLY",req.session)
-        const userId=req.session.user;      
-       let coupon = await Coupon.findOne({_id: couponId});
-       console.log("coupon",coupon)
-        if(grandTotal>coupon.minimumPrice){
-            let oldCoupon = await Coupon.updateMany(
-                { userId: userId }, 
-                { $pull: { userId: userId } } 
-            );
-            if(oldCoupon.modifiedCount === 1){
-                console.log("Coupon not applied");
-                req.session.discount = req.session.discount!==0?(Number(req.session.discount) || 0) - Number(req.session.couponDiscount):0;
-                req.session.couponDiscount=0;
-            }   
-            const percentageDiscount = Math.ceil((Number(req.session.grandTotal) * Number(coupon.percentageOffer)) / 100);
-            req.session.couponDiscount = coupon.percentageOffer !== 0 
-                ? Math.min(percentageDiscount, coupon.offeredPrice) 
-                : coupon.offeredPrice; 
-            req.session.discount = (Number(req.session.discount) || 0) + Number(req.session.couponDiscount);
-            //console.log(oldCoupon,"discount is ", req.session.discount,req.session.couponDiscount, req.session.grandTotal);
-            const updatedCoupon = await Coupon.findByIdAndUpdate(
-                couponId,
-                { $addToSet: { userId: userId } }, 
-                { new: true }
-            );
-            if(updatedCoupon){
-                console.log("CouponApplied");
-                console.log("req.session in coupon apply", req.session)
-                res.json({success:true, message: "Coupon applied successfully"})
-            }else{
-                console.log("Coupon not applied");
-                res.json({success:false, message: "Coupon not applied"})
-            }
+        if (hmac == razorpay_signature) {
+            console.log("payment verified");
+            const newTransaction  = new Transaction({
+                userId: req.session.user,
+                details:{
+                    amount: findOrder.finalAmount,
+                    currency: "INR",
+                    orderId: orderDbId,
+                    orderRazorpayId: req.session.orderId,
+                    paymentId: payment_id,
+                    paymentStatus: "success",
+                    paymentMethod: "razorpay",
+                    paymentDate: new Date(),  
+                }          
+            }) 
+            await Promise.all([
+                newTransaction.save(),
+                Order.findOneAndUpdate({ _id: orderDbId }, { status: "Verified" })
+            ]);
+            res.json({ success: true, message: "Payment verified successfully" ,orderId:orderDbId});
+            console.log("payment verification completed")
         }else{
-            console.log("Coupon minimum price not met");
-            res.json({success:false, message: "Coupon minimum price not met"})
+            console.log("Order not verified")
+            res.json({ success: false, message: "Payment verification failed" ,orderId:orderDbId, redirectUrl:`/orderDetails?id=${orderDbId}`});
         }     
     } catch (error) {
-        console.error("error while submitting coupon", error);
-        res.redirect('/pageNotFound')        
+    console.log("error while verifying the payment", error);
+    res.redirect('/pageNotFound')  
     }
 }
 
-const removeCoupon = async(req,res)=>{
-    try {
-        let {couponName, couponId} = req.body
-        couponId = couponId.trim()
-        const oid = new mongoose.Types.ObjectId(couponId);
-        console.log("useCoupon",req.body, oid)
-        const user=req.session.user;
-        const updateCoupon = await Coupon.findByIdAndUpdate({_id:couponId},
-            {
-                $pull: {userId:user}
-            },
-            {new:true}
-        )
-        if(updateCoupon){
-            console.log("Coupon deleted");
-            req.session.discount = req.session.discount!==0?(Number(req.session.discount) || 0) - Number(req.session.couponDiscount):0;
-            req.session.couponDiscount=0;
-            console.log("req.session in coupon delete", req.session)
-            res.json({success:true, message: "Coupon deleted successfully"})
-        }else{
-            console.log("Coupon not dleted");
-            res.json({success:false, message: "Coupon not deleted"})
-        }
-    } catch (error) {
-        console.error("error while deleting coupon", error);
-        res.redirect('/pageNotFound')       
+//function for applying the coupon
+const useCoupon = async (req, res) => {
+  try {
+    let { couponName, couponId, grandTotal } = req.body;
+    couponId = couponId.trim();
+    const oid = new mongoose.Types.ObjectId(couponId);
+    const userId = req.session.user;
+    let coupon = await Coupon.findOne({ _id: couponId });
+    if (grandTotal > coupon.minimumPrice) {
+      let oldCoupon = await Coupon.updateMany(
+        { userId: userId },
+        { $pull: { userId: userId } }
+      );
+      if (oldCoupon.modifiedCount === 1) {
+        console.log("Coupon not applied");
+        req.session.discount =
+          req.session.discount !== 0
+            ? (Number(req.session.discount) || 0) -
+              Number(req.session.couponDiscount)
+            : 0;
+        req.session.couponDiscount = 0;
+      }
+      const percentageDiscount = Math.ceil(
+        (Number(req.session.grandTotal) * Number(coupon.percentageOffer)) / 100
+      );
+      req.session.couponDiscount =
+        coupon.percentageOffer !== 0
+          ? Math.min(percentageDiscount, coupon.offeredPrice)
+          : coupon.offeredPrice;
+      req.session.discount =
+        (Number(req.session.discount) || 0) +
+        Number(req.session.couponDiscount);
+      const updatedCoupon = await Coupon.findByIdAndUpdate(
+        couponId,
+        { $addToSet: { userId: userId } },
+        { new: true }
+      );
+      if (updatedCoupon) {
+        console.log("CouponApplied");
+        res.json({ success: true, message: "Coupon applied successfully" });
+      } else {
+        console.log("Coupon not applied");
+        res.json({ success: false, message: "Coupon not applied" });
+      }
+    } else {
+      console.log("Coupon minimum price not met");
+      res.json({ success: false, message: "Coupon minimum price not met" });
     }
-}
+  } catch (error) {
+    console.error("error while submitting coupon", error);
+    res.redirect("/pageNotFound");
+  }
+};
 
+//function for removing the coupon
+const removeCoupon = async (req, res) => {
+  try {
+    let { couponName, couponId } = req.body;
+    couponId = couponId.trim();
+    const oid = new mongoose.Types.ObjectId(couponId);
+    const user = req.session.user;
+    const updateCoupon = await Coupon.findByIdAndUpdate(
+      { _id: couponId },
+      {
+        $pull: { userId: user },
+      },
+      { new: true }
+    );
+    if (updateCoupon) {
+      console.log("Coupon deleted");
+      req.session.discount =
+        req.session.discount !== 0
+          ? (Number(req.session.discount) || 0) -
+            Number(req.session.couponDiscount)
+          : 0;
+      req.session.couponDiscount = 0;
+      res.json({ success: true, message: "Coupon deleted successfully" });
+    } else {
+      console.log("Coupon not dleted");
+      res.json({ success: false, message: "Coupon not deleted" });
+    }
+  } catch (error) {
+    console.error("error while deleting coupon", error);
+    res.redirect("/pageNotFound");
+  }
+};
+
+//exporting functions
 module.exports = {
     getCheckoutPage,
     deleteItemCheckout,

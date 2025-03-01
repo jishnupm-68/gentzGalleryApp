@@ -1,7 +1,7 @@
 <%- include("../../views/partials/user/header") %>
+
+<!-- Content of wishlist starts here -->
 <main class="main">
-
-
     <div class="page-header breadcrumb-wrap">
         <div class="container">
             <div class="breadcrumb">
@@ -11,8 +11,6 @@
             </div>
         </div>
     </div>
-
-
     <section class="mt-50 mb-50">
         <div class="container">
             <div class="row">
@@ -29,49 +27,39 @@
                                 </tr>
                             </thead>
                             <tbody>
-                              
                             <% if(wishlist.length>0) {%>
-                                
                                     <% wishlist.forEach((item) => { %>
-
-                                <tr>
-                                   
-                                    <td class="image product-thumbnail">
-                                        <img src="/uploads/product-imagesResized/<%= item.productImage[0] %>" /> 
-                                    </td>
-                                    <td class="product-des product-name">
-                                        <h5 class="product-name">
-                                            <a href="/productDetails?id=<%= item._id %>">
-                                                <%= item.productName %>
-                                            </a>
-                                        </h5>
-                                        <p class="font-xs">
-                                            <br />
-
-                                        </p>
-                                    </td>
-                                    <td class="price" data-title="Price">₹<span>
-                                            <%= item.salePrice %>
-                                        </span></td>
-                                    <td class="text-center" data-title="Add to Cart">
-                                        <!-- <a href="#" onclick="return addToCart('<%= item._id %>','<%= item.salePrice %>')" class="btn btn-sm">Add to Cart</a> -->
-                                         
-                                        <form action="/addToCart" method="post">
-                                            <input type="hidden" name="productId" value="<%= item._id %>">
-                                            <input type="hidden" name="quantity" value="1">
-                                            <input type="hidden" name="price" id="price" value="<%= item.salePrice %>">
-                                            <button type="submit" class="btn add-to-cart-btn" style="background-color: #088178;">Add to Cart</button>
-                                        </form>
-                                    </td>
-                                    <td class="action" data-title="Remove">
-                                        <a class="btn btn-sm" href="#" onclick="confirmRemove('<%= item._id %>')">
-                                            <i class="fi-rs-trash"></i>
+                            <tr>
+                                <td class="image product-thumbnail">
+                                    <img src="/uploads/product-imagesResized/<%= item.productImage[0] %>" /> 
+                                </td>
+                                <td class="product-des product-name">
+                                    <h5 class="product-name">
+                                        <a href="/productDetails?id=<%= item._id %>">
+                                            <%= item.productName %>
                                         </a>
-                                    </td>
-                                    
-                                    
-                                </tr>
-                               
+                                    </h5>
+                                    <p class="font-xs">
+                                        <br />
+                                    </p>
+                                </td>
+                                <td class="price" data-title="Price">₹<span>
+                                        <%= item.salePrice %>
+                                    </span></td>
+                                <td class="text-center" data-title="Add to Cart">
+                                    <form action="/addToCart" method="post">
+                                        <input type="hidden" name="productId" value="<%= item._id %>">
+                                        <input type="hidden" name="quantity" value="1">
+                                        <input type="hidden" name="price" id="price" value="<%= item.salePrice %>">
+                                        <button type="submit" class="btn add-to-cart-btn" style="background-color: #088178;">Add to Cart</button>
+                                    </form>
+                                </td>
+                                <td class="action" data-title="Remove">
+                                    <a class="btn btn-sm" href="#" onclick="confirmRemove('<%= item._id %>')">
+                                        <i class="fi-rs-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
                                 <% }) %>
                             <% }else{%>
                                 <tr>
@@ -88,8 +76,11 @@
         </div>
     </section>
 </main>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<!-- script for alert and ajax request in wishlist page -->
 <script>
+    //function for alert and ajax requests for removing the product from wishlist
     function confirmRemove(productId) {
             Swal.fire({
                 title: 'Are you sure?',
@@ -134,7 +125,10 @@
                 }
             })       
         }
+
 </script>
+
+<!-- Footer -->
 <%- include("../../views/partials/user/footer") %>
 
 

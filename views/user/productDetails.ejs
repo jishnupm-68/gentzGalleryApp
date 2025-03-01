@@ -1,5 +1,7 @@
 <%- include("../../views/partials/user/header") %>
+
 <style>
+
     .product-image-container {
         text-align: center;
     }
@@ -10,210 +12,183 @@
     }
 </style>
 
-
-
+<!-- content starts here -->
 <main class="main">
-
- <div class="page-header breadcrumb-wrap">
-    <div class="container">
-        <nav class="breadcrumb" aria-label="breadcrumb">
-            <a href="/" rel="nofollow">Home</a>
-            <span></span>
-            <a href="/shop" rel="nofollow">Shop</a>
-            <span></span>       
-            <a href="#" rel="nofollow">Product details</a>
-        </nav>
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <nav class="breadcrumb" aria-label="breadcrumb">
+                <a href="/" rel="nofollow">Home</a>
+                <span></span>
+                <a href="/shop" rel="nofollow">Shop</a>
+                <span></span>       
+                <a href="#" rel="nofollow">Product details</a>
+            </nav>
+        </div>
     </div>
-</div>
 
- <section class="mt-50 mb-50">
-     <div class="container">
-         <div class="row">
-             <div class="col-lg-9">
-                 <div class="product-detail accordion-detail">
-                     <div class="row mb-50">
-
-
-
-
-                          <div class="col-md-6 col-sm-12 col-xs-12">
-                            <div class="detail-gallery">
-                                <span class="zoom-icon"><i class="fi-rs-search"></i></span>
-                                <div class="product-image-slider">
-                               
-                                    
-
-
-                          <div id="carouselExampleControls" class="carousel slide col-12" data-ride="carousel">
-                            <div class="carousel-inner">
-                              <div class="carousel-item active product-image-container">
-
-                                <img class="d-block w-100 product-image" id="zoom-image" name="imagezoom" src="/uploads/product-imagesResized/<%= product.productImage[0] %>" alt="First slide" style="object-fit:contain ;">
-                              </div>
-                              <div class="carousel-item   product-image-container">
-                                <img class="d-block w-100 product-image" id="zoom-image" name="imagezoom" src="/uploads/product-imagesResized/<%= product.productImage[1] %>" alt="Second slide" style="object-fit:contain ;">
-                              </div>
-                              <div class="carousel-item   product-image-container">
-                                <img class="d-block w-100 product-image" id="zoom-image" name="imagezoom" src="/uploads/product-imagesResized/<%= product.productImage[2] %>" alt="Third slide" style="object-fit:contain ;">
-                              </div>
+    <!-- product details starts here -->
+    <section class="mt-50 mb-50">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-9">
+                    <div class="product-detail accordion-detail">
+                        <div class="row mb-50">
+                            <div class="col-md-6 col-sm-12 col-xs-12">
+                                <div class="detail-gallery">
+                                    <span class="zoom-icon"><i class="fi-rs-search"></i></span>
+                                    <div class="product-image-slider">
+                                        <div id="carouselExampleControls" class="carousel slide col-12" data-ride="carousel">
+                                            <div class="carousel-inner">
+                                            <div class="carousel-item active product-image-container">
+                                                <img class="d-block w-100 product-image" id="zoom-image" name="imagezoom" src="/uploads/product-imagesResized/<%= product.productImage[0] %>" alt="First slide" style="object-fit:contain ;">
+                                            </div>
+                                            <div class="carousel-item   product-image-container">
+                                                <img class="d-block w-100 product-image" id="zoom-image" name="imagezoom" src="/uploads/product-imagesResized/<%= product.productImage[1] %>" alt="Second slide" style="object-fit:contain ;">
+                                            </div>
+                                            <div class="carousel-item   product-image-container">
+                                                <img class="d-block w-100 product-image" id="zoom-image" name="imagezoom" src="/uploads/product-imagesResized/<%= product.productImage[2] %>" alt="Third slide" style="object-fit:contain ;">
+                                            </div>
+                                            </div>
+                                            <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+                                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                            <span class="sr-only">Previous</span>
+                                            </a>
+                                            <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+                                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                            <span class="sr-only">Next</span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
-                              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                              <span class="sr-only">Previous</span>
-                            </a>
-                            <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
-                              <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                              <span class="sr-only">Next</span>
-                            </a>
-                          </div>
-
-
-
-                        </div>
+                            <div class="col-md-6 col-sm-12 col-xs-12">
+                                <div class="detail-info">
+                                    <h2 class="title-detail"><%=product.productName %></h2>
+                                    <div class="product-detail-rating">
+                                        <div class="pro-details-brand">
+                                            <span> Brand: <a href="#"><%=product.brand %></a></span>
+                                        </div>
+                                        <div class="product-rate-cover text-end">
+                                            <div class="product-rate d-inline-block">
+                                                <div class="product-rating" style="width:90%">
+                                                </div>
+                                            </div>
+                                            <span class="font-small ml-5 text-muted">Rating: <%= product.rating %> <i class="fa-solid fa-star"></i> </span>
+                                        </div>
+                                    </div>
+                                    <div class="clearfix product-price-cover">
+                                        <div class="product-price primary-color float-left">
+                                            <ins><span class="text-brand">₹<%=product.salePrice %></span></ins>
+                                            <ins><span class="old-price font-md ml-15"><strike>₹<%=product.regularPrice %></strike></span></ins>
+                                            <span class="save-price  font-md color3 ml-15">
+    
+                                                <% if(!totalOffer) {%>
+                                                    No offers
+                                                <% }else {%>
+                                                    <%=totalOffer %>% offer
+                                                <% } %>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="bt-1 border-color-1 mt-15 mb-15"></div>
+                                    <div class="short-desc mb-30">
+                                        <p><%=product.description %></p>
+                                    </div>
+                                    <div class="product_sort_info font-xs mb-30">
+                                        <ul>
+                                            <li class="mb-10"><i class="fi-rs-crown mr-5"></i> 1 Year Brand Warranty</li>
+                                            <li class="mb-10"><i class="fi-rs-refresh mr-5"></i> 30 Day Return Policy</li>
+                                            <li><i class="fi-rs-credit-card mr-5"></i> Cash on Delivery available</li>
+                                        </ul>
+                                    </div>
+                                    <div class="bt-1 border-color-1 mt-30 mb-30"></div>
+                                        <form action="/addToCart" method="post">
+                                            <div class="detail-extralink">
+                                                <% if(quantity<=0) {%>
+                                                <div class="detail-qty border radius">
+                                                    <a href="#" class="qty-down" onclick="" ><i class="fi-rs-angle-small-down"></i></a>
+                                                    <div class="qty-val" id="quantity" value="" name="quantity">1</div>         
+                                                    <a href="#" class="qty-up" onclick=""><i class="fi-rs-angle-small-up"></i></a>
+                                                </div>
+                                                <% }else {%>
+                                                    <div class="detail-qty border radius">
+                                                        <a href="#" class="qty-down" onclick="return decrementValue()"  ><i class="fi-rs-angle-small-down"></i></a>
+                                                        <div class="qty-val" id="quantity" value="" name="quantity">1</div>                                                   
+                                                        <a href="#" class="qty-up" onclick="return incrementValue()" ><i class="fi-rs-angle-small-up"></i></a>
+                                                    </div>
+                                                <% } %>
+                                                <div class="product-extra-link2">
+                                                    <input type="text" style="display: none;"name="quantity" id = "quantityUpdated" value="1">
+                                                    <input style="display: none;" name="productId" value="<%= product._id %>">
+                                                    <input style="display: none;" name="price" value="<%= product.salePrice %>">
+                                                    <% if(quantity<=0) {%>
+                                                    <button type="submit" class="button button-add-to-cart btn-secondary btn"  disabled>Out of Stock</button>
+                                                    <% }else{ %>
+                                                        <button type="submit" class="button button-add-to-cart btn"  >Add to Cart</button>
+                                                    <% } %>
+                                                    <a aria-label="Add To Wishlist" class="action-btn hover-up" href="#" onclick="addToWishlist('<%= product._id %>')"><i class="fi-rs-heart"></i></a>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    <ul class="product-meta font-xs color-grey mt-50">
+                                        <li class="mb-5">Tags: <a href="#" rel="tag"></a><%=category.name %> <a href="#" rel="tag"></a> <a href="#" rel="tag"></a> </li>
+                                        <% if(quantity==0) {%>
+                                            <li>Availability:<span class="out-of-stock text-danger ml-5">Out of Stock</span></li> 
+                                            <% }else{ %>
+                                        <li id="availability" data-quantity="<%= quantity %>">Availability:<span class="in-stock text-success ml-5" ><%=quantity %></span></li>
+                                        <% } %>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>                   
                     </div>
                 </div>
- 
- 
-                                
- 
-                          <div class="col-md-6 col-sm-12 col-xs-12">
-                              <div class="detail-info">
-                                  <h2 class="title-detail"><%=product.productName %></h2>
-                                  <div class="product-detail-rating">
-                                      <div class="pro-details-brand">
-                                          <span> Brand: <a href="#"><%=product.brand %></a></span>
-                                      </div>
-                                      <div class="product-rate-cover text-end">
-                                          <div class="product-rate d-inline-block">
-                                              <div class="product-rating" style="width:90%">
-                                              </div>
-                                          </div>
-                                          <span class="font-small ml-5 text-muted">Rating: <%= product.rating %> <i class="fa-solid fa-star"></i> </span>
-                                      </div>
-                                  </div>
-                                  <div class="clearfix product-price-cover">
-                                      <div class="product-price primary-color float-left">
-                                          <ins><span class="text-brand">₹<%=product.salePrice %></span></ins>
-                                          <ins><span class="old-price font-md ml-15"><strike>₹<%=product.regularPrice %></strike></span></ins>
-                                          <span class="save-price  font-md color3 ml-15">
- 
-                                             <% if(!totalOffer) {%>
-                                                 No offers
-                                                 <% }else {%>
-                                                     <%=totalOffer %>% offer
-                                                     <% } %>
-                                        </span>
-                                      </div>
-                                  </div>
-                                  <div class="bt-1 border-color-1 mt-15 mb-15"></div>
-                                  <div class="short-desc mb-30">
-                                      <p><%=product.description %></p>
-                                  </div>
-                                  <div class="product_sort_info font-xs mb-30">
-                                      <ul>
-                                          <li class="mb-10"><i class="fi-rs-crown mr-5"></i> 1 Year Brand Warranty</li>
-                                          <li class="mb-10"><i class="fi-rs-refresh mr-5"></i> 30 Day Return Policy</li>
-                                          <li><i class="fi-rs-credit-card mr-5"></i> Cash on Delivery available</li>
-                                      </ul>
-                                  </div>
-                                
-                                  <div class="bt-1 border-color-1 mt-30 mb-30"></div>
-                                    <form action="/addToCart" method="post">
-                                        <div class="detail-extralink">
-                                            <% if(quantity<=0) {%>
-                                            <div class="detail-qty border radius">
-                                                <a href="#" class="qty-down" onclick="" ><i class="fi-rs-angle-small-down"></i></a>
-                                                <div class="qty-val" id="quantity" value="" name="quantity">1</div>
-                                                
-                                                <a href="#" class="qty-up" onclick=""><i class="fi-rs-angle-small-up"></i></a>
-                                            </div>
-                                            <% }else {%>
-                                                <div class="detail-qty border radius">
-                                                    <a href="#" class="qty-down" onclick="return decrementValue()"  ><i class="fi-rs-angle-small-down"></i></a>
-                                                    <div class="qty-val" id="quantity" value="" name="quantity">1</div>                                                   
-                                                    <a href="#" class="qty-up" onclick="return incrementValue()" ><i class="fi-rs-angle-small-up"></i></a>
-                                                </div>
-                                                <% } %>
-                                            <div class="product-extra-link2">
-                                                <input type="text" style="display: none;"name="quantity" id = "quantityUpdated" value="1">
-                                                <input style="display: none;" name="productId" value="<%= product._id %>">
-                                                <input style="display: none;" name="price" value="<%= product.salePrice %>">
-                                                <% if(quantity<=0) {%>
-                                                <button type="submit" class="button button-add-to-cart btn-secondary btn"  disabled>Out of Stock</button>
-                                                <% }else{ %>
-                                                    <button type="submit" class="button button-add-to-cart btn"  >Add to Cart</button>
-                                                    <% } %>
-                                                <a aria-label="Add To Wishlist" class="action-btn hover-up" href="#" onclick="addToWishlist('<%= product._id %>')"><i class="fi-rs-heart"></i></a>
-                                            </div>
-                                        </div>
-                                    </form>
-                                  <ul class="product-meta font-xs color-grey mt-50">
-                                      <li class="mb-5">Tags: <a href="#" rel="tag"></a><%=category.name %> <a href="#" rel="tag"></a> <a href="#" rel="tag"></a> </li>
-                                      <% if(quantity==0) {%>
-                                         <li>Availability:<span class="out-of-stock text-danger ml-5">Out of Stock</span></li> 
-                                         <% }else{ %>
-                                      <li id="availability" data-quantity="<%= quantity %>">Availability:<span class="in-stock text-success ml-5" ><%=quantity %></span></li>
-                                      <% } %>
-                                  </ul>
-                              </div>
-                          </div>
-                      </div>                   
-                  </div>
-              </div>
-          </div>
-      </div>
-  </section> 
- 
- 
- 
-  <!-- similiar product -->
-  <div class="row">
-     <section class="product spad">
-         <div class="container">
-             <div class="row">
-                 <div class="col-lg-12">
-                     <ul class="filter__controls">
-                         <li data-filter=".new-arrivals">Similiar Products</li>
-                     </ul>
-                 </div>
-             </div>
-             <div class="row product__filter">
-                 <% for(let i=0;i<length;i++){ %>
-                     <div class="col-lg-3 col-md-4 col-12 col-sm-6">
-                         <div class="product-cart-wrap mb-30">
-                             <div class="product-img-action-wrap">
-                                 <div class="product-img product-img-zoom">
-                                     <a href="/productDetails?id=<%= products[i]._id %>">
-                                         <img class="default-img" src="/uploads/product-imagesResized/<%=products[i].productImage[0]%>" alt="<%=products[i].productName%>">
-                                     </a>
-                                 </div>
-                                 <a href="#"  onclick="addToWishlist('<%= product._id %>')" class="wishlist-btn">
-                                     <i class="fas fa-heart"></i>
-                                 </a>
-                             </div>
-       
-       
-                             <div class="product-content-wrap">
-                                 <h6><%= products[i].productName %></h6>
-                                 <h5><%= products[i].productPrice %></h5>
-                                 <a href="/addToCart?id=<%= products[i]._id %>">Add to Cart</a>
-                             </div>
-                         </div>
-                     </div>
-                     <% } %>
-             </div>
-         </div>
-         
- 
-       </section>
-     </div>
- 
- 
- 
+            </div>
+        </div>
+    </section> 
+    
+    <!-- similiar product -->
+    <div class="row">
+        <section class="product spad">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <ul class="filter__controls">
+                            <li data-filter=".new-arrivals">Similiar Products</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row product__filter">
+                    <% for(let i=0;i<length;i++){ %>
+                        <div class="col-lg-3 col-md-4 col-12 col-sm-6">
+                            <div class="product-cart-wrap mb-30">
+                                <div class="product-img-action-wrap">
+                                    <div class="product-img product-img-zoom">
+                                        <a href="/productDetails?id=<%= products[i]._id %>">
+                                            <img class="default-img" src="/uploads/product-imagesResized/<%=products[i].productImage[0]%>" alt="<%=products[i].productName%>">
+                                        </a>
+                                    </div>
+                                    <a href="#"  onclick="addToWishlist('<%= product._id %>')" class="wishlist-btn">
+                                        <i class="fas fa-heart"></i>
+                                    </a>
+                                </div>
+                                <div class="product-content-wrap">
+                                    <h6><%= products[i].productName %></h6>
+                                    <h5><%= products[i].productPrice %></h5>
+                                    <a href="/addToCart?id=<%= products[i]._id %>">Add to Cart</a>
+                                </div>
+                            </div>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </section>
+    </div>
  </main>
 
 
- <script>
+ <!-- script for performing the zoom operation in the product image  -->
+<script>
     document.addEventListener('DOMContentLoaded', () => {
         const img = document.getElementById("zoom-image");
         const container = document.querySelector('.product-image-container');
@@ -222,11 +197,9 @@
             const rect = container.getBoundingClientRect();
             const x = ((e.clientX - rect.left) / rect.width) * 100;
             const y = ((e.clientY - rect.top) / rect.height) * 100;
-
             img.style.transformOrigin = `${x}% ${y}%`;
             img.style.transform = `scale(${zoomFactor})`;
         });
-
         container.addEventListener("mouseleave", () => {
             img.style.transform = "scale(1)";
         });
@@ -234,27 +207,25 @@
 </script>
 
 
-
-
+<!-- script for  add to cart, add to wishlist  -->
  <script>
+    //function to add to cart the product
     function addToCart(productId) {
       const form = document.createElement('form');
       form.action = '/addToCart';
       form.method = 'POST';
       form.style.display = 'none';
-  
       const input = document.createElement('input');
       input.type = 'hidden';
       input.name = 'id';
       input.value = productId;
-  
       form.appendChild(input);
       document.body.appendChild(form);
       form.submit();
     }
     
+    //function to add to wishlist a product
     function addToWishlist(productId) {
-        console.log("Function addtowishlist called with productid", productId);
         $.ajax({
             url: '/addToWishlist?id=' + productId,
             method: 'get',
@@ -294,50 +265,46 @@
  </script>
 
 
-<!-- quantity changing -->
+<!--script for quantity changing -->
   <script>
+
+    //function for incrementing the quantity
     function incrementValue() {
       var value = parseInt(document.getElementById('quantity').value, 10);
       var inputValue = parseInt(document.getElementById('availability').dataset.quantity);
-      console.log("inputValue", inputValue,"value", value)
       value = isNaN(value) ? 0 : value;
       if(isNaN(value)){
         value = 1;
       }else{
         if(value<5 && inputValue-value>0){
-        value++;
-
+            value++;
+        }
+        else if(inputValue-value<=0){
+            Swal.fire ({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Out of Stock'
+            })
+        }else{
+            Swal.fire ({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Quantity cannot be more than 5'
+            })
+        }
       }
-      else if(inputValue-value<=0){
-        console.log("first else")
-        Swal.fire ({
-          icon: 'error',
-          title: 'Oops...',
-          text: 'Out of Stock'
-        })
-      }else{
-        Swal.fire ({
-          icon: 'error',
-          title: 'Oops...',
-          text: 'Quantity cannot be more than 5'
-        })
-      }
-
-      }
-      console.log(inputValue-value)
-  
       document.getElementById('quantity').value = value;
       document.getElementById('quantity').innerText = value;
       document.getElementById('quantityUpdated').innerText = value;
       document.getElementById('quantityUpdated').value = value;
     }
 
+    //function for decrementing the quantity
     function decrementValue() {
       var value = parseInt(document.getElementById('quantity').value, 10);
       value = isNaN(value) ? 0 : value;
       if (value > 1) {
         value--;
-        console.log(value)
       }
       else{
         Swal.fire ({
@@ -349,12 +316,12 @@
       document.getElementById('quantity').value = value;
       document.getElementById('quantity').innerText = value;
       document.getElementById('quantityUpdated').value = value;
-      document.getElementById('quantityUpdated').innerText = value;
-      
+      document.getElementById('quantityUpdated').innerText = value; 
     }
+  
   </script>
   
- 
+ <!-- footer -->
  <%- include("../../views/partials/user/footer") %>
  
  
