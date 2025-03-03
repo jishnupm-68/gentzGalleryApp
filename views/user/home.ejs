@@ -102,99 +102,26 @@
 
     <!-- content starts here -->
     <main>
-        <!--? Hero Area Start-->
-        <div class="container-fluid">
-            <div class="slider-area">
-                <!-- Mobile Device Show Menu-->
-                <div class="header-right2 d-flex align-items-center">
-                    <!-- Social -->
-                    
-                    <!-- Search Box -->
-                    <div class="search d-block d-md-none" >
-                        <ul class="d-flex align-items-center">
-                            <li class="mr-15">
-                                <div class="nav-search search-switch">
-                                    <i class="ti-search"></i>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="card-stor">
-                                    <img src="assets/img/gallery/card.svg" alt="">
-                                    <span></span>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <!-- /End mobile  Menu-->
-
-                <div class="slider-active dot-style">
-                    <!-- Single -->
-                    <div class="single-slider slider-bg1 hero-overly slider-height d-flex align-items-center">
-                        <div class="container">
-                            <div class="row justify-content-center">
-                                <div class="col-xl-8 col-lg-9">
-                                    <!-- Hero Caption -->
-                                    <div class="hero__caption">
-                                        <h1>fashion<br>changing<br>always</h1>
-                                        <a href="/shop" class="btn" style="background-color: #088178;">Shop Now</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Single -->
-                    <div class="single-slider slider-bg2 hero-overly slider-height d-flex align-items-center">
-                        <div class="container">
-                            <div class="row justify-content-center">
-                                <div class="col-xl-8 col-lg-9">
-                                    <!-- Hero Caption -->
-                                    <div class="hero__caption">
-                                        <h1>fashion<br>changing<br>always</h1>
-                                        <a href="/shop" class="btn" style="background-color: #088178;">Shop Now</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Single -->
-                    <div class="single-slider slider-bg3 hero-overly slider-height d-flex align-items-center">
-                        <div class="container">
-                            <div class="row justify-content-center">
-                                <div class="col-xl-8 col-lg-9">
-                                    <!-- Hero Caption -->
-                                    <div class="hero__caption">
-                                        <h1>fashion<br>changing<br>always</h1>
-                                        <a href="/shop" class="btn" style="background-color: #088178;">Shop Now</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- End Hero -->
-        <!--? Popular Items Start -->
+       
+        <!--? image Start -->
         <div class="popular-items pt-50">
             <div class="container-fluid">
                 <div class="row">  
                     <div class="col-lg-12 col-md-6 col-sm-12">
                         <div class="single-popular-items mb-50 text-center wow fadeInUp" data-wow-duration="1s" data-wow-delay=".2s">
                             <div class="popular-img">
-                                <img src="/uploads/brands/1736849786662-830146210-hand-wrist-watch-business-suit-elegant-handsome-man-suit-man-suit-male-beard-mustache-black-white_293990-4461.jpg" style=" height: 50%;" alt="">
+                                <img src="/uploads/brands/1736849786662-830146210-hand-wrist-watch-business-suit-elegant-handsome-man-suit-man-suit-male-beard-mustache-black-white_293990-4461.jpg" style=" height:30%;" alt="">
                                 <div class="img-cap">
-                                    <span>Watches</span>
+                                    <a href="/shop" ><span >Watches</span> </a>
                                 </div>
                                 <div class="favorit-items">
-                                <a href="/shop" class="btn" style="background-color: #088178;">Shop </a>
                             </div>
                         </div>
                     </div>
                 </div>
             </div> 
         </div>
-        <!-- Popular Items End -->
+        <!-- image End -->
         <!--? New Arrival Start -->
         <div class="new-arrival">
             <div class="container">
@@ -215,7 +142,7 @@
                                         <div class="product-img-action-wrap">
                                             <div class="product-img product-img-zoom">
                                                 <a href="/productDetails?id=<%= products[i]._id %>">
-                                                    <img class="default-img" src="/uploads/product-imagesResized/<%=products[i].productImage[0]%>" alt="<%=products[i].productName%>">
+                                                    <img class="default-img" src="<%=products[i].productImage[0]%>" alt="<%=products[i].productName%>">
                                                 </a>
                                             </div>
                                             <a href="#" onclick="addToWishlist('<%= products[i]._id %>')" class="wishlist-btn">

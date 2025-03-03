@@ -1,5 +1,5 @@
 const Brand = require("../../models/brandSchema");  // importing the brand schema
-
+const cloudinary = require("../../config/cloudinary"); // Import  Cloudinary config
 //rendering the brand page
 const getBrandPage =async(req, res)=>{
     try {
@@ -27,31 +27,37 @@ const getBrandPage =async(req, res)=>{
 
 // adding new brand
 const addBrand = async (req, res) => {
-    try {
-        const brand = req.body.name;
-        const findBrand = await Brand.findOne({ brandName: brand });
-        if (!findBrand) {
-            if (req.file && req.file.filename) {
-                const image = req.file.filename;
-                const newBrand = new Brand({
-                    brandName: brand,
-                    brandImage: image,
-                });
-                await newBrand.save();
-                console.log("Brand added successfully");
-                res.status(200).json({success:true,message:"Brand successfully added"});              
-            } else {
-                console.log("No image uploaded");
-                res.json({success:false, message:"Image upload failed"});
-            }
-        } else {
-            console.log("Brand already exists");
-            res.status(400).json({success:false, message:"Brand already exists"});
-        }
-    } catch (error) {
-        console.error("Error adding brand:", error);
-        res.redirect("/admin/pageError");
+  try {
+    const brand = req.body.name;
+    const findBrand = await Brand.findOne({ brandName: brand });
+    if (!findBrand) {
+      if (req.file) {
+        // Upload the image to Cloudinary
+        const result = await cloudinary.uploader.upload(req.file.path, {
+          folder: "gentz_gallery_brands", // Folder in Cloudinary
+        });
+
+        const newBrand = new Brand({
+          brandName: brand,
+          brandImage: result.secure_url, 
+        });
+
+        // Save the brand to the database
+        await newBrand.save();
+        console.log("Brand added successfully");
+        res.status(200).json({ success: true, message: "Brand successfully added" });
+      } else {
+        console.log("No image uploaded");
+        res.status(400).json({ success: false, message: "Image upload failed" });
+      }
+    } else {
+      console.log("Brand already exists");
+      res.status(400).json({ success: false, message: "Brand already exists" });
     }
+  } catch (error) {
+    console.error("Error adding brand:", error);
+    res.status(500).json({ success: false, message: "Error adding brand" });
+  }
 };
 
 // function for blocking the brand

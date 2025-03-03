@@ -40,13 +40,13 @@
                                         <div id="carouselExampleControls" class="carousel slide col-12" data-ride="carousel">
                                             <div class="carousel-inner">
                                             <div class="carousel-item active product-image-container">
-                                                <img class="d-block w-100 product-image" id="zoom-image" name="imagezoom" src="/uploads/product-imagesResized/<%= product.productImage[0] %>" alt="First slide" style="object-fit:contain ;">
+                                                <img class="d-block w-100 product-image" id="zoom-image" name="imagezoom" src="<%= product.productImage[0] %>" alt="First slide" style="object-fit:contain ;">
                                             </div>
                                             <div class="carousel-item   product-image-container">
-                                                <img class="d-block w-100 product-image" id="zoom-image" name="imagezoom" src="/uploads/product-imagesResized/<%= product.productImage[1] %>" alt="Second slide" style="object-fit:contain ;">
+                                                <img class="d-block w-100 product-image" id="zoom-image" name="imagezoom" src="<%= product.productImage[1] %>" alt="Second slide" style="object-fit:contain ;">
                                             </div>
                                             <div class="carousel-item   product-image-container">
-                                                <img class="d-block w-100 product-image" id="zoom-image" name="imagezoom" src="/uploads/product-imagesResized/<%= product.productImage[2] %>" alt="Third slide" style="object-fit:contain ;">
+                                                <img class="d-block w-100 product-image" id="zoom-image" name="imagezoom" src="<%= product.productImage[2] %>" alt="Third slide" style="object-fit:contain ;">
                                             </div>
                                             </div>
                                             <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
@@ -165,7 +165,7 @@
                                 <div class="product-img-action-wrap">
                                     <div class="product-img product-img-zoom">
                                         <a href="/productDetails?id=<%= products[i]._id %>">
-                                            <img class="default-img" src="/uploads/product-imagesResized/<%=products[i].productImage[0]%>" alt="<%=products[i].productName%>">
+                                            <img class="default-img" src="<%=products[i].productImage[0]%>" alt="<%=products[i].productName%>">
                                         </a>
                                     </div>
                                     <a href="#"  onclick="addToWishlist('<%= product._id %>')" class="wishlist-btn">
@@ -231,26 +231,27 @@
             method: 'get',
             data: { productId: productId },
             success: function(response) {
-                console.log("Response from server:", response);
                 if (response.success) {
                     Swal.fire({
                         icon: 'success',
                         title: 'Success',
                         text: response.message
                     });
-                }else if(response.message=="Product already in wishlist"){
+                }else {
+                    if(response.message=="Product already in wishlist"){
                     Swal.fire({
                         icon: 'success',
                         title: 'success',
                         text: response.message
                     })
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: response.message
-                    })
-                }
+                    }else  {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: response.message,
+                        })
+                    }
+                }    
             },
             error: function(xhr, status, error) {
                 console.error("AJAX error:", xhr.responseText, status, error);

@@ -4,6 +4,8 @@ const Brand = require("../../models/brandSchema");
 const fs = require("fs");
 const path = require("path");
 const sharp = require("sharp");
+const cloudinary = require('../../config/cloudinary')
+
 
 //render the product add page
 const getProductAddPage = async (req, res) => {
@@ -27,25 +29,25 @@ const addProducts = async (req, res) => {
     const productExists = await Product.findOne({
       productName: products.productName.trim(),
     });
+
     if (!productExists) {
       const images = [];
+
       if (req.files && req.files.length > 0) {
         for (let i = 0; i < req.files.length; i++) {
-          const originalImagePath = req.files[i].path;
-          const resizedImagePath = path.join(
-            __dirname,
-            "../../public/uploads/product-imagesResized",
-            req.files[i].filename 
-          );
-          await sharp(originalImagePath)
-            .resize({ width: 440, height: 400 })
-            .toFile(resizedImagePath);
-          images.push(req.files[i].filename);        
+          // Upload the image to Cloudinary with resizing
+          const result = await cloudinary.uploader.upload(req.files[i].path, {
+            folder: "gentz_gallery_products", // Folder in Cloudinary
+            transformation: [
+              { width: 440, height: 400, crop: "fill" }, // Resize and crop to 440x400
+            ],
+          });
+          images.push(result.secure_url);
         }
       }
       const categoryId = await Category.findOne({ name: products.category });
       if (!categoryId) {
-        return res.status(400).join({ message: "Category not found" });
+        return res.status(400).json({ message: "Category not found" });
       }
       const newProduct = new Product({
         productName: products.productName,
@@ -58,19 +60,30 @@ const addProducts = async (req, res) => {
         quantity: products.quantity,
         size: products.size,
         color: products.color,
-        productImage: images,
+        productImage: images, 
         status: "Available",
       });
+
+      // Save the product to the database
       await newProduct.save();
       console.log("New product saved successfully");
-      return res.json({ success:true,message:"Product successfully Added" ,redirectUrl:"/admin/addProducts"});
+      return res.json({
+        success: true,
+        message: "Product successfully added",
+        redirectUrl: "/admin/addProducts",
+      });
     } else {
+
       const [category, brand] = await Promise.all([
-         Category.find({ isListed: true }),
-         Brand.find({ isBlocked: false }),
+        Category.find({ isListed: true }),
+        Brand.find({ isBlocked: false }),
       ]);
+
       console.log("Product name already exists, please try again with another name");
-      return res.status(400).json({success:false, message: "Product already exists" });
+      return res.status(400).json({
+        success: false,
+        message: "Product already exists",
+      });
     }
   } catch (error) {
     console.error("Error while saving the new product", error);
@@ -230,41 +243,39 @@ const getEditProduct = async (req, res) => {
   }
 };
 
-//function for updating the product
+//function  updating data with image resize
 const editProduct = async (req, res) => {
-  console.log("editing the existing product");
+  console.log("Editing the existing product");
   try {
     const id = req.query.id;
     const data = req.body;
     const [product, existingProduct, category, brand] = await Promise.all([
       Product.findOne({ _id: id }),
-      Product.findOne({_id: {$ne: id},
-        productName: data.productName.trim(),
-      }),
-      Category.find({isListed: true}),
-      Brand.find({isBlocked: false}),
+      Product.findOne({ _id: { $ne: id }, productName: data.productName.trim() }),
+      Category.find({ isListed: true }),
+      Brand.find({ isBlocked: false }),
     ]);
     const currentCategory = await Category.findOne({ _id: product.category });
     if (existingProduct) {
       console.log("Product name already exists, please try again with another name");
-      return res.json({ success:false, message: "Product name already exists, please try with another name" });
+      return res.json({ success: false, message: "Product name already exists, please try with another name" });
     }
     const images = [];
-      if (req.files && req.files.length > 0) {
-        for (let i = 0; i < req.files.length; i++) {
-          const originalImagePath = req.files[i].path;
-          const resizedImagePath = path.join(
-            __dirname,
-            "../../public/uploads/product-imagesResized",
-            req.files[i].filename 
-          );
-          await sharp(originalImagePath)
-            .resize({ width: 440, height: 400 })
-            .toFile(resizedImagePath);
-          images.push(req.files[i].filename);
-        }
+    if (req.files && req.files.length > 0) {
+      for (let i = 0; i < req.files.length; i++) {
+        // Upload the image to Cloudinary with resizing
+        const result = await cloudinary.uploader.upload(req.files[i].path, {
+          folder: "gentz_gallery_products", // Folder in Cloudinary
+          transformation: [
+            { width: 440, height: 400, crop: "fill" }, 
+          ],
+        });
+        images.push(result.secure_url);
       }
-    const newCategoryId = await Category.findOne({name:data.category},{_id:1});
+    }
+    const newCategoryId = await Category.findOne({ name: data.category }, { _id: 1 });
+
+    // updated fields
     const updateFields = {
       productName: data.productName,
       description: data.description,
@@ -274,19 +285,20 @@ const editProduct = async (req, res) => {
       salePrice: data.salePrice,
       quantity: data.quantity,
       color: data.color,
-      productImage: images,
+      productImage: images, 
     };
-    if (req.files.length > 0) {
-      updateFields.$push = {
-        productImage: { $each: images },
-      };
-    }
-    let result =  await Product.findByIdAndUpdate(id, { $set: updateFields }, { new: true });
-    console.log("Data saved for editing the product"  );
-    res.json({success:true, message:"Product updated successfully",redirectUrl:"/admin/products"});
+    // Update the product in the database
+    const result = await Product.findByIdAndUpdate(
+      id,
+      { $set: updateFields },
+      { new: true }
+    );
+
+    console.log("Product updated successfully");
+    res.json({ success: true, message: "Product updated successfully", redirectUrl: "/admin/products" });
   } catch (error) {
-    console.error("Error in editProduct", error);
-    res.redirect("/admin/pageError");
+    console.error("Error in editProduct:", error);
+    res.status(500).json({ success: false, message: "Error updating product" });
   }
 };
 
@@ -294,25 +306,33 @@ const editProduct = async (req, res) => {
 const deleteSingleImage = async (req, res) => {
   try {
     const { imageNameToServer, productIdToServer } = req.body;
-    const product = await Product.findByIdAndUpdate(productIdToServer, {
-      $pull: { productImage: imageNameToServer },
+    const publicId = imageNameToServer
+      .split("/")
+      .slice(-2)
+      .join("/")
+      .split(".")[0]; 
+    // Delete the image from Cloudinary
+    await cloudinary.uploader.destroy(publicId, (error, result) => {
+      if (error) {
+        console.error("Error deleting image from Cloudinary:", error);
+        return res.json({ success: false, message: "Error deleting image from Cloudinary" });
+      }
+      console.log("Image deleted from Cloudinary:", result);
     });
-    const imagePath = path.resolve(
-      __dirname,
-      "../../public/uploads/brands",
-      imageNameToServer
+    const product = await Product.findByIdAndUpdate(
+      productIdToServer,
+      { $pull: { productImage: imageNameToServer } },
+      { new: true }
     );
-    if (fs.existsSync(imagePath)) {
-      await fs.unlinkSync(imagePath);
-      console.log("Image  deleted successfully");
-      res.json({ success: true, message: "Image deleted successfully"});
-    } else {
-      console.error("Image not found to delete", imageNameToServer);
-      res.json({ success: false, message: "Image not found"});
+
+    if (!product) {
+      return res.json({ success: false, message: "Product not found" });
     }
+    console.log("Image URL removed from product successfully");
+    res.json({ success: true, message: "Image deleted successfully" });
   } catch (error) {
-    console.error("Error in deleteSingleImage", error);
-    res.json({success:false, message: "Error while deleting the image" })
+    console.error("Error in deleteSingleImage:", error);
+    res.json({ success: false, message: "Error while deleting the image" });
   }
 };
 

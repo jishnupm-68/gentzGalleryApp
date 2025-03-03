@@ -125,7 +125,7 @@ router.post("/retryPayment", userAuth, postOrderController.retryPayment)
 
 //wishlist management
 router.get('/Wishlist',userAuth,wishlistController.loadWishlist)
-router.get('/addToWishlist',userAuth,wishlistController.addToWishlist)
+router.get('/addToWishlist',wishlistController.addToWishlist)
 router.get("/deleteWishlistItem",userAuth, wishlistController.deleteWishlistItem)
 
 //exporting routes

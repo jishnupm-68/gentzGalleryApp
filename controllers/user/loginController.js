@@ -2,7 +2,6 @@
 const User = require('../../models/userSchema')
 const bcrypt = require("bcrypt")
 
-
 //render the login page
 const loadLogin = async(req,res)=>{
     try {
@@ -24,13 +23,16 @@ const login = async(req,res)=>{
         const {email,password} = req.body
         const findUser = await User.findOne({isAdmin:false, email:email});
         if(!findUser){
+            console.log("User not found")
             return res.render("login",{message:"User not found"})
         }
         if(findUser.isBlocked){
+            console.log("User is blocked by admin")
             return res.render("login",{message:"User is blocked by admin"})
         }
         const passwordMatch = await bcrypt.compare(password,findUser.password);
         if(!passwordMatch){
+            console.log("Incorrect Password")
             return res.render("login",{message:"Incorrect Password"});
         }
         console.log("manual login")

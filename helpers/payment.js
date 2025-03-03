@@ -1,11 +1,4 @@
-const User = require("../models/userSchema");
-const Product = require('../models/productSchema');
-const Address =  require('../models/addressSchema');
-const Order = require('../models/orderSchema');
-const Coupon = require('../models/couponSchema');
-const Transaction = require('../models/transactionSchema');
-const Cart = require('../models/cartSchema');
-const mongoose = require("mongoose");
+
 const env = require('dotenv').config();
 const Razorpay  = require('razorpay');
 const crypto = require("crypto");

@@ -1,5 +1,6 @@
 const User = require("../models/userSchema");
 
+//checking for customer loggedin or not  
 const userAuth = (req,res,next) => {
     if(req.session.user){
         User.findOne({_id:req.session.user,isBlocked:false})
@@ -19,7 +20,7 @@ const userAuth = (req,res,next) => {
     }
 }
 
-
+//Checking while doing the forgot password operations
 const profileAuth = (req,res,next) => {
     try{
         if(req.session.userData){
@@ -27,40 +28,36 @@ const profileAuth = (req,res,next) => {
         }else{
             res.redirect("/forgotPassword")
         }
-       }
-    catch(error)
-{  console.log("Error in profile auth middleware");
+
+    }catch(error){  
+        console.log("Error in profile auth middleware");
         res.status(500).send("Internal server error")
     }
 }
 
-
+//checking for admin loggedin or not
 const adminAuth = (req,res,next) => {
-    //console.log("Session", req.session.admin)
     if(req.session.admin){
         User.findOne({isAdmin: true})
-    .then(data=>{    
-        if(data){
-            next();
-        }else{
-            res.redirect("/admin/login")
-        }
-    })
-    .catch(error=>{
-        console.log("Error in admin auth middleware");
-        res.status(500).send("Internal server error")
-    })
-        
+        .then(data=>{    
+            if(data){
+                next();
+            }else{
+                res.redirect("/admin/login")
+            }
+        })
+        .catch(error=>{
+            console.log("Error in admin auth middleware");
+            res.status(500).send("Internal server error")
+        })    
     }else{
-        res.redirect("/admin/login")
-
+        res.redirect("/admin/login");
     }   
 }
 
-
-
+//exporting functions
 module.exports = {
-    userAuth
-    ,adminAuth,
+    userAuth,
+    adminAuth,
     profileAuth
 };
