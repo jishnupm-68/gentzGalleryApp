@@ -7,10 +7,20 @@ const mongoose = require("mongoose");
 const loadWishlist = async(req,res)=>{
     try {
         const userId = req.session.user; 
-        const [user, wishlistItems] = await Promise.all ([
-            User.findOne({_id:userId}),
-            Wishlist.findOne({ userId: userId }),
-        ]);
+        let user, wishlistItems
+        try{
+            [user, wishlistItems] = await Promise.all ([
+                User.findOne({_id:userId}),
+                Wishlist.findOne({ userId: userId }),
+            ]);
+        }catch(error){
+            let newWishlist = new Wishlist({userId:userId});
+            await newWishlist.save();
+            [user, wishlistItems] = await Promise.all ([
+                User.findOne({_id:userId}),
+                Wishlist.findOne({ userId: userId }),
+            ]);
+        }
         const wishlistIds = wishlistItems.products.map((item)=>item.productId)
         const products = await Product.find({ _id: { $in: wishlistIds } });
         console.log("rendered wishlist");
@@ -20,7 +30,6 @@ const loadWishlist = async(req,res)=>{
         res.status(500).redirect("/pageNotFound");
     }
 }
-
 
 //add the item to the wishlist
 const addToWishlist = async (req, res) => {

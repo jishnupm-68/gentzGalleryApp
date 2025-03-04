@@ -397,7 +397,6 @@
     // Pagination Click Event
     $(document).on("click", ".ajax-pagination", function (e) {
       e.preventDefault(); // Prevent full-page reload
-      console.log("Pagination clicked");
 
       let page = $(this).data("page"); // Get page number
       fetchProducts(page);
@@ -406,7 +405,6 @@
     // Filter Click Event
     $(document).on("click", ".ajax-filter", function (e) {
       e.preventDefault();
-      console.log("Filter clicked");
 
       let filterType = $(this).data("filter");
       let filterValue = $(this).data("value");
@@ -434,7 +432,6 @@
 
     // Function to Fetch Products via AJAX
     function fetchProducts(page = 1) {
-      console.log("Fetching products for page:", page, "with filters:", appliedFilters);
 
       // Construct query parameters
       let queryParams = new URLSearchParams();
@@ -446,8 +443,6 @@
 
       queryParams.set("page", page); // Always set the current page
       let finalUrl = `/filter?${queryParams.toString()}`;
-
-      console.log("Final AJAX URL:", finalUrl);
 
       $.ajax({
         url: finalUrl,
@@ -473,7 +468,6 @@
             data: { productId: productId },
 
             success: function(response) {
-                console.log("Response from server:", response);
                 if (response.success) {
                     Swal.fire({
                         icon: 'success',
@@ -532,7 +526,6 @@
         .then(response => {console.log("response" , response); 
           return response.json()})
         .then(data => {
-          console.log("fronfrontend ",data);
           window.history.pushState({}, "", pageUrl);  // new entry
 
             updateProductList(data.products);
