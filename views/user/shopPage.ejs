@@ -196,14 +196,22 @@
   <div class="main-container">
     <section class="shop-page container">
       <!-- Search bar  -->
+
       <div class="shop-topbar">
         <div class="search-bar">
-          <form action="/search" method="POST" class="search-form">
-            <input type="text" name="query" placeholder="Search items..." class="search-input" />
-            <button type="submit" class="search-button btn">Search</button>
+          <form action="#" class="search-form"> 
+            <input type="text" name="query" id="search" placeholder="Search items..." 
+                   class="search-input" data-filter="search"> 
+            <button type="submit" class="ajax-filter search-button btn" 
+                    data-filter="search">Search</button>      
           </form>
+
+          <button class="ajax-filter search-button  btn mt-2" data-filter="clearFilter" data-value="clearFilter" >Clear filter</button>
+
         </div>
       </div>
+
+
       <!-- Categories for filtering -->
       <div class="product-list-container">
         <aside class="sidebar">
@@ -505,14 +513,21 @@
 
     function applyFilters() {
         let filters = {};
+        let searchInput =  document.getElementById("search").value;
+        let searchButton = document.querySelector(".search-button");
+        
+        // Set the input value to button's data-value
+        searchButton.setAttribute("data-value", searchInput);
 
-        // Collect selected filters
         document.querySelectorAll(".ajax-filter.active").forEach(item => {
             const filterType = item.dataset.filter;
             const filterValue = item.dataset.value || "";
             filters[filterType] = filterValue;
             
         });
+        if(filters["clearFilter"] === "clearFilter"){
+         window.location.href  = '/shop'
+        }
 
         // Add Out of Stock filter if checked
         if (outOfStockCheckbox && outOfStockCheckbox.checked) {
@@ -523,7 +538,7 @@
             method: "GET",
             headers: { "X-Requested-With": "XMLHttpRequest" }
         })
-        .then(response => {console.log("response" , response); 
+        .then(response => {
           return response.json()})
         .then(data => {
           window.history.pushState({}, "", pageUrl);  // new entry

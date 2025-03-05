@@ -53,6 +53,8 @@ const loadHomePage = async(req,res)=>{
 // rendering shop page
 const loadShopPage = async (req,res)=>{
     try{
+
+    req.session.filteredProducts  = null;
         const userId = req.session.user;
         const [userData, categories] = await Promise.all([
             User.findOne({ _id: userId }),
@@ -96,11 +98,11 @@ const loadShopPage = async (req,res)=>{
 }
 
 let sessionProducts;
-// function for filtering products
+// function for filtering products with search functionality
 const filterProduct  = async (req, res) => {
     try {
         const user = req.session.user;
-        const { filter: advancedFilter, filterOutOfStock: outOfStock, category, brand, page, gt, lt } = req.query;
+        const { filter: advancedFilter, filterOutOfStock: outOfStock, category, brand, page, gt, lt, search, clearFilter } = req.query;
         const [userData, findCategory, findBrand, brands, categories] = await Promise.all([
             User.findOne({ _id: user }),
             category ? Category.findById(category).select('_id') : null,
@@ -114,6 +116,14 @@ const filterProduct  = async (req, res) => {
         if (findBrand) query.brand = findBrand.brandName;
         if (outOfStock === "true") query.quantity = { $gte: 0 };
         if (gt && lt) query.salePrice = { $gt: gt, $lt: lt };
+        if(search){
+            query.$or = [
+                { productName: { $regex: search, $options: "i" } },
+                { brand: { $regex: search, $options: "i" } },
+                { descrption: { $regex: search, $options: "i" } }
+            ];
+        } 
+
         // Rating filter
         if (["1", "2", "3", "4"].includes(advancedFilter)) {
             query.rating = { $gte: Number(advancedFilter) };
@@ -143,8 +153,15 @@ const filterProduct  = async (req, res) => {
         // Pagination 
         const itemsPerPage = 9;
         const currentPage = parseInt(page) || 1;
-        const skipCount = (currentPage - 1) * itemsPerPage;       
-        const [findProducts, totalProducts] = await Promise.all([
+        const skipCount = (currentPage - 1) * itemsPerPage;   
+        if(clearFilter){
+            req.session.filteredProducts = null;
+            req.session.selectedCategory = null;
+            req.session.selectedBrand = null;
+        }
+        let findProducts, totalProducts;
+
+         [findProducts, totalProducts] = await Promise.all([
             Product.find(query)
                 .sort(sortOrder)
                 .collation({ locale: "en", strength: 2 })
@@ -153,6 +170,7 @@ const filterProduct  = async (req, res) => {
                 .lean(),
             Product.countDocuments(query)
         ]);
+
         const totalPages = Math.ceil(totalProducts / itemsPerPage);     
         // Update user search history
         if (user) {
@@ -167,6 +185,7 @@ const filterProduct  = async (req, res) => {
             }
         }
         sessionProducts = findProducts; 
+        req.session.filteredProducts = findProducts || null;
         req.session.selectedCategory = categories || null;
         req.session.selectedBrand = brands || null;   
         console.log("Rendering shop page with filters");
@@ -187,76 +206,12 @@ const filterProduct  = async (req, res) => {
     }
 };
 
-// function for search product
-const searchProducts  = async(req,res)=>{
-    try{
-        let productLength =0;
-        const user = req.session.user;      
-        let search = req.body.query;
-        const [userData, brands, categories]  = await  Promise.all([ 
-            User.findOne({_id:user}),
-            Brand.find({}).lean(),
-            Category.find({isListed:true}).lean(),
-         ])
-        const categoryIds = categories.map((category)=>{
-            cateogry=>category._id.toString()
-        }) 
-        let itemsPerPage = 6;
-        let currentPage = parseInt(req.query.page) || 1;
-        let skipCount = (currentPage - 1) * itemsPerPage;
-        let query = {};
-        // If session has filtered products
-        if (req.session.filteredProducts && req.session.filteredProducts.length > 0) {
-            query = { 
-                isBlocked:false,
-                productName: { $regex: search, $options: "i" } 
-            };
-        } else {
-            query = {
-                isBlocked:false,
-                $or: [
-                    
-                    { productName: { $regex: search, $options: "i" } },
-                    { description: { $regex: search, $options: "i" } },
-                    { brand: { $regex: search, $options: "i" } }
-                ]
-            };
-        }
-        const [totalProducts, searchResult] = await Promise.all([
-            Product.countDocuments(query),  
-            Product.find(query)
-                .sort({ createdOn: -1 }) 
-                .skip(skipCount) 
-                .limit(itemsPerPage) 
-                .lean() 
-        ]);
-        req.session.filteredProducts = searchResult; 
-        sessionProducts = searchResult
-        const totalPages = Math.ceil(totalProducts / itemsPerPage);    
-        res.render('shopPage',{
-            user:userData,
-            products:searchResult,
-            category:categories,
-            brand:brands,
-            currentPage:currentPage,
-            totalPages:totalPages,
-            count:searchResult.length
-        })
-        console.log("search result to the shop page")
-    }
-    catch(error){
-        console.error("Search error", error)
-        res.redirect("/pageNotFound")
-    }
-}
-
 // exporting function 
 module.exports = {
     loadHomePage,
     pageNotFound,
     loadShopPage,  
     filterProduct,
-    searchProducts,
 }
 
 

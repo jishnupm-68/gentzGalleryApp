@@ -37,7 +37,6 @@ const {userAuth, profileAuth} = require("../middlewares/auth");
 router.get('/', homePageController.loadHomePage)             // allowing user without login
 router.get('/shop',homePageController.loadShopPage)          // allowing user without login
 router.get('/filter',homePageController.filterProduct)      // allowing user without login
-router.post('/search',homePageController.searchProducts)    // allowing user without login
 //Rendering the page not found page
 router.get('/pageNotFound', homePageController.pageNotFound);
 
