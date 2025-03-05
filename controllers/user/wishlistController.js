@@ -7,7 +7,7 @@ const mongoose = require("mongoose");
 const loadWishlist = async(req,res)=>{
     try {
         const userId = req.session.user; 
-        let user, wishlistItems
+        let user, wishlistItems , wishlistIds 
         try{
             [user, wishlistItems] = await Promise.all ([
                 User.findOne({_id:userId}),
@@ -21,7 +21,12 @@ const loadWishlist = async(req,res)=>{
                 Wishlist.findOne({ userId: userId }),
             ]);
         }
-        const wishlistIds = wishlistItems.products.map((item)=>item.productId)
+        try{
+           wishlistIds = wishlistItems.products.map((item)=>item.productId)
+        }catch(error){
+            wishlistIds = [];
+        }
+       
         const products = await Product.find({ _id: { $in: wishlistIds } });
         console.log("rendered wishlist");
         res.render('wishlist',{user:user, wishlist:products});
