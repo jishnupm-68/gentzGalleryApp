@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html class="no-js" lang="zxx">
 <head>
@@ -25,7 +26,6 @@
     <link rel="stylesheet" href="assets/css/nice-select.css">
     <link rel="stylesheet" href="assets/css/style.css">
 
-
     <link rel="stylesheet" href="./PublicOut/css/bootstrap.min.css" type="text/css">
    <link rel="stylesheet" href="./PublicOut/css/font-awesome.min.css" type="text/css">
    <link rel="stylesheet" href="./PublicOut/css/elegant-icons.css" type="text/css">
@@ -37,7 +37,6 @@
    <link rel="stylesheet" href="./PublicOut/user-assets/css/maind134.css">
    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
-   
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
    <script src="https://kit.fontawesome.com/b001ffdfea.js" crossorigin="anonymous"></script>
 
@@ -48,8 +47,11 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel/slick/slick.css"/>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel/slick/slick-theme.css"/>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/SlickNav/1.0.10/jquery.slicknav.min.js"></script>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/elevatezoom/3.0.8/jquery.elevateZoom.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/elevatezoom/3.0.8/jquery.elevateZoom.min.js"></script>
 
     <style>
          .header__nav__option .sign-in-link {
@@ -93,6 +95,100 @@
             position: relative;
             z-index: 500;
         }
+
+    
+        /*  Mobile Navigation  */
+        @media (min-width: 992px) {
+            .mobile-nav-container {
+                display: none;
+            }
+        }
+
+        @media (max-width: 991px) {
+            .main-menu {
+                display: none;
+            }
+            
+            .mobile-nav-container {
+                display: block;
+                position: relative;
+                z-index: 1000;
+            }
+            
+            .mobile-nav-toggle {
+                position: absolute;
+                top: -40px;
+                right: 15px;
+                background-color: #ffffff;
+                color: #9F78FF;
+                border: none;
+                width: 40px;
+                height: 40px;
+                border-radius: 4px;
+                cursor: pointer;
+                z-index: 1001;
+            }
+            
+            .mobile-nav-menu {
+                position: absolute;
+                top: 0;
+                right: 0;
+                width: 250px;
+                background: white;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+                z-index: 1000;
+                max-height: 80vh;
+                overflow-y: auto;
+            }
+            
+            .mobile-nav-menu ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+            
+            .mobile-nav-menu li {
+                position: relative;
+                border-bottom: 1px solid #f1f1f1;
+            }
+            
+            .mobile-nav-menu a {
+                display: block;
+                padding: 12px 15px;
+                color: #333;
+                text-decoration: none;
+            }
+            
+            .mobile-nav-menu a:hover {
+                background: #f5f5f5;
+                color: #9F78FF;
+            }
+            
+            .mobile-nav-menu ul ul {
+                display: none;
+                background: #f9f9f9;
+            }
+            
+            .mobile-nav-menu ul ul a {
+                padding-left: 25px;
+            }
+            
+            .submenu-toggle {
+                position: absolute;
+                right: 0;
+                top: 0;
+                height: 42px;
+                width: 42px;
+                text-align: center;
+                line-height: 42px;
+                cursor: pointer;
+                color: #666;
+            }
+            
+            .submenu-toggle:hover {
+                color: #ffffff;
+            }
+        }
     </style>
 
 
@@ -130,12 +226,10 @@
                                     <ul id="navigation">
                                         <li><a href="/">Home</a></li>
                                         <li><a href="/shop">Shop</a></li> 
-                                        <!-- <li><a href="#">Men</a></li>
-                                        <li><a href="#">Boys</a></li>
-                                        <li><a href="#">Contact</a></li> -->
+                                       
                                         <% if(locals.user ) { %>
                                             <div class="dropdown">
-                                               <li><a href="" class="sign-in-link"><%=locals.user.name %></a></li> 
+                                               <li><a href="/userProfile" class="sign-in-link"><%=locals.user.name %></a></li> 
                                                 <div class="dropdown-content">
                                                         <a href="/userProfile">Profile</a>
                                                         <a href="/logout">Logout</a>
@@ -166,9 +260,47 @@
                             </div>
                         </div>
                         <!-- Mobile Menu -->
-                        <div class="col-12">
+
+                        <!-- <div class="col-12">
                             <div class="mobile_menu d-block d-lg-none"></div>
+                        </div> -->
+
+                        <!-- <div class="col-12">
+                            <ul id="mobile-menu" class="slicknav_menu">
+                                <li><a href="/">Home</a></li>
+                                <li><a href="/shop">Shop</a></li> 
+                                <% if(locals.user) { %>
+                                    <li>
+                                        <a href="" class="sign-in-link"><%=locals.user.name %></a>
+                                        <ul>
+                                            <li><a href="/userProfile">Profile</a></li>
+                                            <li><a href="/logout">Logout</a></li>
+                                        </ul>
+                                    </li>
+                                <% } else { %>
+                                    <li><a href="/login">Login</a></li>
+                                    <li><a href="/signup">Signup</a></li>
+                                <% } %>
+                            </ul>
+                        </div> -->
+
+                        <!-- Mobile Menu -->
+                        <!-- <div class="col-12">
+                            <div class=" mobile_menu d-block d-lg-none">
+                                <nav class="slicknav_nav" id="mobile-menu-wrap">
+                                
+                                </nav>
+                            </div>
+                        </div> -->
+
+                        <div class="col-12">
+                            <div class="mobile-nav-container   d-block d-lg-none">
+                                <!-- Mobile menu toggle button will be created here -->
+                            </div>
                         </div>
+
+
+
                     </div>
                 </div>
             </div>

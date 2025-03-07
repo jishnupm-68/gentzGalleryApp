@@ -102,43 +102,44 @@
 
 <!-- JS here -->
 <!-- Jquery, Popper, Bootstrap -->
-<script src="./assets/js/vendor/modernizr-3.5.0.min.js"></script>
-<script src="./assets/js/vendor/jquery-1.12.4.min.js"></script>
-<script src="./assets/js/popper.min.js"></script>
-<script src="./assets/js/bootstrap.min.js"></script>
+<script src="/assets/js/vendor/modernizr-3.5.0.min.js"></script>
+<script src="/assets/js/vendor/jquery-1.12.4.min.js"></script>
+<script src="/assets/js/popper.min.js"></script>
+<script src="/assets/js/bootstrap.min.js"></script>
 
 <!-- Slick-slider , Owl-Carousel ,slick-nav -->
-<script src="./assets/js/owl.carousel.min.js"></script>
+<script src="./assets/js/owl.carousel.min.js"></script> 
 <script src="./assets/js/slick.min.js"></script>
-<script src="./assets/js/jquery.slicknav.min.js"></script>
+ <script src="./assets/js/jquery.slicknav.min.js"></script>
+
 
 <!-- One Page, Animated-HeadLin, Date Picker -->
-<script src="./assets/js/wow.min.js"></script>
-<script src="./assets/js/animated.headline.js"></script>
-<script src="./assets/js/jquery.magnific-popup.js"></script>
-<script src="./assets/js/gijgo.min.js"></script>
+<script src="/assets/js/wow.min.js"></script>
+<script src="/assets/js/animated.headline.js"></script>
+<script src="/assets/js/jquery.magnific-popup.js"></script>
+<script src="/assets/js/gijgo.min.js"></script>
 
 <!-- Nice-select, sticky,Progress -->
-<script src="./assets/js/jquery.nice-select.min.js"></script>
-<script src="./assets/js/jquery.sticky.js"></script>
-<script src="./assets/js/jquery.barfiller.js"></script>
+<script src="/assets/js/jquery.nice-select.min.js"></script>
+<script src="/assets/js/jquery.sticky.js"></script>
+<script src="/assets/js/jquery.barfiller.js"></script>
 
 <!-- counter , waypoint,Hover Direction -->
-<script src="./assets/js/jquery.counterup.min.js"></script>
-<script src="./assets/js/waypoints.min.js"></script>
-<script src="./assets/js/jquery.countdown.min.js"></script>
-<script src="./assets/js/hover-direction-snake.min.js"></script>
+<script src="/assets/js/jquery.counterup.min.js"></script>
+<script src="/assets/js/waypoints.min.js"></script>
+<script src="/assets/js/jquery.countdown.min.js"></script>
+<script src="/assets/js/hover-direction-snake.min.js"></script>
 
 <!-- contact js -->
-<script src="./assets/js/contact.js"></script>
-<script src="./assets/js/jquery.form.js"></script>
-<script src="./assets/js/jquery.validate.min.js"></script>
-<script src="./assets/js/mail-script.js"></script>
-<script src="./assets/js/jquery.ajaxchimp.min.js"></script>
+<script src="/assets/js/contact.js"></script>
+<script src="/assets/js/jquery.form.js"></script>
+<script src="/assets/js/jquery.validate.min.js"></script>
+<script src="/assets/js/mail-script.js"></script>
+<script src="/assets/js/jquery.ajaxchimp.min.js"></script>
 
 <!-- Jquery Plugins, main Jquery -->	
-<script src="./assets/js/plugins.js"></script>
-<script src="./assets/js/main.js"></script>
+<script src="/assets/js/plugins.js"></script>
+<script src="/assets/js/main.js"></script>
 
 
 <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
@@ -183,6 +184,42 @@
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/slick-carousel/slick/slick.min.js"></script>
+
+
+
+
+<script>
+    $(document).ready(function() {
+        
+        var mobileNavHtml = $('#navigation').clone();
+        
+        var toggleBtn = $('<button class="mobile-nav-toggle"><i class="fas fa-bars"></i></button>');
+
+        $('.mobile-nav-container').append(toggleBtn);
+        $('.mobile-nav-container').append('<div class="mobile-nav-menu"></div>');
+        $('.mobile-nav-menu').append(mobileNavHtml);
+
+        $('.mobile-nav-menu').hide();
+        
+        toggleBtn.on('click', function() {
+            $('.mobile-nav-menu').slideToggle(300);
+            $(this).find('i').toggleClass('fa-bars fa-times');
+        });
+
+        $('.mobile-nav-menu a').on('click', function() {
+            $('.mobile-nav-menu').slideUp(300);
+            toggleBtn.find('i').removeClass('fa-times').addClass('fa-bars');
+        });
+
+        $('.mobile-nav-menu li:has(ul)').append('<span class="submenu-toggle"><i class="fa fa-angle-down"></i></span>');
+        
+        $('.submenu-toggle').on('click', function(e) {
+            e.preventDefault();
+            $(this).siblings('ul').slideToggle(300);
+            $(this).find('i').toggleClass('fa-angle-down fa-angle-up');
+        });
+    });
+    </script>
 
 
 </body>

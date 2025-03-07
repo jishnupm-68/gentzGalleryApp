@@ -20,13 +20,13 @@ const getDateRange = (type) => {
             end.setHours(23, 59, 59, 999);
             break;
         case 'salesMonthly':
-            start = new Date(now.getFullYear(), now.getMonth(), 1);
-            end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            start = new Date(now.getFullYear(), now.getMonth()-1, now.getDate());
+            end = new Date(now.getFullYear(), now.getMonth() , now.getDate());
             end.setHours(23, 59, 59, 999);
             break;
         case 'salesYearly':
-            start = new Date(now.getFullYear(), 0, 1);
-            end = new Date(now.getFullYear(), 11, 31);
+            start = new Date(now.getFullYear()-1,  now.getMonth(), now.getDate());
+            end = new Date(now.getFullYear(),  now.getMonth(), now.getDate());
             end.setHours(23, 59, 59, 999);
             break;
         default:

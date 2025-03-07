@@ -62,7 +62,7 @@
                                 <%= address.state %>, <%= address.addressType %> <br>
                                 <%= address.pincode %>
                             </p>
-                            <%if(orders.orderedItems[0].productStatus.trim()=="Delivered"){%>
+                            <%if(orders.status.trim()=="Verified"){%>
                                 <a href="" class="btn btn-sm" id="downloadInvoice">Download Invoice</a>
                             <%}%>
                         </div>

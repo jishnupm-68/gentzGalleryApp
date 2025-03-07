@@ -188,23 +188,27 @@
 
 
  <!-- script for performing the zoom operation in the product image  -->
+
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const img = document.getElementById("zoom-image");
-        const container = document.querySelector('.product-image-container');
-        const zoomFactor = 2; // Zoom level
-        container.addEventListener("mousemove", (e) => {
-            const rect = container.getBoundingClientRect();
-            const x = ((e.clientX - rect.left) / rect.width) * 100;
-            const y = ((e.clientY - rect.top) / rect.height) * 100;
-            img.style.transformOrigin = `${x}% ${y}%`;
-            img.style.transform = `scale(${zoomFactor})`;
-        });
-        container.addEventListener("mouseleave", () => {
-            img.style.transform = "scale(1)";
+        const containers = document.querySelectorAll('.product-image-container');
+        const zoomFactor = 1.5; // Zoom level
+        containers.forEach(container => {
+            const img = container.querySelector(".product-image");
+            container.addEventListener("mousemove", (e) => {
+                const rect = container.getBoundingClientRect();
+                const x = ((e.clientX - rect.left) / rect.width) * 100;
+                const y = ((e.clientY - rect.top) / rect.height) * 100;
+                img.style.transformOrigin = `${x}% ${y}%`;
+                img.style.transform = `scale(${zoomFactor})`;
+            });
+            container.addEventListener("mouseleave", () => {
+                img.style.transform = "scale(1)";
+            });
         });
     });
 </script>
+
 
 
 <!-- script for  add to cart, add to wishlist  -->

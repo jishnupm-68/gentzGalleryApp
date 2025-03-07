@@ -111,7 +111,7 @@ const filterProduct  = async (req, res) => {
             Category.find({ isListed: true }).lean()
         ]);  
         // query
-        const query = { isBlocked: false, quantity: { $gt: 0 } };
+        let query = { isBlocked: false, quantity: { $gt: 0 } };
         if (findCategory) query.category = findCategory._id;
         if (findBrand) query.brand = findBrand.brandName;
         if (outOfStock === "true") query.quantity = { $gte: 0 };
@@ -141,7 +141,7 @@ const filterProduct  = async (req, res) => {
             ];
         }
         // Sorting options
-        const sortOptions = {
+        let sortOptions = {
             "Low to High": { salePrice: 1 },
             "High to Low": { salePrice: -1 },
             "aA-zZ": { productName: 1 },
@@ -158,6 +158,8 @@ const filterProduct  = async (req, res) => {
             req.session.filteredProducts = null;
             req.session.selectedCategory = null;
             req.session.selectedBrand = null;
+            query = { isBlocked: false, quantity: { $gt: 0 } };
+            sortOptions ={};
         }
         let findProducts, totalProducts;
 

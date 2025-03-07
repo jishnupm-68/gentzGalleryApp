@@ -10,6 +10,7 @@ let countDocumentsFilter = {
   "orderedItems.productStatus": "Delivered"
 }
 
+let startDay, endDay;
 //rendering and display sales report
 const salesReport =async(req,res)=>{
   try {
@@ -17,6 +18,8 @@ const salesReport =async(req,res)=>{
       const filter = req.query.day==undefined? "salesToday":req.query.day;    
       const page = req.query.page || 1;
       const {orders,count,start,end} = await filterSalesReportAdmin.filter(filter,page);
+      startDay = start;
+      endDay = end;
       currentPage = orders
       currentPageData = orders
       console.log("Rendering the sales report page")
@@ -41,6 +44,8 @@ const displayFilteredData = async (req, res) => {
             const { startDate, endDate, page = 1, limit = 5 } = req.query;
             const start = startDate ? new Date(startDate) : new Date('1970-01-01');
             const end = endDate ? new Date(endDate) : new Date();
+            startDay = start;
+            endDay = end;
             const [orderData, count, salesCount] = await Promise.all([
                 Order.find({
                     status: "Verified",
@@ -120,10 +125,19 @@ const displayFilteredData = async (req, res) => {
     }
 };
 
+
+
 //generating excel report
 const generateExcelReport = async (req, res) => {
   try {
-    const orderData = currentPageData; 
+    const orderData = await Order.find(
+      { status: "Verified", "orderedItems.productStatus": "Delivered",
+          createdOn: { $gte: startDay, $lte: endDay } })
+      .populate("userId")
+      .populate("orderedItems")
+      .populate("address")
+      .lean()
+      .exec();
     const totals = orderData.reduce((acc, order) => {
       acc.totalSales += 1;
       acc.totalPrice += order.totalPrice;
@@ -136,15 +150,6 @@ const generateExcelReport = async (req, res) => {
       Order.aggregate([
         { $match: countDocumentsFilter },
         { $unwind: "$orderedItems" },
-        {
-          $group: {
-            _id: null,
-            totalSales: { $sum: "$orderedItems.quantity" },
-            totalPrice: { $sum: "$totalPrice" },
-            discount: { $sum: "$discount" },
-            finalAmount: { $sum: "$finalAmount" },
-          },
-        },
       ]),
     ]);
     const totalsales = salesCount[0];
@@ -265,7 +270,14 @@ const salesSummary = async (req, res) => {
 // Function to generate a PDF
 const generatePdf = async (req, res) => {
   try {
-    const orderData = currentPageData;
+    const orderData =await   Order.find(
+                    { status: "Verified", "orderedItems.productStatus": "Delivered",
+                        createdOn: { $gte: startDay, $lte: endDay } })
+                    .populate("userId")
+                    .populate("orderedItems")
+                    .populate("address")
+                    .lean()
+                    .exec();
     // Calculate totals
     const totals = orderData.reduce((acc, order) => {
       acc.totalSales += 1;
@@ -306,12 +318,15 @@ const generatePdf = async (req, res) => {
 
     // Add table heading
     doc.fontSize(16).text("Order Details", { underline: true, align: "left" });
+    doc.fontSize(12).text(`Orders between:- ${new Date(startDay).toLocaleDateString()} - ${new Date(endDay).toLocaleDateString()}`,{align: "left"});
     doc.moveDown();
 
     // Add a single table for all orders
+  
     const table = {
-      headers: ["Invoice Date", "User Name", "User Email", "Total Price", "Discount", "Final Amount", "Payment Method"],
-      rows: orderData.map(order => [
+      headers: ["slno","Invoice Date", "User Name", "User Email", "Total Price", "Discount", "Final Amount", "Payment Method"],
+      rows: orderData.map((order,index) => [
+        index+1,
         new Date(order.createdOn).toLocaleDateString(),
         order.userId.name,
         order.userId.email,
@@ -336,7 +351,7 @@ function drawTable(doc, table) {
   const startX = doc.x;
   let startY = doc.y;
 
-  const colWidths = [80, 120, 150, 70, 70, 100, 100];
+  const colWidths = [50,80, 120, 150, 70, 70, 100, 100];
 
   // Draw table border
   doc.rect(startX, startY, colWidths.reduce((acc, width) => acc + width, 0), 20 + (table.rows.length * 20)).stroke();

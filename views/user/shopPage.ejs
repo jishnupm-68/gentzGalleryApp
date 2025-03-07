@@ -205,9 +205,7 @@
             <button type="submit" class="ajax-filter search-button btn" 
                     data-filter="search">Search</button>      
           </form>
-
           <button class="ajax-filter search-button  btn mt-2" data-filter="clearFilter" data-value="clearFilter" >Clear filter</button>
-
         </div>
       </div>
 
@@ -402,72 +400,9 @@
 //new code
   let appliedFilters = {}; // Store active filters
 
-  $(document).ready(function () {
-    // Pagination Click Event
-    $(document).on("click", ".ajax-pagination", function (e) {
-      e.preventDefault(); // Prevent full-page reload
 
-      let page = $(this).data("page"); // Get page number
-      fetchProducts(page);
-    });
 
-    // Filter Click Event
-    $(document).on("click", ".ajax-filter", function (e) {
-      e.preventDefault();
 
-      let filterType = $(this).data("filter");
-      let filterValue = $(this).data("value");
-
-      let resetFilter = ["Popularity", 'New arrivals','Featured']
-      if(resetFilter.includes(filterValue)) {
-        appliedFilters = {}; // Reset filters when resetting a filter type
-        appliedFilters[filterType] = filterValue;
-      }
-    
-
-      if (filterType === "price") {
-        // Convert "&gt=500&lt=2000" to { gt: "500", lt: "2000" }
-        let match = filterValue.match(/&gt=(\d+)&lt=(\d+)/);
-        if (match) {
-          appliedFilters["gt"] = match[1]; // Extract 500
-          appliedFilters["lt"] = match[2]; // Extract 2000
-        }
-      } else {
-        appliedFilters[filterType] = filterValue;
-      }
-
-      fetchProducts(1); // Reset to page 1 when a filter is applied
-    });
-
-    // Function to Fetch Products via AJAX
-    function fetchProducts(page = 1) {
-
-      // Construct query parameters
-      let queryParams = new URLSearchParams();
-
-      // Append applied filters
-      for (let key in appliedFilters) {
-        queryParams.set(key, appliedFilters[key]);
-      }
-
-      queryParams.set("page", page); // Always set the current page
-      let finalUrl = `/filter?${queryParams.toString()}`;
-
-      $.ajax({
-        url: finalUrl,
-        method: "GET",
-        dataType: "html",
-        success: function (response) {
-          $(".product-grid").html($(response).find(".product-grid").html()); // Update product list
-          $(".pagination").html($(response).find(".pagination").html()); // Update pagination
-          window.history.pushState({}, "", finalUrl); // Update browser URL
-        },
-        error: function (xhr, status, error) {
-          console.error("AJAX Error:", xhr.responseText, status, error);
-        }
-      });
-    }
-  });
 
   function addToWishlist(productId) {
         $.ajax({
@@ -507,64 +442,90 @@
         })
     }
 
-  document.addEventListener("DOMContentLoaded", function () {
+
+
+
+document.addEventListener("DOMContentLoaded", function () {
     const filterItems = document.querySelectorAll(".ajax-filter");
     const outOfStockCheckbox = document.querySelector("#showOutOfStock");
+    const searchInput = document.getElementById("search");
+    const searchButton = document.querySelector(".search-button");
+    let appliedFilters = {};
 
-    function applyFilters() {
-        let filters = {};
-        let searchInput =  document.getElementById("search").value;
-        let searchButton = document.querySelector(".search-button");
+    function applyFilters(page = 1) {
+        let filters = { ...appliedFilters };
         
-        // Set the input value to button's data-value
-        searchButton.setAttribute("data-value", searchInput);
-
-        document.querySelectorAll(".ajax-filter.active").forEach(item => {
-            const filterType = item.dataset.filter;
-            const filterValue = item.dataset.value || "";
-            filters[filterType] = filterValue;
-            
-        });
-        if(filters["clearFilter"] === "clearFilter"){
-         window.location.href  = '/shop'
-        }
+        // Get search input value
+        let searchValue = searchInput.value || "";
+        searchButton.setAttribute("data-value", searchValue);
+        if (searchValue) filters["search"] = searchValue;
 
         // Add Out of Stock filter if checked
         if (outOfStockCheckbox && outOfStockCheckbox.checked) {
             filters["outOfStock"] = "true";
         }
 
-        fetch(`/filter?${new URLSearchParams(filters)}`, {
-            method: "GET",
-            headers: { "X-Requested-With": "XMLHttpRequest" }
-        })
-        .then(response => {
-          return response.json()})
-        .then(data => {
-          window.history.pushState({}, "", pageUrl);  // new entry
+        // Construct query parameters
+        let queryParams = new URLSearchParams(filters);
+        queryParams.set("page", page);
+        let finalUrl = `/filter?${queryParams.toString()}`;
 
-            updateProductList(data.products);
-            updatePagination(data.totalPages, data.currentPage);
-        })
-        .catch(error => console.error("Error fetching filtered products:", error));
+        // Fetch filtered products via AJAX
+        fetch(finalUrl, { method: "GET", headers: { "X-Requested-With": "XMLHttpRequest" } })
+            .then(response => response.text())
+            .then(html => {
+                let tempDiv = document.createElement("div");
+                tempDiv.innerHTML = html;
+                document.querySelector(".product-grid").innerHTML = tempDiv.querySelector(".product-grid").innerHTML;
+                document.querySelector(".pagination").innerHTML = tempDiv.querySelector(".pagination").innerHTML;
+                window.history.pushState({}, "", finalUrl);
+            })
+            .catch(error => console.error("Error fetching filtered products:", error));
     }
 
     filterItems.forEach(item => {
         item.addEventListener("click", function (event) {
             event.preventDefault();
+            
+            let filterType = this.dataset.filter;
+            let filterValue = this.dataset.value;
 
-            // Toggle active class for styling
+            if (["Popularity", "New arrivals", "Featured"].includes(filterValue)) {
+                appliedFilters = {}; // Reset all filters
+            }
+            if(filterType=="clearFilter"){
+              window.location.href = "/shop"
+            }
+            
+            if (filterType === "price") {
+                let match = filterValue.match(/&gt=(\d+)&lt=(\d+)/);
+                if (match) {
+                    appliedFilters["gt"] = match[1];
+                    appliedFilters["lt"] = match[2];
+                }
+            } else {
+                appliedFilters[filterType] = filterValue;
+            }
+
             this.classList.toggle("active");
-
-            // Apply Filters
             applyFilters();
         });
     });
 
     if (outOfStockCheckbox) {
-        outOfStockCheckbox.addEventListener("change", applyFilters);
+        outOfStockCheckbox.addEventListener("change", () => applyFilters());
     }
+
+    $(document).ready(function () {
+        $(document).on("click", ".ajax-pagination", function (e) {
+            e.preventDefault();
+            let page = $(this).data("page");
+            applyFilters(page);
+        });
+    });
 });
+
+
 
   function updateProductList(products) {
       const productGrid = document.querySelector(".product-grid");
