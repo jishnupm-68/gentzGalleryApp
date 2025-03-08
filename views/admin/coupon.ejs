@@ -85,7 +85,6 @@
                          <td class="text-start"><%= sformatedTime %></td>
                          <% let edate = new Date( coupon.expireOn )
                         const eformatedTime= `${String(edate.getFullYear() ).padStart(2, '0')}-${String(edate.getMonth() + 1).padStart(2, '0')}-${String(edate.getDate()).padStart(2, '0')}`; %>
-                         <% console.log(eformatedTime) %>
                          <td class="text-start"><%= eformatedTime %></td>
                          <td class="text-start"><%= coupon.percentageOffer %></td>
                          <td class="text-start"><%= coupon.offeredPrice %></td>

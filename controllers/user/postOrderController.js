@@ -61,80 +61,74 @@ const getOrderDetailsPage = async (req,res)=>{
     }
 }
 
-//function for cancelling the order
-const cancelOrder = async(req,res)=>{
+//function for cancenlling the order
+const cancelOrder = async (req, res) => {
     try {
-        let findOrder;
-        const {productId, orderId, payment}= req.body;
+        const { productId, orderId, payment } = req.body;
         const userId = req.session.user;
-        if(payment!="cod"){
-             findOrder = await Order.findOneAndUpdate(
-                {"orderedItems.product":productId, userId:userId, _id:orderId, status:"Verified"},
-                {"orderedItems.$.productStatus":"Cancelled",
-                "orderedItems.$.refundDate":Date.now()
+
+        // Find and update the order
+        let findOrder;
+        if(payment !=='cod'){
+            findOrder == await Order.findOneAndUpdate(
+                { "orderedItems.product": productId, userId: userId, _id: orderId, status: "Verified" },
+                {
+                    "orderedItems.$.productStatus": "Cancelled",
+                     "orderedItems.$.refundDate": Date.now() ,
                 },
-                {new:true}
-            )
-            let amount = findOrder.finalAmount
-        await User.findByIdAndUpdate(
-            {_id:userId},
-            {$inc:{wallet:amount}}
-        )
-        }else{
-             findOrder = await Order.findOneAndUpdate(
-                {"orderedItems.product":productId, userId:userId, _id:orderId},
-                {"orderedItems.$.productStatus":"Cancelled"},
-                {new:true}
-            )
-        }       
-        const cancelOrder = await Order.findOne(
-            {"orderedItems.product":productId, userId:userId, _id:orderId},
-            {"orderedItems.$":1},
-        )       
-        const cancelItemQuantities = cancelOrder.orderedItems.map((item)=>
-            ({
-                productId:item.product,
-                quantity: -item.quantity
-            })
+                { new: true }
             );
-            if(findOrder){
-                let walletUpdate;
-                if(findOrder.payment !== "cod"){
-                    const quantity = findOrder.orderedItems[0].quantity;
-                    const price =  findOrder.orderedItems[0].price;
-                    let amount =  price * quantity;
-                    walletUpdate = await User.findOneAndUpdate({ _id: userId }, { $inc: { wallet: amount } });
-                    if (walletUpdate) {
-                        console.log("Wallet updated successfully");
-                    }else{
-                        console.log("Wallet update failed");
+        }else{
+            findOrder == await Order.findOneAndUpdate(
+                { "orderedItems.product": productId, userId: userId, _id: orderId },
+                {
+                    "orderedItems.$.productStatus": "Cancelled",
+                },
+                { new: true }
+            );
+        }
+
+        if (!findOrder) {
+            return res.json({ success: false, message: "Order not found or already cancelled." });
+        }
+
+        // Update user wallet if payment is not COD
+        if (payment !== "cod") {
+            const amount = findOrder.finalAmount;
+            await User.findByIdAndUpdate(
+                userId,
+                {
+                    $inc: { wallet: amount },
+                    $push: {
+                        walletHistory: {
+                            transactionDate: new Date(),
+                            transactionAmount: amount,
+                            transactionType: "Credit",
+                        }
                     }
                 }
-                decrementSaleCounts(cancelItemQuantities)
-                  .then(result =>                     
-                    {console.log('Decrement successful:')
-                    if (result.modifiedCount === 1 && walletUpdate) {
-                        return res.json({
-                            success: true,
-                            result, 
-                            message: "Order has been successfully cancelled and amount credited to your wallet"
-                        });
-                    } else {
-                        return res.json({
-                            success: false,
-                            result,
-                            message: "Order cancellation failed. No changes made."
-                        });
-                    }}
-                    )
-                  .catch(error => console.error('Decrement failed:', error));             
-            }  
-            console.log("Updating the cancel order status")     
+            );
+        }
+
+        // Decrement sale counts
+        const cancelItemQuantities = findOrder.orderedItems.map(item => ({
+            productId: item.product,
+            quantity: -item.quantity
+        }));
+
+        await decrementSaleCounts(cancelItemQuantities);
+
+        // Return success response
+        return res.json({
+            success: true,
+            message: "Order has been successfully cancelled" + (payment !== "cod" ? " and amount credited to your wallet." : ".")
+        });
+
     } catch (error) {
-        console.error("Error while cancelling the order",error);
-        res.redirect('/pageNotFound')
+        console.error("Error while cancelling the order", error);
+        res.redirect('/pageNotFound');
     }
-}
+};
 
 //function for returning the order
 const returnrequestOrder = async(req,res)=>{

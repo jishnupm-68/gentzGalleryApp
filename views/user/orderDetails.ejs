@@ -311,11 +311,19 @@
             contentType: 'application/json',
             data: JSON.stringify({ productId: product, orderId: orderId.value , payment:payment}),
             success: (response) => {
-                if (response.result.modifiedCount === 1) {
+                if (response.success) {
                     Swal.fire({
                         icon: 'success',
                         title: 'Success',
                         text: response.message
+                    });
+                    window.location.reload();
+                }
+                else{
+                    Swal.fire({
+                        icon:"error",
+                        title:"Error",
+                        text:response.message
                     });
                     window.location.reload();
                 }

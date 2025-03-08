@@ -201,11 +201,21 @@ const orderPlaced = async (req,res)=>{
         req.session.orderDbId = orderDone._id
         if(payment === "wallet"){
             if(findUser.wallet>= req.session.finalAmount){
-                await User.findOneAndUpdate(
-                    { _id: userId },
-                    { $inc: { wallet: -req.session.finalAmount } },
-                    { new: true }
-                );
+              await User.findOneAndUpdate(
+                { _id: userId },
+                {
+                    $inc: { wallet: -req.session.finalAmount }, // Deducts from wallet
+                    $push: {
+                        walletHistory: {
+                            transactionDate: new Date(),
+                            transactionAmount: req.session.finalAmount,
+                            transactionType: "Debit"
+                        }
+                    }
+                },
+                { new: true }
+            );
+            
                 await Order.findOneAndUpdate(
                     { _id: orderDone._id },
                     { $set: { status: "Verified" } },

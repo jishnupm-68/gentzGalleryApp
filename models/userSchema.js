@@ -47,6 +47,22 @@ const userSchema = new Schema({
         type:Number,
         default:0
     },
+    walletHistory: [{
+        transactionAmount: {
+            type: Number,
+            default:0,
+            required: true
+        },
+        transactionDate: {
+            type: Date,
+            required: true
+        },
+        transactionType: {
+            type: String,
+            enum: ["Credit", "Debit"], // Determines the nature of the transaction
+            required: true
+        },
+    }],
     wishlist:[{
         type:Schema.Types.ObjectId,
         ref:"wishlist"

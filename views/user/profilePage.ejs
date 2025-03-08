@@ -148,6 +148,18 @@
                       <i class="fi-rs-clock mr-10"></i>Wallet History
                     </a>
                   </li>
+
+
+
+
+                  <li class="nav-item">
+                    <a class="nav-link" id="track-orders-tab" data-bs-toggle="tab" href="#referal" role="tab" aria-controls="track-orders" aria-selected="false">
+                      <i class="fi-rs-shopping-cart-check mr-10"></i>Referals
+                    </a>
+                  </li>
+
+
+
                 </ul>
               </div>
             </div>
@@ -271,17 +283,15 @@
                             <% let walletTransactions = user.wallet %>
                             <% if(walletTransactions) { %>
                                %>
-                              <% walletSummary.forEach((item)=>{ %>
-                                <% item.orderedItems.forEach((element)=>{ %>
-                                  <% if(element.refundDate) {%>
+                                <% user.walletHistory.forEach((element)=>{ %>
+                                  <% if(element.transactionDate) {%>
                               <tr>  
-                                  <td><%= element.refundDate.toLocaleString('en-IN') %></td>
-                                  <td>Credited</td>
-                                  <td><%= item.finalAmount %></td>
-                                </tr>
+                                  <td><%= element.transactionDate.toLocaleString('en-IN') %></td>
+                                  <td><%= element.transactionType %></td> 
+                                  <td><%= element.transactionAmount %></td>
+                              </tr>
                                 <% } %>
-                                <% }) %>
-                                <% })  %>
+                                <% }) %>                             
                             <% } else { %>
                               <tr><td colspan="3" class="text-center">No Transactions Found</td></tr>
                             <% } %>
@@ -291,6 +301,23 @@
                     </div>
                   </div>
                 </div>
+
+
+                <div class="tab-pane fade" id="referal" role="tabpanel" aria-labelledby="track-orders-tab">
+                  <div class="card">
+                    <div class="card-header">
+                      <h5 class="mb-0">Referal</h5>
+                    </div>
+                    <div class="card-body">
+                      <h6 class="mb-3">Refer your friends and earn money!</h6>
+                      <p>Share this link: <strong>></strong></p>
+                      <p>Earned: ₹</p>
+                    </div>
+                  </div>
+                </div>
+
+                
+                
               </div>
             </div>
           </div>

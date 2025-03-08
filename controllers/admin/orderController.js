@@ -51,8 +51,7 @@ const updateOrderStatus = async (req,res)=>{
         const {orderId, productId, status} = req.body;
         let update = await Order.findOneAndUpdate({_id:orderId, "orderedItems.product":productId},
             {$set:{"orderedItems.$.productStatus":status}},
-            {new:true});
-            console.log("updated data",update)      
+            {new:true});    
         if(update.status =="Pending" && update.payment == "cod"){
             await Order.findOneAndUpdate({_id:orderId, "orderedItems.product":productId},
                 {$set:{status:"Verified"}},
@@ -116,7 +115,17 @@ const updateReturnStatus = async (req,res)=>{
                 let walletUpdate;
                 {
                     let amount =  update.finalAmount
-                    walletUpdate = await User.findOneAndUpdate({ _id: update.userId }, { $inc: { wallet: amount } });
+                    walletUpdate = await User.findOneAndUpdate({ _id: update.userId },
+                         { 
+                            $inc: { wallet: amount },
+                            $push: {
+                                walletHistory: {
+                                    transactionDate: new Date(),
+                                    transactionAmount: amount,
+                                    transactionType: "Credit",
+                                }
+                            }
+                         });
                     if (walletUpdate) {
                         console.log("Wallet updated successfully");
                     }else{
@@ -191,5 +200,4 @@ module.exports = {
     getOrderDetailsPageAdmin,
     updateReturnStatus
 }
-
 
