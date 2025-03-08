@@ -144,7 +144,9 @@
                       <label for="confirmPassword" class="form-label">Confirm Password <span
                           class="text-danger">*</span></label>
                       <input type="password" class="form-control" name="confirmPassword" id="confirmPassword" value="">
+                      <input type="hidden" class="form-control" name="referrerId" id="referrerId" value="rrr">
                     </div>
+                    
                     <div id="errorInConfirmPassword" class="error-message"></div>
                     <%if(locals.message && message.length>0){%>
                       <div class="alert alert-danger text-center">
@@ -353,6 +355,8 @@
         const errorInPassword = document.getElementById("errorInPassword");
         const errorInConfirmPassword = document.getElementById("errorInConfirmPassword");
         const signForm = document.getElementById("signForm");
+        const urlParams = new URLSearchParams(window.location.search);
+        const referralId = urlParams.get('ref');
 
         //function for validating name
         function nameValidateChecking() {
@@ -451,6 +455,7 @@
                 phone: phoneInput.value,
                 password: passwordInput.value,
                 confirmPassword: confirmPasswordInput.value,
+                referralId:referralId,
               },
               success: function (response) {
                 console.log("Response:", response);
@@ -485,6 +490,8 @@
         });
       });
     </script> 
+
+
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

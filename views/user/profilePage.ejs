@@ -309,8 +309,12 @@
                       <h5 class="mb-0">Referal</h5>
                     </div>
                     <div class="card-body">
-                      <h6 class="mb-3">Refer your friends and earn money!</h6>
-                      <p>Share this link: <strong>></strong></p>
+                      <h6 class="mb-3">Refer your friends and earn money! You get 100Rs and new user get 50Rs to the wallet</h6>
+                      <% if(user.referalCode) {%>
+                      <p>Click on the link to Share: <strong><input type="text"  onclick="clipBoard()"  id="referalCode" value=http://localhost:3000/signUp?ref=<%= user.referalCode %>> </strong></p> 
+                      <% }else {%>
+                        <button class="btn" onclick="generateReferal('<%= user._id%>')">Generate referal link</button>
+                        <% } %>
                       <p>Earned: ₹</p>
                     </div>
                   </div>
@@ -385,6 +389,55 @@
     document.querySelector(tabID).classList.add('show', 'active');
   });
 });
+
+function generateReferal(userId){
+  $.ajax({
+    url:`/generateReferal?id=${userId}`,
+    method:'get',
+    success:((response)=>{
+      if(response.success){
+        Swal.fire({
+          icon:"success",
+          title:"success",
+          text:response.message
+        })
+      }else{
+        Swal.fire({
+          icon:"error",
+          title:"error",
+          text:response.message,
+        });
+      }
+    })
+  })
+}
+
+function clipBoard() {
+  // Get the text field
+  var copyText = document.getElementById("referalCode");
+
+  // Select the text field
+  copyText.select();
+  copyText.setSelectionRange(0, 99999); // For mobile devices
+
+   // Copy the text inside the text field
+  navigator.clipboard.writeText(copyText.value);
+
+  // Alert the copied text
+  // if(copyText.value){
+  //   Swal.fire({
+
+  //   text:"Copied the text: " + copyText.value 
+  // });
+
+  // }
+  Swal.fire({
+      text: "Copied the link to clip board" 
+    });
+ 
+ 
+ 
+}
 
 </script>
 

@@ -6,6 +6,8 @@ const nodemailer = require('nodemailer')
 const bcrypt = require('bcrypt')
 const env = require('dotenv').config();
 const session = require("express-session");
+const { randomUUID  } = require('crypto');
+
 
 //function for generating otp
 function generateOtp(){
@@ -44,7 +46,6 @@ const sentVerificationEmail =  async(email,otp)=>{
 //rendering the user profile page
 const loadUserProfile = async(req,res)=>{
     try{
-        console.log(req.body , req.session)
         const userId = req.session.user;
         const [userData,addressData, order , wallet] = await Promise.all ([
             User.findOne({_id:userId}),
@@ -163,6 +164,27 @@ const  updatePassword = async(req,res)=>{
     }
 }
 
+
+const generateReferal = async(req,res)=>{
+    try {
+        const userId =req.query.id
+        const referalCode = randomUUID().replace(/-/g, '').slice(0, 8);;
+        let updateCode = await User.findByIdAndUpdate({_id:userId},{$set:{referalCode:referalCode}})
+        if(updateCode){
+            console.log("referal Code generated");
+            res.json({success:true, message:"Referal code created successfully", redirectUrl:'/userProfile'})
+        }else{
+            console.log("Failed to update code");
+            res.json({success:false, message:"Failed to generate or save referal code", redirectUrl:'/userProfile'});
+        }
+    } catch (error) {
+        console.log("error while generate and store referal code",error);
+        res.redirect("/pageNotFound")
+    }
+}
+
+
+
 //exporting the functions  for user profile and change password
 module.exports = {
     loadUserProfile,
@@ -171,5 +193,6 @@ module.exports = {
     verifyEmailOtpForPassword,
     loadChangePasswordNew,
     updatePassword,
-    loadChangeEmailVerifyOtpForPassword
+    loadChangeEmailVerifyOtpForPassword,
+    generateReferal
 }

@@ -11,7 +11,7 @@ const passport = require('./config/passport');
 const adminRouter = require('./routes/adminRouter');
 db();
 
-//app.use(logger('dev'));
+app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({extended : true}));
 app.use(session({

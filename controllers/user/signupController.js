@@ -61,7 +61,7 @@ const loadSignup = async (req,res)=>{
 // checking the input data and sent the verification mail
 const signup = async (req, res) => {
     try {
-        const { name, email, phone, password, confirmPassword } = req.body;
+        const { name, email, phone, password, confirmPassword, referralId } = req.body;
         if (password !== confirmPassword) {
             console.log("Password donot match")
             return res.json({ success: false , message: "Password do not Match" });
@@ -77,7 +77,7 @@ const signup = async (req, res) => {
             return res.json({success:false, message:"Failed to send otp"});
         }
         req.session.userOtp = otp;
-        req.session.userData = { name, phone, email, password };
+        req.session.userData = { name, phone, email, password, referralId};
         res.status(200).json({success:true, message:"Otp sent successfully", redirectUrl:"/verifyOtp"})
         console.log("OTP SENT", otp);
         return; 
@@ -105,7 +105,7 @@ const verifyOtp = async (req,res)=>{
         if(otp === req.session.userOtp){
             const user = req.session.userData;
             const passwordHash = await securePassword(user.password)
-            let undefinedForGoogleId = undefined
+            
             const saveUserData  = new User({
                 name:user.name,
                 email:user.email,
@@ -113,6 +113,29 @@ const verifyOtp = async (req,res)=>{
                 googleId:new Date(),
                 password: passwordHash
             })    
+            if((user.referralId).length>0){
+                await User.findOneAndUpdate(
+                    {referalCode:user.referralId},
+                    {
+                        $inc: { wallet: 100 },
+                        $push: {
+                            walletHistory: {
+                                transactionDate: new Date(),
+                                transactionAmount: 100,
+                                transactionType: "Credit",
+                            }
+                        }
+                    }
+                )
+                saveUserData.wallet = 50; 
+                saveUserData.walletHistory = [
+                    {
+                        transactionDate: new Date(),
+                        transactionAmount: 50,
+                        transactionType: "Credit",
+                    }
+                ];
+            }
             await saveUserData.save()
             console.log("user data saved successfully")
             req.session.user =saveUserData._id;

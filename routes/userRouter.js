@@ -48,6 +48,7 @@ router.post("/verifyOtp",signupController.verifyOtp)
 router.post('/resendOtp', signupController.resendOtp)
 router.get('/auth/google', passport.authenticate('google',{scope:['profile','email']}))
 
+
 //login
 router.get('/login',loginController.loadLogin)
 router.post('/login',loginController.login)
@@ -64,6 +65,10 @@ router.post('/verifyForgotPasswordOtp',profileAuth,forgotPasswordController.veri
 router.get("/changePassword",profileAuth,forgotPasswordController.loadChangePassword)
 router.post("/resendOtpForgotPassword",profileAuth, forgotPasswordController.resendOtpForgotPassword)
 router.post('/resetPassword',profileAuth,forgotPasswordController.resetPassword)
+
+//referal setup
+router.get('/generateReferal',userAuth, profileController.generateReferal);
+
 
 //load user profilepage
 router.get('/userProfile',userAuth,profileController.loadUserProfile)
