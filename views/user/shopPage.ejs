@@ -331,50 +331,59 @@
         </aside>
 
         <!-- Products displaying -->
-        <main class="product-grid">
-          <% if (products && products.length> 0) { %>
-            <% for (let i=0; i < products.length; i++) { %>
-              <div class="product-card">
-                <a href="#" class="wishlist-btn" onclick="addToWishlist('<%= products[i]._id %>')">
-                  <i class="fas fa-heart"></i>
-                </a> 
-                <a href="/productDetails?id=<%= products[i]._id %>">
-                  <img src="<%= products[i].productImage[0] %>"
-                    alt="<%= products[i].productName %>" />
-                  <h4>
-                    <%= products[i].productName %>
-                  </h4>
-                  <p>Brand: <%= products[i].brand %>
-                  </p>
-                  <p> Price: ₹<%= products[i].salePrice.toLocaleString('en-IN') %>
-                      <span class="text-muted">
-                        <strike>₹<%= products[i].regularPrice.toLocaleString('en-IN') %></strike>
-                      </span>
-                  </p>
-                  <% if (products[i].quantity > 0) { %>
-                  <p>stock: <%= products[i].quantity %>
-                  </p>
-                  <% } else { %>
-                  <p class="text-danger">Out of stock</p>
+      <div class="container">
+        <div class="row">
+          <% if (products && products.length > 0) { %>
+              <% for (let i = 0; i < products.length; i++) { %>
+                  <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                      <div class="product-cart-wrap mb-30">
+                          <div class="product-img-action-wrap">
+                              <div class="product-img product-img-zoom">
+                                  <a href="/productDetails?id=<%= products[i]._id %>">
+                                      <img class="default-img" src="<%= products[i].productImage[0] %>" alt="<%= products[i].productName %>">
+                                  </a>
+                              </div>
+                              <a href="#" onclick="addToWishlist('<%= products[i]._id %>')" class="wishlist-btn">
+                                  <i class="fas fa-heart"></i>
+                              </a>
+                          </div>
+                          <div class="product-content-wrap">
+                              <h6><%= products[i].productName %></h6>
+                              <p>Brand: <%= products[i].brand %></p>
+                              <p>Price: ₹<%= products[i].salePrice.toLocaleString('en-IN') %>
+                                  <span class="text-muted">
+                                      <strike>₹<%= products[i].regularPrice.toLocaleString('en-IN') %></strike>
+                                  </span>
+                              </p>
+                              <% if (products[i].quantity > 0) { %>
+                                  <p>Stock: <%= products[i].quantity %></p>
+                              <% } else { %>
+                                  <p class="text-danger">Out of stock</p>
+                              <% } %>
+      
+                              <% if (products[i].quantity > 0) { %>
+                                  <form action="/addToCart" method="post">
+                                      <input type="hidden" name="productId" value="<%= products[i]._id %>">
+                                      <input type="hidden" name="quantity" value="1">
+                                      <input type="hidden" name="price" id="price" value="<%= products[i].salePrice %>">
+                                      <button type="submit" class="btn add-to-cart-btn" style="background-color: #088178;">
+                                          Add to Cart
+                                      </button>
+                                  </form>
+                              <% } else { %>
+                                  <button class="add-to-cart-btn btn" onclick="window.location.href='/productDetails?id=<%= products[i]._id %>'">
+                                      Currently Unavailable
+                                  </button>
+                              <% } %>
+                          </div>
+                      </div>
+                  </div>
                   <% } %>
-                </a>
-
-                <% if(products[i].quantity > 0) {%>              
-                  <form action="/addToCart" method="post">
-                    <input type="hidden" name="productId" value="<%= products[i]._id %>">
-                    <input type="hidden" name="quantity" value="1">
-                    <input type="hidden" name="price" id="price" value="<%= products[i].salePrice %>">
-                    <button type="submit" class="btn add-to-cart-btn" style="background-color: #088178;">Add to Cart</button>
-                </form>
-                <% }else{ %>
-                   <button class="add-to-cart-btn btn" onclick="window.location.href='/productDetails?id=<%= products[i]._id %>'">Currently Unavailable</button>
-                <% } %>                
-              </div>
-              <% } %>
-            <% } else { %>
+              <% } else { %>
                   <p>No products available</p>
-            <% } %>                
-        </main>
+              <% } %>
+          </div>
+        </div>
       </div>
 
       <!-- pagination -->
@@ -399,10 +408,6 @@
 <script>
 //new code
   let appliedFilters = {}; // Store active filters
-
-
-
-
 
   function addToWishlist(productId) {
         $.ajax({
@@ -442,9 +447,6 @@
         })
     }
 
-
-
-
 document.addEventListener("DOMContentLoaded", function () {
     const filterItems = document.querySelectorAll(".ajax-filter");
     const outOfStockCheckbox = document.querySelector("#showOutOfStock");
@@ -455,29 +457,38 @@ document.addEventListener("DOMContentLoaded", function () {
     function applyFilters(page = 1) {
         let filters = { ...appliedFilters };
         
-        // Get search input value
         let searchValue = searchInput.value || "";
         searchButton.setAttribute("data-value", searchValue);
         if (searchValue) filters["search"] = searchValue;
 
-        // Add Out of Stock filter if checked
         if (outOfStockCheckbox && outOfStockCheckbox.checked) {
             filters["outOfStock"] = "true";
         }
 
-        // Construct query parameters
         let queryParams = new URLSearchParams(filters);
         queryParams.set("page", page);
         let finalUrl = `/filter?${queryParams.toString()}`;
 
-        // Fetch filtered products via AJAX
         fetch(finalUrl, { method: "GET", headers: { "X-Requested-With": "XMLHttpRequest" } })
             .then(response => response.text())
             .then(html => {
                 let tempDiv = document.createElement("div");
                 tempDiv.innerHTML = html;
-                document.querySelector(".product-grid").innerHTML = tempDiv.querySelector(".product-grid").innerHTML;
-                document.querySelector(".pagination").innerHTML = tempDiv.querySelector(".pagination").innerHTML;
+
+                const productGrid = document.querySelector(".row");
+                const updatedProducts = tempDiv.querySelector(".row");
+                
+                if (productGrid && updatedProducts) {
+                    productGrid.innerHTML = updatedProducts.innerHTML;
+                }
+
+                const paginationContainer = document.querySelector(".pagination");
+                const updatedPagination = tempDiv.querySelector(".pagination");
+                
+                if (paginationContainer && updatedPagination) {
+                    paginationContainer.innerHTML = updatedPagination.innerHTML;
+                }
+
                 window.history.pushState({}, "", finalUrl);
             })
             .catch(error => console.error("Error fetching filtered products:", error));
@@ -486,7 +497,7 @@ document.addEventListener("DOMContentLoaded", function () {
     filterItems.forEach(item => {
         item.addEventListener("click", function (event) {
             event.preventDefault();
-            
+
             let filterType = this.dataset.filter;
             let filterValue = this.dataset.value;
 
@@ -525,45 +536,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-
-
-  function updateProductList(products) {
-      const productGrid = document.querySelector(".product-grid");
-      productGrid.innerHTML = "";
-      
-      if (products.length === 0) {
-          productGrid.innerHTML = "<p>No products available</p>";
-          return;
-      }
-
-      products.forEach(product => {
-          productGrid.innerHTML += `
-              <div class="product-card">
-                  <a href="/productDetails?id=${product._id}">
-                      <img src="/uploads/product-imagesResized/${product.productImage[0]}" alt="${product.productName}" />
-                      <h4>${product.productName}</h4>
-                      <p>Brand: ${product.brand}</p>
-                      <p> Price: ₹${product.salePrice.toLocaleString("en-IN")} 
-                          <span class="text-muted"><strike>₹${product.regularPrice.toLocaleString("en-IN")}</strike></span>
-                      </p>
-                  </a>
-              </div>
-          `;
-      });
-  }
-
-  function updatePagination(totalPages, currentPage) {
-      const paginationContainer = document.querySelector(".pagination");
-      paginationContainer.innerHTML = "";
-
-      for (let i = 1; i <= totalPages; i++) {
-          paginationContainer.innerHTML += `
-              <li class="page-item ${i === currentPage ? "active" : ""}">
-                  <a class="page-link ajax-page" href="#" data-page="${i}">${i}</a>
-              </li>
-          `;
-      }
-  }
 
 </script>
 

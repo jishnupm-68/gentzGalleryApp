@@ -175,7 +175,8 @@
                                 <div class="product-content-wrap">
                                     <h6><%= products[i].productName %></h6>
                                     <h5><%= products[i].productPrice %></h5>
-                                    <a href="/addToCart?id=<%= products[i]._id %>">Add to Cart</a>
+                                    <!-- <a href="/addToCart?id=<%= products[i]._id %>" >Add to Cart</a> -->
+                                    <button type="submit" class="button button-add-to-cart btn" onclick="addToCart('<%= products[i]._id %>')" >Add to Cart</button>
                                 </div>
                             </div>
                         </div>

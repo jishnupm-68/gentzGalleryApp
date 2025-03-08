@@ -284,16 +284,20 @@ const editProduct = async (req, res) => {
       regularPrice: data.regularPrice,
       salePrice: data.salePrice,
       quantity: data.quantity,
-      color: data.color,
-      productImage: images, 
+      color: data.color, 
     };
+
+    const updateQuery = images.length > 0 
+      ? { $set: updateFields, $push: { productImage: { $each: images } } }
+      : { $set: updateFields };
+
     // Update the product in the database
     const result = await Product.findByIdAndUpdate(
-      id,
-      { $set: updateFields },
-      { new: true }
+        id,
+        updateQuery,
+        { new: true }
     );
-
+      
     console.log("Product updated successfully");
     res.json({ success: true, message: "Product updated successfully", redirectUrl: "/admin/products" });
   } catch (error) {
