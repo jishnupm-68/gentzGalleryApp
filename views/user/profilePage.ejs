@@ -311,11 +311,11 @@
                     <div class="card-body">
                       <h6 class="mb-3">Refer your friends and earn money! You get 100Rs and new user get 50Rs to the wallet</h6>
                       <% if(user.referalCode) {%>
-                      <p>Click on the link to Share: <strong><input type="text"  onclick="clipBoard()"  id="referalCode" value=http://localhost:3000/signUp?ref=<%= user.referalCode %>> </strong></p> 
+                      <p>Click on the link to Share: <strong><input type="text"  onclick="clipBoard()"  id="referalCode" value=https://www.gentzgallery.online/signup?ref=<%= user.referalCode %>> </strong></p> 
                       <% }else {%>
                         <button class="btn" onclick="generateReferal('<%= user._id%>')">Generate referal link</button>
                         <% } %>
-                      <p>Earned: ₹</p>
+                      
                     </div>
                   </div>
                 </div>
@@ -401,6 +401,7 @@ function generateReferal(userId){
           title:"success",
           text:response.message
         })
+        window.location.href=response.redirectUrl;
       }else{
         Swal.fire({
           icon:"error",
@@ -424,13 +425,7 @@ function clipBoard() {
   navigator.clipboard.writeText(copyText.value);
 
   // Alert the copied text
-  // if(copyText.value){
-  //   Swal.fire({
-
-  //   text:"Copied the text: " + copyText.value 
-  // });
-
-  // }
+  
   Swal.fire({
       text: "Copied the link to clip board" 
     });

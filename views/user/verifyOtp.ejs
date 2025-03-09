@@ -338,7 +338,7 @@
                   if (response.success) {
                       Swal.fire({
                           icon: "success",
-                          title: "OTP Verified and Account created successfully",
+                          title: response.message,
                           showConfirmButton: false,
                           timer: 5000,
                           timerProgressBar: true,
@@ -350,7 +350,9 @@
                           icon: "error",
                           title: "Error",
                           text: response.message, 
-                      });
+                          timer: 5000,
+                          timerProgressBar: true,
+                      })
                   }
               },
               error: function () {

@@ -101,11 +101,11 @@ const loadVerifyOtp = async (req,res)=>{
 //function for verifying the otp and saving the USER profile
 const verifyOtp = async (req,res)=>{
     try{
+        let updateReferalUser;
         const {otp} = req.body;
         if(otp === req.session.userOtp){
             const user = req.session.userData;
             const passwordHash = await securePassword(user.password)
-            
             const saveUserData  = new User({
                 name:user.name,
                 email:user.email,
@@ -114,7 +114,7 @@ const verifyOtp = async (req,res)=>{
                 password: passwordHash
             })    
             if((user.referralId).length>0){
-                await User.findOneAndUpdate(
+                 updateReferalUser = await User.findOneAndUpdate(
                     {referalCode:user.referralId},
                     {
                         $inc: { wallet: 100 },
@@ -127,26 +127,37 @@ const verifyOtp = async (req,res)=>{
                         }
                     }
                 )
-                saveUserData.wallet = 50; 
-                saveUserData.walletHistory = [
-                    {
-                        transactionDate: new Date(),
-                        transactionAmount: 50,
-                        transactionType: "Credit",
-                    }
-                ];
+
+                if(updateReferalUser){
+                    saveUserData.wallet = 50; 
+                    saveUserData.walletHistory = [
+                        {
+                            transactionDate: new Date(),
+                            transactionAmount: 50,
+                            transactionType: "Credit",
+                        }
+                    ];
+                }else{
+                    console.log("ReferalCode is wrong, account creation failed. ");
+                    return res.json({success:false,message:"Wrong referal code, account creation failed", redirectUrl:'/signUp'})
+                }
             }
             await saveUserData.save()
-            console.log("user data saved successfully")
             req.session.user =saveUserData._id;
-            res.json({success:true, redirectUrl :'/'})
+            if(updateReferalUser){
+                console.log("OTP verified and account created successfully, Referal applied")
+                return res.json({success:true, message:"OTP verified and account created successfully, Referal applied", redirectUrl :'/'})
+            }else{
+                console.log("OTP verified and account created successfully")
+                return res.json({success:true, message:"OTP verified and account created successfully", redirectUrl :'/'})
+            }  
         }else{
             console.log("Invalid otp, please try again")
-            res.status(400).json({success:false, message:"Invalid otp, please try again"})
+            res.json({success:false, message:"Invalid otp, please try again"})
         }
     }catch(error){
         console.error("Error while verifying the otp", error);
-        res.status(500).json({success:false, message:"An error occured"})
+        res.json({success:false, message:"An error occured"})
     }
 }
 
