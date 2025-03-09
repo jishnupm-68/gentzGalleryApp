@@ -31,223 +31,241 @@
     </style>
 
     <!-- contents of checkout page starts here -->
+
+
     <section>
         <div class="container">
             <div class="row">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="order_review">
-                            <div class="mb-20">
-                                <h4>Products</h4>
-                            </div>
-                            <div class="table-responsive order_table text-center">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Image</th>
-                                            <th>Product</th>
-                                            <th>Quantity</th>
-                                            <th>Total</th>
-                                            <th>Delete</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                            <% if (product && Array.isArray(product) && product.length> 0) { %>
-                                <% for (let i=0; i < product.length; i++) { %>
+                <div class="col-md-12">
+                    <div class="order_review">
+                        <div class="mb-20">
+                            <h4>Products</h4>
+                        </div>
+                        <div class="table-responsive order_table text-center">
+                            <table class="table">
+                                <thead>
                                     <tr>
-                                        <td class="image product-thumbnail"><img
-                                                src="<%= product[i].image %>"
-                                                alt="#"></td>
-                                        <td>
-                                            <h5><a href="productDetails?id=<%= product[i].productId %>">
-                                                    <%= product[i].name %>
-                                                </a></h5>
-                                        </td>
-                                        <td>
-                                            <%= product[i].quantity %>
-                                        </td>
-                                        <td>
-                                            <%= product[i].price*product[i].quantity %>
-                                        </td>
-                                        <td class="action" data-title="Remove" onclick="return false">
-                                            <button class="btn btn-sm" type="button"
-                                                onclick="return confirmRemove('<%= product[i].productId %>')">
-                                                <i class="fi-rs-trash"></i>
-                                                </button>
-                                        </td>
+                                        <th>Image</th>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                        <th>Total</th>
+                                        <th>Delete</th>
                                     </tr>
+                                </thead>
+                                <tbody>
+                                    <% if (product && Array.isArray(product) && product.length> 0) { %>
+                                        <% for (let i=0; i < product.length; i++) { %>
+                                            <tr>
+                                                <td class="image product-thumbnail">
+                                                    <img src="<%= product[i].image %>" alt="#" class="img-fluid">
+                                                </td>
+                                                <td>
+                                                    <h5><a href="productDetails?id=<%= product[i].productId %>">
+                                                        <%= product[i].name %>
+                                                    </a></h5>
+                                                </td>
+                                                <td>
+                                                    <%= product[i].quantity %>
+                                                </td>
+                                                <td>
+                                                    <%= product[i].price * product[i].quantity %>
+                                                </td>
+                                                <td class="action" data-title="Remove" onclick="return false">
+                                                    <button class="btn btn-sm" type="button"
+                                                        onclick="return confirmRemove('<%= product[i].productId %>')">
+                                                        <i class="fi-rs-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        <% } %>
+                                    <% } else { %>
+                                        <tr>
+                                            <td colspan="5" class="text-center">No products found</td>
+                                        </tr>
                                     <% } %>
-                            <% } else { %>
-                                <tr>
-                                    <td colspan="4">No products found</td>
-                                </tr>
-                            <% } %>
                                 </tbody>
-                                <% let totalAmount=0; %>
                             </table>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-8">
-                        <div class="row align-items-start mt-10 ml-190">
-                            <% if (locals.userAddress) { %>
-                                <% userAddress.address.forEach((address)=> { %>
-                                    <div class="col-lg-6">
-                                        <div class="card">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="radio"
-                                                    id="addressRadio<%= address._id %>" name="selectedAddress"
-                                                    value="<%= address._id %>">
-                                                <label class="form-check-label"
-                                                    for="addressRadio<%= address._id %>">Select Address</label>
-                                            </div>
-                                            <div class="card-header">
-                                                <h5 class="mb-0">
-                                                    <%= address.addressType %>
-                                                </h5>
-                                            </div>
-                                            <div class="card-body">
-                                                <address>
-                                                    <%= address.name %><br />
-                                                    <%= address.city %>,<br />
-                                                    <%= address.landMark %> <br />
-                                                    <%= address.state %>
-                                                </address>
-                                                <p>
-                                                    <%= address.pincode %>
-                                                </p>
-                                                <p>
-                                                    <%= address.phone %>
-                                                </p>
-                                                <p>
-                                                    <%= address.altPhone %>
-                                                </p>
-                                                <div class="d-flex justify-content-between">
-                                                    <a href="/editAddress?id=<%= address._id %>"
-                                                        class="btn-small">Edit</a>
-                                                    <a href="/deleteAddress?id=<%= address._id %>" class="btn-small"
-                                                        onclick="return confirm('Are you sure you want to delete this address?')">Delete</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <% }) %>
-                            <% } else { %>
-                                <div class="col-lg-6 mb-3">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h5 class="mb-0"></h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <address>
-                                                No address
-                                            </address>
-                                        </div>
-                                    </div>
-                                </div>
-                        <% } %>
-                            <div class="col-lg-6 mb-3">
-                                <a href="/addAddress">
-                                    <button class="btn btn-primary w-100">Add address</button>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="mb-25 ml-150 pt-10">
-                            <h5>Available Coupons</h5>
-                        </div>
-                            <ul>
-                            <% if (Coupon) { %>
-                                <% Coupon.forEach((item)=>{ %>
-                                    <li>
-                                        <div class="coupon-card col-4" style="margin-left: 150px;">
-                                            <div class="coupon-details">
-                                                <span class="coupon-name">
-                                                    <%= item.name %>
-                                                </span><br>
-                                            </div>
-                                            <% if((item.userId).length>0) {%>
-                                            <% item.userId.forEach(element => { %>  
-                                            <% if(element.toString()==(user._id).toString()){ %>
-                                                <button onclick="removeCoupon('<%= item.name %>',' <%= item._id %>')" id="useButton_<%= item.name %>" class="use-button" style="background-color: #e93838;;" >Remove</button>
-                                            <% }else {%>
-                                            <% } %> 
-                                        <%  }); %>
-                                        <% }else {%>
-                                            <button onclick="useCoupon('<%= item.name %>',' <%= item._id %>','<%=grandTotal%>')" id="useButton_<%= item.name %>" class="use-button" style="background-color: #088178;">Apply</button>
-                                            <% } %>
-                                            <button onclick="cancelCoupon('<%= item.name %>')" id="cancelButton_<%= item.name %>" class="cancel-button btn-danger" style="display: none;">Cancel</button>
-                                        </div>
-                                    </li>
-                                    <% }) %>
-                            <% }else{ %>
-                                <h5>No coupons available</h5>
-                            <% } %>
-                            </ul>
-                        </div>
-                    <div class="payment_method">
-                        <div class="mb-25 ml-150">
-                            <h5>Payment</h5>
-                        </div>
-                        <div class="custome-radio ml-150">
-                            <input class="form-check-input payment" type="radio" value="cod" name="payment_option"
-                                id="CashOnDelivey" checked="">
-                            <label class="form-check-label" for="CashOnDelivey" product-bs-toggle="collapse"
-                                product-target="#CashOnDelivey" aria-controls="CashOnDelivey">Cash on
-                                Delivery</label>
-                        </div>
-                        <div class="custome-radio ml-150">
-                            <input class="form-check-input payment" required="" value="razorpay" type="radio"
-                                name="payment_option" id="Razorpay" checked="">
-                            <label class="form-check-label" for="Razorpay" data-bs-toggle="collapse"
-                                data-target="#Razorpay" aria-controls="paypal">Razorpay</label>
-                        </div>
-                        <div class="custome-radio ml-150">
-                            <input class="form-check-input payment" required="" value="wallet" type="radio"
-                                name="payment_option" id="wallet" checked="">
-                            <label class="form-check-label" for="wallet" data-bs-toggle="collapse" data-target="#wallet"
-                                aria-controls="wallet">wallet</label>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="container col-6 mt-3">
-                <% for (let i=0; i < product.length; i++) { %>
-                    <% if (locals.isCart==="true" ) { %>
-                        <% totalAmount +=product[i].price * product[i].quantity; %>
-                    <% } else { %>
-                        <% totalAmount +=product[i].price; %>
-                    <% } %>
-                <% } %>
-                <div class="ml-150">
-                    <table class="table mt-45">
-                        <tbody>
-                            <tr>
-                                <th>Shipping</th>
-                                <% if (grandTotal>1000) { %>
-                                    <td colspan="2"><em>Free Shipping</em></td>
-                                <% } else { %>
-                                <td colspan="2"><em>Shipping charge included</em></td>
-                                <% } %>
-                            </tr>
-                            <tr>
-                                <th>Amount to pay </th>
-                                <td colspan="2" class="product-subtotal">
-                                    <span class="font-xl text-brand fw-900"
-                                        id="totalValue">₹<%= finalAmount %></span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div class="ml-65">
-                        <button type="button" class="btn"
-                            onclick="placeOrder('<%= user._id %>','<%= discount %>')">Place Order</button>
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="row mt-10 ml-md-190">
+                        <% if (locals.userAddress) { %>
+                            <% userAddress.address.forEach((address)=> { %>
+                                <div class="col-lg-6 mb-3">
+                                    <div class="card">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio"
+                                                id="addressRadio<%= address._id %>" name="selectedAddress"
+                                                value="<%= address._id %>">
+                                            <label class="form-check-label"
+                                                for="addressRadio<%= address._id %>">Select Address</label>
+                                        </div>
+                                        <div class="card-header">
+                                            <h5 class="mb-0">
+                                                <%= address.addressType %>
+                                            </h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <address>
+                                                <%= address.name %><br />
+                                                <%= address.city %>,<br />
+                                                <%= address.landMark %> <br />
+                                                <%= address.state %>
+                                            </address>
+                                            <p>
+                                                <%= address.pincode %>
+                                            </p>
+                                            <p>
+                                                <%= address.phone %>
+                                            </p>
+                                            <p>
+                                                <%= address.altPhone %>
+                                            </p>
+                                            <div class="d-flex justify-content-between">
+                                                <a href="/editAddress?id=<%= address._id %>"
+                                                    class="btn btn-sm btn-primary">Edit</a>
+                                                <a href="/deleteAddress?id=<%= address._id %>" class="btn btn-sm btn-danger"
+                                                    onclick="return confirm('Are you sure you want to delete this address?')">Delete</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        <% } else { %>
+                            <div class="col-lg-6 mb-3">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0"></h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <address>
+                                            No address
+                                        </address>
+                                    </div>
+                                </div>
+                            </div>
+                        <% } %>
+                        <div class="col-lg-6 mb-3">
+                            <a href="/addAddress">
+                                <button class="btn btn-primary w-100">Add address</button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-25 ml-md-150 pt-10">
+                        <h5>Available Coupons</h5>
+                    </div>
+                    <ul>
+                        <% if (Coupon) { %>
+                            <% Coupon.forEach((item)=>{ %>
+                                <li>
+                                    <div class="coupon-card col-12">
+                                        <div class="coupon-details">
+                                            <span class="coupon-name">
+                                                <%= item.name %>
+                                            </span><br>
+                                        </div>
+                                        <% if((item.userId).length>0) {%>
+                                            <% item.userId.forEach(element => { %>  
+                                                <% if(element.toString()==(user._id).toString()){ %>
+                                                    <button onclick="removeCoupon('<%= item.name %>',' <%= item._id %>')" id="useButton_<%= item.name %>" class="use-button" style="background-color: #e93838;">Remove</button>
+                                                <% } %>
+                                            <% }); %>
+                                        <% } else { %>
+                                            <button onclick="useCoupon('<%= item.name %>',' <%= item._id %>','<%=grandTotal%>')" id="useButton_<%= item.name %>" class="use-button" style="background-color: #088178;">Apply</button>
+                                        <% } %>
+                                        <button onclick="cancelCoupon('<%= item.name %>')" id="cancelButton_<%= item.name %>" class="cancel-button btn-danger" style="display: none;">Cancel</button>
+                                    </div>
+                                </li>
+                            <% }) %>
+                        <% } else { %>
+                            <h5>No coupons available</h5>
+                        <% } %>
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="payment_method">
+                        <div class="mb-25 ml-md-150">
+                            <h5>Payment</h5>
+                        </div>
+                        <div class="custome-radio ml-md-150">
+                            <input class="form-check-input payment" type="radio" value="cod" name="payment_option"
+                                id="CashOnDelivey" checked="">
+                            <label class="form-check-label" for="CashOnDelivey">Cash on Delivery</label>
+                        </div>
+                        <div class="custome-radio ml-md-150">
+                            <input class="form-check-input payment" required="" value="razorpay" type="radio"
+                                name="payment_option" id="Razorpay">
+                            <label class="form-check-label" for="Razorpay">Online Payment</label>
+                        </div>
+                        <div class="custome-radio ml-md-150">
+                            <input class="form-check-input payment" required="" value="wallet" type="radio"
+                                name="payment_option" id="wallet">
+                            <label class="form-check-label" for="wallet">Wallet</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="ml-md-150">
+                        <table class="table mt-45">
+                            <tbody>
+                                <tr>
+                                    <th>Shipping</th>
+                                    <% if (grandTotal>1000) { %>
+                                        <td colspan="2"><em>Free Shipping</em></td>
+                                    <% } else { %>
+                                        <td colspan="2"><em>₹50</em></td>
+                                    <% } %>
+                                </tr>
+                                <tr>
+                                    <% let shipping = grandTotal>1000?0:50  %>
+                                    <% let tax = (finalAmount-shipping)*18/100 %>
+                                    <% let amount = finalAmount-shipping-tax %>
+                                    <th>Taxable amount</th>
+                                    <td colspan="2" class="product-subtotal">
+                                        <span class="font-xl text-brand fw-900"
+                                            id="totalValue">₹<%= amount %></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                               
+                                    <th>Tax</th>
+                                    <td colspan="2" class="product-subtotal">
+                                        <span class="font-xl text-brand fw-900"
+                                            id="totalValue">₹<%= tax %></span>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <th>Amount to pay</th>
+                                    <td colspan="2" class="product-subtotal">
+                                        <span class="font-xl text-brand fw-900"
+                                            id="totalValue">₹<%= finalAmount %></span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="ml-md-65">
+                            <button type="button" class="btn btn-primary"
+                                onclick="placeOrder('<%= user._id %>','<%= discount %>')">Place Order</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
+
+
+
+
     
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
    

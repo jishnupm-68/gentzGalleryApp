@@ -1,6 +1,9 @@
 <%- include("../../views/partials/user/header") %>
 
+
         <!-- contents of cart starts here  -->
+
+
     <main class="main">
         <div class="page-header breadcrumb-wrap">
             <div class="container">
@@ -14,7 +17,7 @@
         <section class="mt-50 mb-50">
             <div class="container">
                 <div class="row">
-                    <div class="col-9">
+                    <div class="col-12 col-lg-9">
                         <div class="table-responsive">
                             <table class="table shopping-summery text-center clean">
                                 <thead>
@@ -32,8 +35,7 @@
                                         <% for (let i=0; i < items.length;i++) { %>
                                             <tr>
                                                 <td class="image product-thumbnail">
-                                                    <img src="<%= items[i].image %>"
-                                                        alt="#" />
+                                                    <img src="<%= items[i].image %>" alt="#" class="img-fluid" />
                                                 </td>
                                                 <td class="product-des product-name">
                                                     <h5 class="product-name">
@@ -64,7 +66,7 @@
                                                                 <input class="quantity-input"
                                                                     id="cartProductQuantity<%= items[i].productId %>"
                                                                     value="<%= items[i].quantity %>"
-                                                                    style="width: 45px;" type="text" readonly>
+                                                                    type="text" readonly>
                                                                 <input type="text" value="<%= items[i].prodctId %>"
                                                                     style="display: none;" id="productIdNew">
                                                                 <button class="btn btn-sm decrement-button"
@@ -77,7 +79,7 @@
                                                                 <input class="quantity-input"
                                                                     id="cartProductQuantity<%= items[i].productId %>"
                                                                     value="<%= items[i].quantity %>"
-                                                                    style="width: 45px;" type="text" readonly>
+                                                                    type="text" readonly>
                                                                 <input type="text" value="<%= items[i].prodctId %>"
                                                                     style="display: none;" id="productIdNew">
                                                                 <button class="btn btn-sm decrement-button" disabled
@@ -109,7 +111,7 @@
                                                 <% } %>
                                 <% } else { %>
                                 <tr>
-                                    <td colspan="2" class="text-center">
+                                    <td colspan="5" class="text-center">
                                         <p class="lead mb-4">No item found in Cart</p>
                                     </td>
                                 </tr>
@@ -119,7 +121,7 @@
                             </table>
                         </div>
                     </div>
-                    <div class="col-3">
+                    <div class="col-12 col-lg-3">
                         <div class="border p-md-4 p-30 border-radius cart-totals">
                             <div class="heading_s1 mb-3">
                                 <h4>PRICE DETAILS</h4>
@@ -179,10 +181,10 @@
                                 </table>
                             </div>
                            <% if(items.length>0) {%>
-                            <button  class="btn btn-md rounded font-sm hover-up" onclick="return confirmCheckout()"> <i class="fi-rs-box-alt mr-10"></i>
+                            <button  class="btn btn-md rounded font-sm hover-up w-100" onclick="return confirmCheckout()"> <i class="fi-rs-box-alt mr-10"></i>
                                 Proceed To CheckOut</button>
                             <% }else {%>
-                                <button  class="btn btn-md rounded font-sm hover-up" onclick="return confirmCheckout()" disabled> <i class="fi-rs-box-alt mr-10"></i>
+                                <button  class="btn btn-md rounded font-sm hover-up w-100" onclick="return confirmCheckout()" disabled> <i class="fi-rs-box-alt mr-10"></i>
                                     Proceed To CheckOut</button>
                             <% } %>
                             <input type="text" value="<%= user._id %>" data-user="<%= user._id %>" style="display: none;" id="user">
@@ -192,6 +194,9 @@
             </div>
         </section> 
     </main>
+
+   
+
 
     <!-- script for operations in the cart -->
     <script>
