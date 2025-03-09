@@ -88,7 +88,20 @@
                                                             <% } %>
                                                         </div>
                                                     </td>  
-                                                    <% if(items[i].quantity<=items[i].stock ) {%>
+
+                                                    <% if(items[i].quantity>5){ %>
+                                                        <td class="action" data-title="Remove">                                                               
+                                                           <a style="background-color: red; border: none;" class="btn btn-sm" href="#"
+                                                                onclick="confirmRemove('<%= items[i].productId %>')">
+                                                                <i class="fi-rs-trash"></i>
+                                                            </a>
+                                                                <p class="text-danger pt-4">Max quantity  exceeded</p>
+                                                                <p class="text-danger">Please reduce the quantity</p>
+                                                           
+                                                            <input type="text" value="<%= items[i].productId.toString() %>" data-pId="<%= items[i].productId.toString() %>" style="display: none;" id="pId">
+                                                        </td>
+
+                                                    <% }else if(items[i].quantity<=items[i].stock  ) {%>
                                                         <td class="action" data-title="Remove">
                                                             <a class="btn btn-sm" href="#"
                                                                 onclick="confirmRemove('<%= items[i].productId %>')">
@@ -96,6 +109,10 @@
                                                             </a>
                                                             <p class="text-success pt-4">Stock: <%=items[i].stock %></p>
                                                         </td>
+                                                      
+                                                        
+                                                        
+
                                                         <% }else{ %>
                                                             <td class="action" data-title="Remove">                                                               
                                                                <a style="background-color: red; border: none;" class="btn btn-sm" href="#"
@@ -104,7 +121,7 @@
                                                                 </a>
                                                                     <p class="text-danger pt-4">Item sold out</p>
                                                                     <p class="text-danger">Please remove this item</p>
-                                                                <% console.log("PRoduct id to be remove", items[i].productId) %>
+                                                               
                                                                 <input type="text" value="<%= items[i].productId.toString() %>" data-pId="<%= items[i].productId.toString() %>" style="display: none;" id="pId">
                                                             </td>
                                                         <% } %>

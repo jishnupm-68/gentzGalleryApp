@@ -209,7 +209,13 @@ try {
     doc.fontSize(12).text(`Payment Status: ${order.status}`);
     let shipping;
     req.session.subtotal>1000?shipping="Free":shipping="₹50 included";
-    doc.fontSize(12).text(`Total Price: ₹ ${order.totalPrice}`);
+    let shippingFee;
+    req.session.subtotal>1000?shippingFee=0:shippingFee=50;
+     
+    let tax = (order.finalAmount-shippingFee)*18/100
+    let taxableAmount = order.finalAmount-shippingFee-tax 
+    doc.fontSize(12).text(`Taxable amount: ₹ ${taxableAmount}`);
+    doc.fontSize(12).text(`Tax: ₹ ${tax}`);
     doc.fontSize(12).text(`Shipping: ${shipping} `);
     doc.fontSize(12).text(`Total Discount: ₹${order.discount}`);
     doc.fontSize(12).text(`Final Amount: ₹${order.finalAmount}`);
