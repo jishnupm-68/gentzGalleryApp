@@ -117,13 +117,13 @@
             
             .mobile-nav-toggle {
                 position: absolute;
-                top: -40px;
-                right: 15px;
+                top: -7%;
+                right: 0px;
                 background-color: #ffffff;
                 color: #9F78FF;
                 border: none;
-                width: 40px;
-                height: 40px;
+                width: 60px;
+                height: 60px;
                 border-radius: 4px;
                 cursor: pointer;
                 z-index: 1001;
@@ -243,68 +243,38 @@
                                 </nav>
                             </div>   
                         </div>
+
                         <div class="header-right1 d-flex align-items-center">
-                            <!-- Social -->
-                            <div class="header-social d-none d-md-block">
-                                <a href="/Wishlist" ><i class="fas fa-heart "></i></a>
+                            
+                            <div class="header-social  ">
+                                
+                                 <button class="card-stor btn-xs border-0" onclick="window.location.href='/wishlist'"><i class="fas fa-heart"></i></button>
                             </div>
-                            <!-- Search Box -->
-                            <div class="search d-none d-md-block">
+                            
+                            <div class="search">
                                 <ul class="d-flex align-items-center">
-                                        <div class="card-stor">
-                                            <a href="/cart"><img src="assets/img/gallery/card.svg" alt=""></a>
-                                            <span></span>
-                                        </div>
-                                    </li>
+                                    <div class="card-stor">
+                                        <a href="/cart"><img src="assets/img/gallery/card.svg" alt=""></a>
+                                        <span></span>
+                                    </div>
                                 </ul>
                             </div>
                         </div>
-                        <!-- Mobile Menu -->
-
-                        <!-- <div class="col-12">
-                            <div class="mobile_menu d-block d-lg-none"></div>
-                        </div> -->
-
-                        <!-- <div class="col-12">
-                            <ul id="mobile-menu" class="slicknav_menu">
-                                <li><a href="/">Home</a></li>
-                                <li><a href="/shop">Shop</a></li> 
-                                <% if(locals.user) { %>
-                                    <li>
-                                        <a href="" class="sign-in-link"><%=locals.user.name %></a>
-                                        <ul>
-                                            <li><a href="/userProfile">Profile</a></li>
-                                            <li><a href="/logout">Logout</a></li>
-                                        </ul>
-                                    </li>
-                                <% } else { %>
-                                    <li><a href="/login">Login</a></li>
-                                    <li><a href="/signup">Signup</a></li>
-                                <% } %>
-                            </ul>
-                        </div> -->
 
                         <!-- Mobile Menu -->
-                        <!-- <div class="col-12">
-                            <div class=" mobile_menu d-block d-lg-none">
-                                <nav class="slicknav_nav" id="mobile-menu-wrap">
-                                
-                                </nav>
-                            </div>
-                        </div> -->
 
                         <div class="col-12">
-                            <div class="mobile-nav-container   d-block d-lg-none">
-                                <!-- Mobile menu toggle button will be created here -->
-                            </div>
-                        </div>
+                            <div class=" mobile-nav-container   d-block d-lg-none"></div>
+                        </div>                      
 
+                        <!-- Mobile Menu -->
 
 
                     </div>
                 </div>
             </div>
         </div>
+        
         <!-- Header End -->
     </header>
     <!-- header end -->
