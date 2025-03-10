@@ -166,29 +166,43 @@
             <div class="col-md-8">
               <div class="tab-content dashboard-content">
                 <!-- Dashboard Tab -->
+
                 <div class="tab-pane fade show active" id="dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
                   <div class="card card-green">
-                    <div class="card-header" style="background-color: rgb(224, 224, 224);">
-                      <h5 class="mb-0 text-center">User Profile</h5>
-                    </div>
-                    <div class="card-body text-center" style="background-color: white;">
-                      <h5 class="card-title"><%= user.name %></h5>
-                      <p class="card-text">
-                        <strong>Phone:</strong>
-                        <%= user.phone ? user.phone : "Not Available" %>
-                      </p>
-                      <p class="card-text"><strong>Email:</strong> <%= user.email %></p>
-                      <a href="/changeEmail" class="btn btn-sm btn-success ml-2">Change Email</a>
-                      <a href="/changePasswordFromProfile" class="btn btn-sm btn-success">Change Password</a>
-                     <% if(user.phone) {%>
-                      <a href="/changePhone" class="btn btn-sm btn-success ml-2">Change Phone</a>
-                      <% }else{ %>
-                        <a href="/changePhone" class="btn btn-sm btn-success ml-2">Add Phone</a>
-                      <% } %>
-                      <a href="/logout" class=" btn-sm btn-warning btn" >Logout</a>
-                    </div>
+                      <div class="card-header" style="background-color: rgb(224, 224, 224);">
+                          <h5 class="mb-0 text-center">User Profile</h5>
+                      </div>
+                      <div class="card-body text-center" style="background-color: white;">
+                          <h5 class="card-title"><%= user.name %></h5>
+                          <p class="card-text">
+                              <strong>Phone:</strong>
+                              <%= user.phone ? user.phone : "Not Available" %>
+                          </p>
+                          <p class="card-text"><strong>Email:</strong> <%= user.email %></p>
+              
+                          <!-- Button Group for Actions -->
+                          <div class="row justify-content-center">
+                              <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-2">
+                                  <a href="/changeEmail" class="btn btn-block btn-sm btn-success">Change Email</a>
+                              </div>
+                              <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-2">
+                                  <a href="/changePasswordFromProfile" class="btn btn-block btn-sm btn-success">Change Password</a>
+                              </div>
+                              <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-2">
+                                  <% if(user.phone) { %>
+                                      <a href="/changePhone" class="btn btn-block btn-sm btn-success">Change Phone</a>
+                                  <% } else { %>
+                                      <a href="/changePhone" class="btn btn-block btn-sm btn-success">Add Phone</a>
+                                  <% } %>
+                              </div>
+                              <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-2">
+                                  <a href="/logout" class="btn btn-block btn-sm btn-warning">Logout</a>
+                              </div>
+                          </div>
+                      </div>
                   </div>
-                </div>
+              </div>
+
                 <!-- Address Tab -->
                 <div class="tab-pane fade" id="address" role="tabpanel" aria-labelledby="address-tab">
                   <div class="row">
