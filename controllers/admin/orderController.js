@@ -97,7 +97,7 @@ const updateReturnStatus = async (req,res)=>{
         const {orderId, productId, status} = req.body;
         let actualStatus = status==true?"Returned":"Return Request";
         let message = status == true ? "Return request accepted" : "Return request rejected";
-        let date = status == true ? Date.now() : null;
+        let date = status == true ? (new Date()).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }) : null;
         let update = await Order.findOneAndUpdate({_id:orderId, "orderedItems.product":productId},
             {$set:
                 {
@@ -120,7 +120,7 @@ const updateReturnStatus = async (req,res)=>{
                             $inc: { wallet: amount },
                             $push: {
                                 walletHistory: {
-                                    transactionDate: new Date(),
+                                    transactionDate: (new Date()).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }),
                                     transactionAmount: amount,
                                     transactionType: "Credit",
                                 }

@@ -59,35 +59,45 @@
                                                 <% x +=items[i].price * items[i].quantity%>
                                                     <td class="text-center" data-title="Stock">
                                                         <div class="detail-qty border radius m-auto">
-                                                            <% if (items[i].stock > 0) {%>
-                                                            <div class="quantity-control">
-                                                                <button class="btn btn-sm increment-button"
-                                                                    onclick="changeQuantity('<%= items[i].productId %>', '<%= items[i].quantity %>', 1, '<%= items[i].price %>',   '<%= items[i].stock%>')">+</button>
-                                                                <input class="quantity-input"
-                                                                    id="cartProductQuantity<%= items[i].productId %>"
-                                                                    value="<%= items[i].quantity %>"
-                                                                    type="text" readonly>
-                                                                <input type="text" value="<%= items[i].prodctId %>"
-                                                                    style="display: none;" id="productIdNew">
-                                                                <button class="btn btn-sm decrement-button"
-                                                                    onclick="changeQuantity('<%= items[i].productId %>', '<%= items[i].quantity %>', -1, '<%= items[i].price %>', '<%= items[i].stock%>')">-</button>                                                               
-                                                            </div>
-                                                            <% } else { %>   
-                                                            <div class="quantity-control">
-                                                                <button class="btn btn-sm increment-button" disabled
-                                                                    onclick="changeQuantity('<%= items[i].productId %>', '<%= items[i].quantity %>', 1, '<%= items[i].price %>',   '<%= items[i].stock%>')">+</button>
-                                                                <input class="quantity-input"
-                                                                    id="cartProductQuantity<%= items[i].productId %>"
-                                                                    value="<%= items[i].quantity %>"
-                                                                    type="text" readonly>
-                                                                <input type="text" value="<%= items[i].prodctId %>"
-                                                                    style="display: none;" id="productIdNew">
-                                                                <button class="btn btn-sm decrement-button" disabled
-                                                                    onclick="changeQuantity('<%= items[i].productId %>', '<%= items[i].quantity %>', -1, '<%= items[i].price %>', '<%= items[i].stock%>')">-</button>     
-                                                            </div>
+                                                            <% if (items[i].stock > 0) { %>
+                                                                <div class="d-flex flex-column align-items-center quantity-control">
+                                                                    <button class="btn btn-sm btn-outline-primary increment-button mb-1"
+                                                                        onclick="changeQuantity('<%= items[i].productId %>', '<%= items[i].quantity %>', 1, '<%= items[i].price %>', '<%= items[i].stock %>')">+</button>
+
+                                                                        <input class=" text-center quantity-input my-1"
+                                                                            id="cartProductQuantity<%= items[i].productId %>"
+                                                                            value="<%= items[i].quantity %>"
+                                                                            type="text"
+                                                                            readonly
+                                                                            style="text-align: center; padding: 0;">
+
+
+                                                                    <input type="hidden" value="<%= items[i].productId %>" id="productIdNew">
+                                                                    <button class="btn btn-sm btn-outline-primary decrement-button mt-1"
+                                                                        onclick="changeQuantity('<%= items[i].productId %>', '<%= items[i].quantity %>', -1, '<%= items[i].price %>', '<%= items[i].stock %>')">-</button>
+                                                                </div>
+                                                            <% } else { %>
+                                                                <div class="d-flex flex-column align-items-center quantity-control">
+                                                                    <button class="btn btn-sm btn-outline-secondary increment-button mb-1" disabled
+                                                                        onclick="changeQuantity('<%= items[i].productId %>', '<%= items[i].quantity %>', 1, '<%= items[i].price %>', '<%= items[i].stock %>')">+</button>
+                                                                    <input class="form-control text-center quantity-input my-1"
+                                                                        id="cartProductQuantity<%= items[i].productId %>"
+                                                                        value="<%= items[i].quantity %>"
+                                                                        type="text" readonly>
+                                                                    <input type="hidden" value="<%= items[i].productId %>" id="productIdNew">
+                                                                    <button class="btn btn-sm btn-outline-secondary decrement-button mt-1" disabled
+                                                                        onclick="changeQuantity('<%= items[i].productId %>', '<%= items[i].quantity %>', -1, '<%= items[i].price %>', '<%= items[i].stock %>')">-</button>
+                                                                </div>
                                                             <% } %>
                                                         </div>
-                                                    </td>  
+                                                    </td>
+
+
+
+
+
+
+
 
                                                     <% if(items[i].quantity>5){ %>
                                                         <td class="action" data-title="Remove">                                                               

@@ -38,7 +38,7 @@
                                 Pay method: <%= orders.payment %> <br>
                                 Pay Status: <%= orders.status %> 
                                 <% if(orders.payment!=='cod' && orders.status=='Pending') {%>
-                                    <button type="submit" onclick="retryPayment('<%=orders._id%>')" class="p-1 ml-2">Retry Payment?</button>
+                                    <button type="submit" onclick="retryPayment('<%=orders._id%>')" class="btn btn-xs p-0 ml-2">Retry Payment?</button>
                                     <% } %>
                                 <br>
                                 Order Status: <%= orders.orderedItems[0].productStatus %><br>

@@ -74,7 +74,7 @@ const cancelOrder = async (req, res) => {
                 { "orderedItems.product": productId, userId: userId, _id: orderId, status: "Verified" },
                 {
                     "orderedItems.$.productStatus": "Cancelled",
-                     "orderedItems.$.refundDate": Date.now() ,
+                     "orderedItems.$.refundDate": (new Date()).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }),
                 },
                 { new: true }
             );
@@ -101,7 +101,7 @@ const cancelOrder = async (req, res) => {
                     $inc: { wallet: amount },
                     $push: {
                         walletHistory: {
-                            transactionDate: new Date(),
+                            transactionDate: (new Date()).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }),
                             transactionAmount: amount,
                             transactionType: "Credit",
                         }
@@ -204,7 +204,8 @@ try {
     doc.moveDown(2);
     // Order Information
     doc.fontSize(16).text("Order Information", { align: "left", underline: true });
-    doc.fontSize(12).text(`Order Date: ${new Date(order.createdOn).toLocaleDateString()}`);
+    doc.fontSize(12).text(`Invoice date and time:${(new Date()).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' })}`)
+    doc.fontSize(12).text(`Order Date: ${new Date(order.createdOn).toLocaleDateString('en-US',{timeZone:"Asia/Kolkata"})}`);
     doc.fontSize(12).text(`Payment Method: ${order.payment}`);
     doc.fontSize(12).text(`Payment Status: ${order.status}`);
     let shipping;

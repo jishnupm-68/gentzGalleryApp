@@ -120,7 +120,7 @@ const verifyOtp = async (req,res)=>{
                         $inc: { wallet: 100 },
                         $push: {
                             walletHistory: {
-                                transactionDate: new Date(),
+                                transactionDate: (new Date()).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }),
                                 transactionAmount: 100,
                                 transactionType: "Credit",
                             }
@@ -132,7 +132,7 @@ const verifyOtp = async (req,res)=>{
                     saveUserData.wallet = 50; 
                     saveUserData.walletHistory = [
                         {
-                            transactionDate: new Date(),
+                            transactionDate: (new Date()).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }),
                             transactionAmount: 50,
                             transactionType: "Credit",
                         }
