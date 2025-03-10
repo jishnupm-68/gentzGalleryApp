@@ -44,7 +44,6 @@ const getAddCategory = async (req,res)=>{
 //add new category to the database
 const addCategory = async (req,res)=>{
     const {name,description} = req.body;
-    console.log(req.body)
     try{
         const existCategory  = await Category.findOne({name: name.trim()});
         if(existCategory){
@@ -103,7 +102,6 @@ const addCategoryOffer = async (req,res)=>{
 const removeCategoryOffer = async (req,res)=>{
     try{
         const categoryId = req.body.categoryId;
-        console.log(categoryId)
         const category = await Category.findById(categoryId);
         if(!category){
             console.log("Category not found")

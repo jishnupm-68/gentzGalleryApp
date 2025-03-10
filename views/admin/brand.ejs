@@ -106,7 +106,7 @@
             <label for="product_name" class="form-label">Brand Image</label>
             <div class="input-upload">
               <img src="" alt=""/>
-              <input class="form-control border" name="image" type="file" />
+              <input class="form-control border" name="image" type="file" onchange="validateImage(this)"/>
             </div>
             <div class="d-grid">
               <button class="btn btn-primary mt-20" type="submit">
@@ -260,6 +260,39 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     })
   }
+
+  function validateImage(input) {
+    const file = input.files[0];
+    if (!file) {
+       Swal.fire({
+           icon: 'error',
+           title: 'Error',
+           text: 'Please select an image file!',
+       })
+        return;
+    }
+    //image types
+    const allowedTypes = ["image/jpeg", "image/png", "image/jpg", "image/webp"];
+    if (!allowedTypes.includes(file.type)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error...',
+        text: 'Invalid image type! Only JPEG, PNG, JPG, and WebP are allowed.',
+      })
+        input.value = ""; 
+        return;
+    }
+    if (file.size > 2 * 1024 * 1024) { 
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'File size is too large! Please select an image under 2MB.',
+        })
+        input.value = ""; 
+        return;
+    }
+    console.log("Valid image selected:", file.name);
+}
 
 </script>
 
