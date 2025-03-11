@@ -107,19 +107,41 @@
     
 
     <!-- pagination -->
-    <div class="container mt-3">
+     <div class="container mt-3">
         <nav aria-label="Page navigation">
             <ul class="pagination justify-content-center mb-20" style="margin-right: 200px;">
-                <% for (let i = 1; i <= totalPages; i++) { %>
+                <!-- Previous Button -->
+                <li class="page-item <%= Number(currentPage) === 1 ? 'disabled' : '' %>">
+                    <a class="page-link" href="?page=<%= currentPage - 1 %>">Previous</a>
+                </li>
+                <!-- First Page -->
+                <% if (currentPage > 3) { %>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1">1</a>
+                    </li>
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                <% } %>
+                <!-- Dynamic Pages -->
+                <% for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) { %>
                     <li class="page-item <%= (i === currentPage) ? 'active' : '' %>">
-                        <a class="page-link" href="?page=<%= i %>">
-                            <%= i %>
-                        </a>
+                        <a class="page-link" href="?page=<%= i %>"><%= i %></a>
                     </li>
                 <% } %>
+                <!-- Last Page -->
+                <% if (currentPage < totalPages - 2) { %>
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<%= totalPages %>"><%= totalPages %></a>
+                    </li>
+                <% } %>
+                <!-- Next Button -->
+                <li class="page-item <%= Number(currentPage) === totalPages ? 'disabled' : '' %>">
+                    <a class="page-link" href="?page=<%= Number(currentPage) + 1 %>">Next</a>
+                </li>
             </ul>
         </nav>
-    </div>
+      </div>
+    
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>

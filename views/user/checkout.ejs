@@ -230,9 +230,13 @@
                                     <% let tax = (finalAmount-shipping)*18/100 %>
                                     <% let amount = finalAmount-shipping-tax %>
                                     <th>Taxable amount</th>
-                                    <td colspan="2" class="product-subtotal">
+                                    <td colspan="2" class="product-subtotal" >
                                         <span class="font-xl text-brand fw-900"
-                                            id="totalValue">₹<%= amount %></span>
+                                           >₹<%= amount %></span>
+                                    </td>
+                                    <td colspan="2" class="product-subtotal" style="display: none;" >
+                                        <span class="font-xl text-brand fw-900"
+                                            id="totalValue">₹<%= finalAmount-shipping %></span>
                                     </td>
                                 </tr>
                                 <tr>
