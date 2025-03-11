@@ -30,17 +30,17 @@
            </div>
            <div class="form-group col-md-4">
                <label for="pincode">Pincode:</label>
-               <input type="number" class="form-control border-3" id="pincode" name="pincode" >
+               <input type="text" class="form-control border-3" id="pincode" name="pincode" >
            </div>
        </div>
        <div class="row mb-3">
            <div class="form-group col-md-4">
                <label for="phone">Phone:</label>
-               <input type="number" class="form-control border-3" id="phone" name="phone" >
+               <input type="text" class="form-control border-3" id="phone" name="phone" >
            </div>
            <div class="form-group col-md-4">
                <label for="altPhone">Alternate Phone:</label>
-               <input type="number" class="form-control border-3" id="altPhone" name="altPhone" >
+               <input type="text" class="form-control border-3" id="altPhone" name="altPhone" >
            </div>
        </div>
        <button type="submit" id="submitButton" class="btn text-white"  style="background-color: #1e918b;">Submit</button>
@@ -54,8 +54,7 @@
    document.getElementById('addressForm').addEventListener('submit', function(event) {
        if (validateForm()) {
         event.preventDefault();
-        $('#addressForm').on('submit', function(e) {           
-            $.ajax({
+        $.ajax({
                 url: `/addAddress`,
                 type: 'POST',
                 data: $(this).serialize(),                
@@ -64,7 +63,7 @@
                         Swal.fire({
                             icon:'success',
                             title: response.message,
-                            showConfirmButton: false,
+                            showConfirmButton: true,
                             timer: 1500,
                         }).then(() => {
                             window.location.href = response.redirectUrl;
@@ -82,7 +81,6 @@
                     console.error("Error:", xhr.responseText);
                 }
             });
-        });
        }else{     
         event.preventDefault();
        }
